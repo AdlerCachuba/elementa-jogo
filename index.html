@@ -42,6 +42,7 @@ body{font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-t
 .bar{position:relative;height:16px;border-radius:4px;background:rgba(10,8,16,.78);border:1px solid var(--line);overflow:hidden}
 .bar i{position:absolute;inset:0;transform-origin:left center;background:var(--hp)}
 .bar.mana i{background:var(--mana)}
+.bar.xp{height:12px}.bar.xp i{background:var(--gold);opacity:.75}.bar.xp span{font-size:9.5px;line-height:10px}
 .bar span{position:relative;display:block;font-size:11px;font-weight:800;line-height:14px;padding-left:6px;color:var(--text);text-shadow:0 1px 2px #000}
 .bar.low{border-color:var(--hp)}
 .wave{display:grid;justify-items:center;text-align:center}
@@ -201,6 +202,7 @@ body{font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-t
     <div class="bars">
       <div class="bar hp"><i id="hpFill"></i><span id="hpTxt">100</span></div>
       <div class="bar mana" id="mnBar"><i id="mnFill"></i><span id="mnTxt">100</span></div>
+      <div class="bar xp" id="xpBar" hidden><i id="xpFill"></i><span id="xpTxt">Nível 1</span></div>
     </div>
     <div class="wave"><b id="waveTxt">Onda 1</b><small id="leftTxt"></small></div>
     <div class="hud-right"><span id="scoreTxt">0</span><button id="pauseBtn" class="icon-btn" aria-label="Pausar">II</button></div>
@@ -304,6 +306,16 @@ body{font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-t
     </div>
   </section>
 
+  <section id="sLevel" class="screen" hidden>
+    <div class="panel">
+      <p class="eyebrow">Você subiu de nível</p>
+      <h2 id="lvTitle">Nível 2!</h2>
+      <p class="sub">Escolha um Arcano Maior. Ele fica com você em todos os capítulos da História daqui em diante.</p>
+      <div class="arcana" id="lvArcana"></div>
+      <div class="stack"><button id="lvGo" class="btn primary" disabled>Escolha um Arcano</button></div>
+    </div>
+  </section>
+
   <section id="sAltar" class="screen" hidden>
     <div class="panel">
       <div class="ph"><h2>Altar</h2><button class="btn small" data-back>Voltar</button></div>
@@ -370,6 +382,7 @@ body{font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-t
       <div class="ph"><h2>Modo História</h2><button class="btn small" data-back>Voltar</button></div>
       <p class="sub">Cada capítulo desperta um novo elemento. Seu progresso fica salvo.</p>
       <p class="sub" id="chFinds"></p>
+      <p class="sub" id="chLevel"></p>
       <h3>Dificuldade</h3>
       <div class="diff" id="sdRow"><button id="sdPrev" aria-label="Dificuldade anterior">‹</button><div><b id="sdName">Normal</b><small id="sdDesc"></small></div><button id="sdNext" aria-label="Próxima dificuldade">›</button></div>
       <h3>Capítulos</h3>
@@ -393,6 +406,7 @@ body{font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-t
         <div><b id="chEss">+0</b><span>Essência</span></div>
       </div>
       <div class="stack">
+        <button id="bChNext" class="btn primary" hidden>Próximo capítulo</button>
         <button id="bChGo" class="btn primary">Continuar explorando</button>
         <button id="bChMenu" class="btn">Voltar ao menu</button>
       </div>
@@ -665,6 +679,15 @@ const store={
 };
 const discovered=new Set(store.get('disc',[]));
 const conq=new Set(store.get('conq',[]));
+// nível da História: XP por monstro derrotado; cada nível dá um Arcano que vale em todos os capítulos
+const LV=Object.assign({lvl:1,xp:0,cards:[],pend:0},store.get('nivel',{}));
+const LV_SKIP=new Set([4,10,16,17]); // cartas que dependem de ondas da Arena
+const xpNeed=l=>60+30*l;
+function lvPool(){return ARCANA.filter(c=>!LV_SKIP.has(c.n)&&!LV.cards.includes(c.n));}
+function lvMax(){return LV.cards.length+LV.pend>=ARCANA.length-LV_SKIP.size;}
+function gainXP(n){if(mode!=='story'||lvMax())return;LV.xp+=n;
+  while(!lvMax()&&LV.xp>=xpNeed(LV.lvl)){LV.xp-=xpNeed(LV.lvl);LV.lvl++;LV.pend++;addText(P.x,P.y-60,`Nível ${LV.lvl}!`,'#e8c477');burst(P.x,P.y,'#e8c477',40,300);sfx('seal');}
+  if(lvMax())LV.xp=0;store.set('nivel',LV);}
 const CONQ=[
   {id:'cap1',name:'Primeira Gota',desc:'Conclua o Capítulo I.'},
   {id:'cap3',name:'Os Quatro Despertos',desc:'Conclua o Capítulo III e desperte os quatro elementos.'},
@@ -1028,7 +1051,8 @@ function newGame(){
   P.elems=new Set(ORDER.split(''));
   camX=camY=0;
   const prog=run.daily?{}:store.get('story',{});P.canDash=run.daily?true:!!prog.ch5;
-  if(mode==='story'){const f=findBonus();P.maxHp+=f.hp;P.hp=P.maxHp;P.maxMana+=f.mp;P.mana=P.maxMana;}if(prog.ch7)P.hpRegen+=1;if(prog.ch9)P.cdMul*=.9;if(prog.ch10)P.dmgMul*=1.1;if(prog.ch8&&mode!=='story')P.echo+=.2;
+  if(mode==='story'){const f=findBonus();P.maxHp+=f.hp;P.hp=P.maxHp;P.maxMana+=f.mp;P.mana=P.maxMana;
+    for(const n of LV.cards){ARCANA[n].apply();P.arcRun.push(n);}P.hp=P.maxHp;P.mana=P.maxMana;}if(prog.ch7)P.hpRegen+=1;if(prog.ch9)P.cdMul*=.9;if(prog.ch10)P.dmgMul*=1.1;if(prog.ch8&&mode!=='story')P.echo+=.2;
   if(mode==='story')storyStart();else{story=null;if(prog.ch4)P.ether=100;
     if(prog.ch6){const c=pick(ARCANA.filter(c=>!c.unique));c.apply();P.arcRun.push(c.n);P.arcCycle.add(c.n);setTimeout(()=>{if(state==='play'&&mode==='arena')showToast('Coroa das Estrelas',`${c.rn} · ${c.name}`,c.desc,arcGlyph(c,46));},600);}
     startWave(1);}
@@ -1518,7 +1542,7 @@ function quench(x,y,r){
 }
 function kill(e){
   e.dead=true;
-  if(mode==='story'&&story){story.kills++;if(e.popIdx!=null)story.deadPop.push(e.popIdx);if(e.area)story.areaDead[e.area]=(story.areaDead[e.area]||0)+1;if(e.boss)storyEvent('bossDead',e);}
+  if(mode==='story'&&story){story.kills++;if(e.popIdx!=null)story.deadPop.push(e.popIdx);gainXP(e.boss?(e.echo?40:80):Math.max(2,Math.round(e.pts*.6))*(e.elite?2:1));if(e.area)story.areaDead[e.area]=(story.areaDead[e.area]||0)+1;if(e.boss)storyEvent('bossDead',e);}
   score+=Math.round(e.pts*(1+(wave.n-1)*.1)*(hasOmen('sangue')?1.5:1));
   P.ether=Math.min(100,P.ether+(e.boss?40:e.elite?8:3)*P.etherMul);
   if(P.lifeSteal)P.hp=Math.min(P.maxHp,P.hp+P.lifeSteal);
@@ -2198,6 +2222,8 @@ function updateHUD(){
   mnFill.style.transform=`scaleX(${clamp(P.mana/P.maxMana,0,1)})`;
   setText('hpTxt',`${Math.ceil(P.hp)} / ${P.maxHp}`);
   setText('mnTxt',P.avatarT>0?'Avatar: mana livre':`${Math.floor(P.mana)} / ${P.maxMana}`);
+  {const xb=$('#xpBar'),on=mode==='story'&&!!story;if(xb.hidden===on)xb.hidden=!on;
+    if(on){const mx=lvMax();$('#xpFill').style.transform=`scaleX(${mx?1:clamp(LV.xp/xpNeed(LV.lvl),0,1)})`;setText('xpTxt',mx?`Nível ${LV.lvl} · máximo`:`Nível ${LV.lvl} · ${LV.xp} / ${xpNeed(LV.lvl)} XP`);}}
   if(mode==='story'&&story){setText('waveTxt','Capítulo '+CH().rn);setText('leftTxt',story.region?story.region.name:'');setText('scoreTxt',String(score));
     const o=storyObjective();if(story.objText!==o.text){story.objText=o.text;$('#objective').innerHTML=`<b>◆</b> ${o.text}`;}
     $('#mnBar').classList.toggle('low',P.noManaT>0);return;}
@@ -4370,6 +4396,21 @@ function checkConq(silent){
   if(ALTAR.some(a=>lv(a.id)>=a.max))unlockConq('altar',silent);if(best.wave>=10)unlockConq('onda10',silent);if(best.wave>=30)unlockConq('onda30',silent);
   if(meta.wins>0)unlockConq('quint',silent);
 }
+function openLevelUp(){
+  const pool=lvPool();if(!pool.length){LV.pend=0;store.set('nivel',LV);return;}
+  const picks=[];while(picks.length<3&&pool.length)picks.push(pool.splice(Math.random()*pool.length|0,1)[0]);
+  const lvNow=LV.lvl-LV.pend+1;$('#lvTitle').textContent=`Nível ${lvNow}!`;
+  const box=$('#lvArcana');box.innerHTML=picks.map((c,i)=>arcCardHTML(c,i).replace(`id="arc${i}"`,`id="lvc${i}"`)).join('');box.style.gridTemplateColumns=`repeat(${picks.length},minmax(0,1fr))`;
+  let sel=null;const go=$('#lvGo');go.disabled=true;go.textContent='Escolha um Arcano';
+  picks.forEach((c,i)=>{const b=$('#lvc'+i);setTimeout(()=>b.classList.add('open'),reduceMotion?0:180+i*260);
+    loadArcImage(c.n,src=>{if(!src)return;const im=document.createElement('img');im.src=src;im.alt='';const f=b.querySelector('.front');f.innerHTML='';f.appendChild(im);});
+    b.addEventListener('click',()=>{sel=c;box.querySelectorAll('.tarot').forEach(t=>t.classList.toggle('sel',t===b));go.disabled=false;go.textContent=`Ficar com ${c.name}`;sfx('tick','A');});});
+  go.onclick=()=>{if(!sel)return;sel.apply();P.arcRun.push(sel.n);LV.cards.push(sel.n);LV.pend--;store.set('nivel',LV);
+    if(!arcCollected.has(sel.n)){arcCollected.add(sel.n);store.set('arc',[...arcCollected]);}
+    showToast('Arcano permanente',`${sel.rn} · ${sel.name}`,sel.desc,arcGlyph(sel,46));sfx('seal');
+    if(LV.pend>0)openLevelUp();else{last=performance.now();setState('play');}};
+  holds.clear();joy.active=false;sfx('discover');setState('level');
+}
 function saveFind(pk){if(!pk.id)return;const got=Object.assign({},store.get('achados',{}));if(got[pk.id])return;got[pk.id]=pk.kind;store.set('achados',got);checkConq();}
 function findBonus(){const got=store.get('achados',{});let hp=0,mp=0,n=0;for(const k in got){n++;if(got[k]==='hp')hp+=25;else mp+=25;}return {hp,mp,n};}
 function storyIntro(){say(CH().intro.map(text=>({who:SPIRIT,text})));}
@@ -4421,6 +4462,7 @@ function storyObjective(){
 }
 function updateStory(dt){
   const S=story,C=CH();S.t+=dt;
+  if(LV.pend>0&&state==='play'&&!dlg){openLevelUp();return;}
   if(S.walk&&P.dashT<=0){const ws=walkShape(P.x,P.y,8);
     if(ws){if(!ws.phase||(ws.phase.cond&&!S.flags[ws.phase.cond]))S.safe={x:P.x,y:P.y};}
     else{const to=S.safe||S.checkpoint;P.x=to.x;P.y=to.y;P.kx=P.ky=0;P.dashT=0;addText(P.x,P.y-36,S.fallText||'Você caiu no vazio','#b48cff');burst(P.x,P.y,'#b48cff',24,200);
@@ -4472,6 +4514,8 @@ function storyComplete(){
   $('#chTitle').textContent=`Capítulo ${C.rn} concluído`;
   $('#chTime').textContent=`${m}:${String(sec).padStart(2,'0')}`;$('#chKills').textContent=S.kills;$('#chEss').textContent='+'+ess;
   $('#chSub').textContent=C.doneText+` Dificuldade: ${D.name}${S.diff===2?' ★':''}.`;
+  {const nx=CHAPTERS[C.num+1],bn=$('#bChNext');bn.hidden=!nx;if(nx)bn.textContent=`Ir para o Capítulo ${nx.rn} · ${nx.title}`;$('#bChGo').classList.toggle('primary',!nx);}
+  $('#chSub').textContent+=` Nível ${LV.lvl}.`;
   musicFanfare();setState('chapter');
 }
 function storyDeath(){
@@ -4501,12 +4545,15 @@ function dialogNext(){
 $('#sDialog').addEventListener('click',dialogNext);
 $('#sdPrev').addEventListener('click',()=>{storyDiff=Math.max(0,storyDiff-1);store.set('storyDiff',storyDiff);renderChapters();});
 $('#sdNext').addEventListener('click',()=>{storyDiff=Math.min(2,storyDiff+1);store.set('storyDiff',storyDiff);renderChapters();});
+$('#bChNext').addEventListener('click',()=>{if(!story||!CHAPTERS[story.ch+1])return;const n=story.ch+1;audioInit();storyDiff=story.diff;
+  storyLoad=store.get('save'+n,null);storyCh=n;mode='story';groundCv=null;newGame();});
 $('#bChGo').addEventListener('click',()=>{last=performance.now();setState('play');});
 $('#bChMenu').addEventListener('click',()=>{P=null;story=null;mode='arena';groundCv=null;parts.length=0;setState('menu');});
 // ----- escolha de capítulo -----
 function renderChapters(){
   const prog=store.get('story',{}),got=store.get('achados',{}),fb=findBonus(),total=CHAPTERS.slice(1).reduce((n,C)=>n+(C.finds||0),0);
   $('#chFinds').textContent=`Achados permanentes: ${fb.n} de ${total}`+(fb.n?` · +${fb.hp} de vida e +${fb.mp} de mana em todos os capítulos.`:'. Cada item que você encontra no mapa fortalece o seu personagem para sempre.');
+  $('#chLevel').textContent=`Nível ${LV.lvl}${lvMax()?' (máximo)':` · ${LV.xp} / ${xpNeed(LV.lvl)} XP`}. `+(LV.cards.length?`Arcanos permanentes: ${LV.cards.map(n=>ARCANA[n].name).join(', ')}.`:'Derrote monstros para subir de nível e ganhar Arcanos que valem em todos os capítulos.');
   $('#chList').innerHTML=CHAPTERS.slice(1).map(C=>{
     const done=!!prog['ch'+C.num],open=C.num===1||!!prog['ch'+(C.num-1)],sv=open?store.get('save'+C.num,null):null;
     return `<li${open?'':' class="unknown"'}><span class="g">${open?(C.reward?glyphSVG(C.reward,40):C.iconKey?glyphSVG(C.iconKey,40):quadSVG(40)):glyphSVG('?',40)}</span><div><b>Capítulo ${C.rn} · ${C.title}</b>
@@ -4712,12 +4759,12 @@ function drawStoryDark(){
 }
 
 // ---------------- Telas ----------------
-const screens={opts:$('#sOpts'),arena:$('#sArena'),chapters:$('#sChapters'),dialog:$('#sDialog'),chapter:$('#sChapter'),altar:$('#sAltar'),win:$('#sWin'),menu:$('#sMenu'),grimoire:$('#sGrim'),help:$('#sHelp'),upgrade:$('#sUp'),pause:$('#sPause'),over:$('#sOver')};
+const screens={level:$('#sLevel'),opts:$('#sOpts'),arena:$('#sArena'),chapters:$('#sChapters'),dialog:$('#sDialog'),chapter:$('#sChapter'),altar:$('#sAltar'),win:$('#sWin'),menu:$('#sMenu'),grimoire:$('#sGrim'),help:$('#sHelp'),upgrade:$('#sUp'),pause:$('#sPause'),over:$('#sOver')};
 function setState(s){
   state=s;
   for(const k in screens)screens[k].hidden=k!==s;
   $('#app').classList.toggle('story',!!(P&&mode==='story'));
-  hud.hidden=!(P&&(s==='play'||s==='pause'||s==='upgrade'||s==='dialog'));
+  hud.hidden=!(P&&(s==='play'||s==='pause'||s==='upgrade'||s==='dialog'||s==='level'));
   $('#objective').hidden=!(P&&mode==='story'&&(s==='play'||s==='dialog'));
   if(s==='play'){holds.clear();joy.active=false;joy.dx=joy.dy=0;}
   if(s==='menu'){refreshMenu();if(biome!==BIOMES[0]){biome=BIOMES[0];makeBg();}}
@@ -4726,7 +4773,7 @@ function setState(s){
   if(s==='chapters')renderChapters();
   if(s==='arena'){refreshDiff();refreshDaily();}
   if(s==='opts')renderOpts();
-  const focusMap={opts:'#optBack',menu:'#bStory',arena:'#bArenaGo',pause:'#bResume',over:'#bAgain',upgrade:'#up0'};
+  const focusMap={chapter:'#bChNext',level:'#lvGo',opts:'#optBack',menu:'#bStory',arena:'#bArenaGo',pause:'#bResume',over:'#bAgain',upgrade:'#up0'};
   if(focusMap[s]&&!coarse){const el=$(focusMap[s]);if(el)el.focus({preventScroll:true});}
 }
 function refreshMenu(){
@@ -4852,7 +4899,7 @@ $('#bAltar').addEventListener('click',()=>openSub('altar'));
 $('#bWinGo').addEventListener('click',()=>{showUpgrade();});
 $('#bWinMenu').addEventListener('click',()=>{P=null;parts.length=0;setState('menu');});
 function pauseGame(){if(state==='play'){
-  if(mode==='story'&&story){$('#pausePhase').textContent=`Capítulo ${CH().rn} · ${CH().title} · ${story.region?story.region.name:''} · ${STORY_DIFF[story.diff].name}. ${storyObjective().text}`;$('#pauseArc').innerHTML='';drawPauseMap();setState('pause');return;}
+  if(mode==='story'&&story){$('#pausePhase').textContent=`Capítulo ${CH().rn} · ${CH().title} · ${story.region?story.region.name:''} · ${STORY_DIFF[story.diff].name}. ${storyObjective().text}`;$('#pauseArc').innerHTML=LV.cards.map(n=>{const c=ARCANA[n];return `<span title="${c.desc}">${c.rn} · ${c.name}</span>`;}).join('');drawPauseMap();setState('pause');return;}
   $('#pausePhase').textContent=phaseLine()+(run.phase&&run.phase.omens.length?'. '+run.phase.omens.map(o=>o.desc).join(' '):'');
   $('#pauseMap').hidden=true;$('#mapLegend').hidden=true;
   $('#pauseArc').innerHTML=P.arcRun.length?P.arcRun.map(n=>{const c=ARCANA[n];return `<span title="${c.desc}">${c.rn} · ${c.name}</span>`;}).join(''):'';
