@@ -83,6 +83,11 @@ body{font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-t
 .seg{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
 .seg button{flex:1 1 auto;min-height:40px;padding:6px 10px;border-radius:10px;border:1px solid var(--line);background:rgba(28,23,38,.9);color:var(--text);font:600 14px var(--body);cursor:pointer}
 .seg button.on{border-color:var(--gold);background:rgba(232,196,119,.16);color:var(--gold)}
+.keys{display:grid;grid-template-columns:1fr auto;gap:6px 12px;align-items:center;margin-top:8px}
+.keys span{font:600 14px var(--body);color:var(--text)}
+.keys button{min-width:120px;min-height:38px;padding:4px 12px;border-radius:10px;border:1px solid var(--line);background:rgba(28,23,38,.9);color:var(--gold);font:700 14px var(--body);cursor:pointer}
+.keys button.wait{border-color:var(--gold);background:rgba(232,196,119,.16);animation:keyPulse 1s ease-in-out infinite}
+@keyframes keyPulse{50%{background:rgba(232,196,119,.32)}}
 #pauseMap{display:block;margin:12px auto 0;max-width:100%;max-height:44vh;width:auto;height:auto;border-radius:10px;border:1px solid var(--line)}
 .map-legend{font-size:12.5px;text-align:center;margin-top:6px}.map-legend b{color:var(--gold)}
 .mk{display:inline-block;width:9px;height:9px;border-radius:50%;margin:0 3px 0 8px;vertical-align:middle}
@@ -273,13 +278,13 @@ body{font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-t
       <div class="ph"><h2>Como jogar</h2><button class="btn small" data-back>Voltar</button></div>
       <dl>
         <dt>Mover</dt>
-        <dd>Arraste o dedo na metade esquerda da tela. No computador, use <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> ou as setas.</dd>
+        <dd>Arraste o dedo na metade esquerda da tela. No computador, use <kbd data-k="up">W</kbd><kbd data-k="left">A</kbd><kbd data-k="down">S</kbd><kbd data-k="right">D</kbd> ou as setas. As teclas podem ser trocadas em Opções.</dd>
         <dt>Carregar elementos</dt>
-        <dd>Toque nos quatro símbolos à direita. Cada toque ocupa um selo. Você começa com dois selos; quando todos estão cheios, o próximo toque começa uma combinação nova. O botão <b>×</b> no canto esquerdo esvazia os selos. Teclado: <kbd>1</kbd> Fogo, <kbd>2</kbd> Água, <kbd>3</kbd> Terra, <kbd>4</kbd> Ar, <kbd>X</kbd> limpar.</dd>
+        <dd>Toque nos quatro símbolos à direita. Cada toque ocupa um selo. Você começa com dois selos; quando todos estão cheios, o próximo toque começa uma combinação nova. O botão <b>×</b> no canto esquerdo esvazia os selos. Teclado: <kbd data-k="F">1</kbd> Fogo, <kbd data-k="W">2</kbd> Água, <kbd data-k="E">3</kbd> Terra, <kbd data-k="A">4</kbd> Ar, <kbd data-k="clear">X</kbd> limpar.</dd>
         <dt>Terceiro selo</dt>
         <dd>Na onda 4 desperta o terceiro selo. Com três elementos você conjura rituais: meteoros, golems, fênix, vulcões, nevascas e mais 15.</dd>
         <dt>Lançar</dt>
-        <dd>Toque no círculo central para mirar no inimigo mais próximo, ou toque em qualquer ponto da metade direita da arena para mirar ali. Segure para lançar sem parar. Teclado: <kbd>Espaço</kbd> ou clique do mouse.</dd>
+        <dd>Toque no círculo central para mirar no inimigo mais próximo, ou toque em qualquer ponto da metade direita da arena para mirar ali. Segure para lançar sem parar. Teclado: <kbd data-k="cast">Espaço</kbd> ou clique do mouse.</dd>
         <dt>Misturas</dt>
         <dd>São 10 misturas de dois elementos e 20 rituais de três, todos escondidos. Na primeira vez que você lançar um, ele é registrado no Grimório.</dd>
         <dt>Evoluções e bênçãos</dt>
@@ -297,7 +302,7 @@ body{font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-t
         <dt>Arcanos Maiores</dt>
         <dd>Ao vencer uma onda, o tempo desacelera e três cartas de tarot aparecem. Escolha uma: cada Arcano dá um bônus para o resto da partida e entra na sua coleção no Grimório.</dd>
         <dt>Quintessência</dt>
-        <dd>Derrotar inimigos enche o arco dourado no canto direito dos botões. Cheio, toque nele (ou <kbd>Q</kbd>) para virar Avatar dos Elementos: uma onda dos quatro elementos varre a arena e, por 7 segundos, suas magias não gastam mana e recarregam na metade do tempo.</dd>
+        <dd>Derrotar inimigos enche o arco dourado no canto direito dos botões. Cheio, toque nele (ou <kbd data-k="ult">Q</kbd>) para virar Avatar dos Elementos: uma onda dos quatro elementos varre a arena e, por 7 segundos, suas magias não gastam mana e recarregam na metade do tempo.</dd>
         <dt>Fraquezas</dt>
         <dd>Cada espírito leva quase o dobro de dano do elemento que o vence e resiste ao próprio elemento. Números amarelos mostram um golpe eficaz.</dd>
         <dt>Os símbolos</dt>
@@ -395,6 +400,10 @@ body{font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-t
       <h3>Símbolos dos elementos nos inimigos</h3>
       <div class="seg" data-opt="sym"><button data-v="false">Só a cor</button><button data-v="true">Cor e símbolo</button></div>
       <p class="sub diff-note">Cor e símbolo mostra o triângulo do elemento sobre cada inimigo. Ajuda a jogar com daltonismo ou em telas pequenas.</p>
+      <h3>Teclado</h3>
+      <p class="sub diff-note">Clique num comando e aperte a tecla nova. Se a tecla já estiver em uso, os dois comandos trocam de tecla. Esc cancela. As setas sempre andam e Esc sempre pausa. No celular, os botões da tela continuam iguais.</p>
+      <div class="keys" id="keyList"></div>
+      <div class="seg"><button id="keyReset">Restaurar teclas padrão</button></div>
     </div>
   </section>
 
@@ -780,6 +789,20 @@ const saveMeta=()=>store.set('meta',meta);
 const lv=id=>run&&run.daily?0:(meta.ups[id]||0);
 // opções do jogador (tela Opções)
 const opts=Object.assign({btn:1,left:false,shake:1,vib:true,sym:false},store.get('opts',{}));
+// teclas de cada comando (tela Opções → Teclado)
+const KEY_ACTS=[['F','Fogo','Digit1'],['W','Água','Digit2'],['E','Terra','Digit3'],['A','Ar','Digit4'],['cast','Lançar magia','Space'],['clear','Limpar selos','KeyX'],
+  ['dash','Passo Etéreo','ShiftLeft'],['ult','Avatar dos Elementos','KeyQ'],['up','Andar para cima','KeyW'],['down','Andar para baixo','KeyS'],['left','Andar para a esquerda','KeyA'],['right','Andar para a direita','KeyD'],['pause','Pausar','KeyP']];
+const KEY_FALLBACK={Numpad1:'F',Numpad2:'W',Numpad3:'E',Numpad4:'A',Backspace:'clear',ShiftRight:'dash',ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right',Escape:'pause'};
+let KM={};
+function loadKeys(){KM=Object.fromEntries(KEY_ACTS.map(a=>[a[0],a[2]]));const sv=opts.keys||{};for(const a in sv)if(a in KM)KM[a]=sv[a];}
+loadKeys();
+function actOf(code){for(const a in KM)if(KM[a]===code)return a;return KEY_FALLBACK[code]||null;}
+function held(a){if(keys[KM[a]])return true;for(const c in KEY_FALLBACK)if(KEY_FALLBACK[c]===a&&keys[c]&&actOf(c)===a)return true;return false;}
+function keyName(code){if(!code)return '—';
+  const N={Space:'Espaço',ShiftLeft:'Shift',ShiftRight:'Shift dir.',ControlLeft:'Ctrl',ControlRight:'Ctrl dir.',AltLeft:'Alt',AltRight:'Alt Gr',MetaLeft:'Cmd',MetaRight:'Cmd dir.',Enter:'Enter',NumpadEnter:'Enter (num.)',
+    Backspace:'Apagar',Tab:'Tab',CapsLock:'Caps Lock',ArrowUp:'↑',ArrowDown:'↓',ArrowLeft:'←',ArrowRight:'→',Escape:'Esc',Delete:'Delete',Insert:'Insert',Home:'Home',End:'End',PageUp:'Page Up',PageDown:'Page Down'};
+  if(N[code])return N[code];const lb=(opts.keyLab||{})[code];if(lb&&lb.length===1&&lb!==' ')return lb.toUpperCase();if(code.startsWith('Key'))return code.slice(3);if(code.startsWith('Digit'))return code.slice(5);if(code.startsWith('Numpad'))return 'Num '+code.slice(6);return code;}
+let keyWait=null;
 let selDiff=Math.min(store.get('diff',0),meta.maxDiff);
 const reactSeen=new Set(store.get('react',[]));
 function seeBeast(f,el){const k=f+':'+el;if(!bestiary.has(k)){bestiary.add(k);store.set('beasts',[...bestiary]);}}
@@ -1174,7 +1197,7 @@ function startWaveNow(n){
   else if(final){title='A Quintessência';sub=BOSSES.quint.desc;w='Vença-a para ganhar a corrida';}
   else if(boss){const B=BOSSES[ph.boss];title=`Onda ${n} · ${B.name}`;sub=B.desc;w=ph.boss==='guardiao'?'Troque de magia quando ele mudar de cor':weakText([{el:R[0].el}]);}
   else{title=`Onda ${n}`;sub=rosterText(avail);if(idx===3&&eliteP>0)w='Inimigos de elite podem aparecer';}
-  if(n===1&&!tip)tip=coarse?'Toque no círculo central para lançar':'Espaço ou clique para lançar';
+  if(n===1&&!tip)tip=coarse?'Toque no círculo central para lançar':`${keyName(KM.cast)} ou clique para lançar`;
   else if(n===2&&countDisc()===0)tip='Dica: carregue dois elementos para criar uma mistura';
   if(n>=4&&P.maxSlots<3){P.maxSlots=3;tip='Terceiro selo desperto: agora você pode misturar três elementos';sfx('seal');}
   if(n>=10&&P.maxSlots<4&&seal4()&&!run.daily){P.maxSlots=4;tip='Quarto selo desperto: misture os quatro elementos e descubra Cataclismos e Infusões';sfx('seal');}
@@ -1332,7 +1355,7 @@ function dash(){
   if(!P||!P.canDash||P.dashCd>0||P.dashT>0||state!=='play')return;
   let dx=0,dy=0;
   if(joy.active&&(joy.dx||joy.dy)){dx=joy.dx;dy=joy.dy;}
-  else{if(keys.KeyA||keys.ArrowLeft)dx-=1;if(keys.KeyD||keys.ArrowRight)dx+=1;if(keys.KeyW||keys.ArrowUp)dy-=1;if(keys.KeyS||keys.ArrowDown)dy+=1;}
+  else{if(held('left'))dx-=1;if(held('right'))dx+=1;if(held('up'))dy-=1;if(held('down'))dy+=1;}
   if(!dx&&!dy){dx=P.fx;dy=P.fy;}const l=Math.hypot(dx,dy)||1;
   P.dashDx=dx/l;P.dashDy=dy/l;P.dashT=.19;P.dashCd=2.2*(P.dashMul||1);UI.dash.flash=.2;sfx('A');
   burst(P.x,P.y,'#e0d0ff',14,180);
@@ -1377,19 +1400,22 @@ cv.addEventListener('pointercancel',onUp);
 cv.addEventListener('lostpointercapture',onUp);
 cv.addEventListener('contextmenu',e=>e.preventDefault());
 addEventListener('keydown',e=>{
+  if(keyWait){e.preventDefault();e.stopPropagation();if(state==='opts')bindKey(e.code,e.key);else keyWait=null;return;}
   keys[e.code]=true;
-  if(state==='dialog'&&(e.code==='Space'||e.code==='Enter')&&!e.repeat){e.preventDefault();dialogNext();return;}
-  if(state!=='play')return;
+  const act=actOf(e.code);
+  if(state==='dialog'&&(e.code==='Space'||e.code==='Enter'||act==='cast')&&!e.repeat){e.preventDefault();dialogNext();return;}
+  if(state!=='play'||!act)return;
   audioInit();
-  const m={Digit1:'F',Digit2:'W',Digit3:'E',Digit4:'A',Numpad1:'F',Numpad2:'W',Numpad3:'E',Numpad4:'A'}[e.code];
-  if(m&&!e.repeat)pressElement(m);
-  if(e.code==='Space'){e.preventDefault();if(!e.repeat)tryCast(0,0,true,false);}
-  if((e.code==='KeyX'||e.code==='Backspace')&&!e.repeat){e.preventDefault();clearSlots();}
-  if(e.code==='KeyQ'&&!e.repeat)ultimate();
-  if((e.code==='ShiftLeft'||e.code==='ShiftRight')&&!e.repeat)dash();
-  if(e.code==='Escape'||e.code==='KeyP')pauseGame();
-});
-addEventListener('keyup',e=>{keys[e.code]=false;});
+  if(act!=='up'&&act!=='down'&&act!=='left'&&act!=='right')e.preventDefault();
+  if(e.repeat)return;
+  if(act.length===1)pressElement(act);
+  else if(act==='cast')tryCast(0,0,true,false);
+  else if(act==='clear')clearSlots();
+  else if(act==='ult')ultimate();
+  else if(act==='dash')dash();
+  else if(act==='pause')pauseGame();
+},true);
+addEventListener('keyup',e=>{keys[e.code]=false;if(bindKey.justT&&performance.now()-bindKey.justT<600){e.preventDefault();}});
 addEventListener('blur',()=>{for(const k in keys)keys[k]=false;});
 
 // ---------------- Magias ----------------
@@ -1753,8 +1779,8 @@ function update(dt){
 }
 function updatePlayer(dt){
   let mx=0,my=0;
-  if(keys.KeyA||keys.ArrowLeft)mx-=1;if(keys.KeyD||keys.ArrowRight)mx+=1;
-  if(keys.KeyW||keys.ArrowUp)my-=1;if(keys.KeyS||keys.ArrowDown)my+=1;
+  if(held('left'))mx-=1;if(held('right'))mx+=1;
+  if(held('up'))my-=1;if(held('down'))my+=1;
   if(mx||my){const l=Math.hypot(mx,my);mx/=l;my/=l;}
   if(joy.active&&(joy.dx||joy.dy)){mx=joy.dx;my=joy.dy;}
   const m=Math.hypot(mx,my);
@@ -3915,7 +3941,7 @@ const CHAPTERS=[null,
 },
 // ===================== Capítulo V · A Cidade Submersa =====================
 {num:5,finds:2,rn:'V',title:'A Cidade Submersa',w:2600,h:3200,start:{x:1300,y:3080},elems:['W','F','E','A'],reward:null,seals:3,iconKey:'WWA',unlock:'dash',
- rewardToast:['Nova habilidade','Passo Etéreo','Toque no botão de passo (ou Shift) para atravessar o espaço'],
+ rewardToast:['Nova habilidade','Passo Etéreo','Toque no botão de passo (ou a tecla do Passo Etéreo) para atravessar o espaço'],
  bossKind:'nerith',bossEl:'W',bossArea:'palacio',bossPos:[1300,330],relicPos:[1300,360],relicGlyph:'W',relicName:'a Pérola do Abismo',firstEss:180,
  desc:'Desça até Vel\'Maran, a cidade que o mar engoliu. A maré sobe e desce como uma respiração.',
  path:[[1300,3150],[1300,2700],[1250,2300],[1350,1950],[1300,1650],[1300,1500],[1250,1100],[1300,700],[1300,400]],
@@ -3931,7 +3957,7 @@ const CHAPTERS=[null,
  bossDeadLine:'Nerith voltou para a água. A Pérola do Abismo brilha onde ela caiu. Toque nela.',
  final:['Nerith era só uma serva. Ela guardava uma passagem: no fundo do palácio, o mar se abre para o Vazio.',
    'A Pérola ensina seu corpo a atravessar o espaço num piscar: o Passo Etéreo. Use-o para cruzar vãos e escapar de golpes. Ele também vale na Arena.'],
- doneText:'Você ganhou o Passo Etéreo: um avanço rápido em que nada atinge você (botão de passo ou Shift). Ele também vale na Arena. O Capítulo VI, O Vazio Entre as Estrelas, já está disponível.',
+ doneText:'Você ganhou o Passo Etéreo: um avanço rápido em que nada atinge você (botão de passo ou a tecla do Passo Etéreo). Ele também vale na Arena. O Capítulo VI, O Vazio Entre as Estrelas, já está disponível.',
  build(S,R){
    const rr=(a,b)=>a+R()*(b-a);
    S.canals=[];for(const [y0,y1] of[[2450,2540],[2150,2240],[1850,1940]]){const c={rect:[0,y0,2600,y1],tide:true,open:true};S.canals.push(c);S.solids.push(c);}
@@ -4104,7 +4130,7 @@ const CHAPTERS=[null,
    for(const w of S.wells){const dx=w.x-P.x,dy=w.y-P.y,d=Math.hypot(dx,dy)||1;
      if(d<w.r&&P.dashT<=0){const f=90*(1-d/w.r);P.x+=dx/d*f*dt;P.y+=dy/d*f*dt;}
      if(Math.random()<.5){const a=rand(0,TAU),r=rand(30,w.r);puff(w.x+Math.cos(a)*r,w.y+Math.sin(a)*r,{vx:-Math.sin(a)*120-Math.cos(a)*90,vy:Math.cos(a)*120-Math.sin(a)*90,life:.5,size:1.8,color:'#b48cff',drag:1,streak:true});}}
-   if(!S.said.dash&&P.y<2560){S.said.dash=1;return say([{who:SPIRIT,text:'Um vão. Corra até a borda e use o Passo Etéreo (o botão de passo, ou Shift) na direção da próxima ilha.'}]);}
+   if(!S.said.dash&&P.y<2560){S.said.dash=1;return say([{who:SPIRIT,text:`Um vão. Corra até a borda e use o Passo Etéreo (o botão de passo, ou ${keyName(KM.dash)}) na direção da próxima ilha.`}]);}
    if(!S.said.hub&&P.y<2150){S.said.hub=1;return say([{who:SPIRIT,text:'As âncoras ficam nas quatro ilhas em volta. Cada uma pede o ritual que deixa o próprio elemento de fora. As pontes de luz e as pedras que somem têm ritmo: observe antes de pular.'}]);}
  },
  onProp(S,pr){
@@ -5958,7 +5984,8 @@ function setState(s){
   if(s==='altar')renderAltar();
   if(s==='chapters')renderChapters();
   if(s==='arena'){refreshDiff();refreshDaily();}
-  if(s==='opts')renderOpts();
+  if(s==='opts')renderOpts();else keyWait=null;
+  if(s==='help')refreshKeyHints();
   if(s==='avatar')renderAvatars();
   const focusMap={chapter:'#bChNext',level:'#lvGo',opts:'#optBack',menu:'#bStory',arena:'#bArenaGo',pause:'#bResume',over:'#bAgain',upgrade:'#up0'};
   if(focusMap[s]&&!coarse){const el=$(focusMap[s]);if(el)el.focus({preventScroll:true});}
@@ -6026,8 +6053,16 @@ $('#bGrim').addEventListener('click',()=>openSub('grimoire'));
 $('#bOpts').addEventListener('click',()=>openSub('opts'));
 $('#bAvatar').addEventListener('click',()=>openSub('avatar'));
 $('#bPOpts').addEventListener('click',()=>openSub('opts'));
-function renderOpts(){document.querySelectorAll('#sOpts .seg').forEach(g=>{const k=g.dataset.opt;g.querySelectorAll('button').forEach(b=>b.classList.toggle('on',String(opts[k])===b.dataset.v));});}
-document.querySelectorAll('#sOpts .seg').forEach(g=>g.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
+function bindKey(code,key){const a=keyWait;keyWait=null;bindKey.justT=performance.now();
+  if(code!=='Escape'){opts.keyLab=Object.assign({},opts.keyLab,{[code]:key});const old=KM[a];for(const o in KM)if(o!==a&&KM[o]===code)KM[o]=old;KM[a]=code;opts.keys=Object.assign({},KM);store.set('opts',opts);sfx('tick','F');}
+  renderKeys();}
+function renderKeys(){const box=$('#keyList');if(!box)return;
+  box.innerHTML=KEY_ACTS.map(([a,name])=>`<span${a.length===1?` style="color:${EL[a].c}"`:''}>${name}</span><button data-act="${a}" class="${keyWait===a?'wait':''}">${keyWait===a?'Aperte uma tecla…':keyName(KM[a])}</button>`).join('');
+  box.querySelectorAll('button').forEach(b=>b.addEventListener('click',ev=>{keyWait=keyWait===b.dataset.act?null:b.dataset.act;renderKeys();try{document.activeElement.blur();}catch(_){}sfx('tick','A');}));}
+function refreshKeyHints(){document.querySelectorAll('kbd[data-k]').forEach(k=>k.textContent=keyName(KM[k.dataset.k]));}
+$('#keyReset').addEventListener('click',()=>{delete opts.keys;store.set('opts',opts);keyWait=null;loadKeys();renderKeys();sfx('tick','A');});
+function renderOpts(){renderKeys();document.querySelectorAll('#sOpts .seg[data-opt]').forEach(g=>{const k=g.dataset.opt;g.querySelectorAll('button').forEach(b=>b.classList.toggle('on',String(opts[k])===b.dataset.v));});}
+document.querySelectorAll('#sOpts .seg[data-opt]').forEach(g=>g.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
   const k=g.dataset.opt,v=b.dataset.v;opts[k]=v==='true'?true:v==='false'?false:+v;store.set('opts',opts);layout();renderOpts();sfx('tick','A');
   if(k==='vib'&&opts.vib){try{navigator.vibrate&&navigator.vibrate(30);}catch(_){}}if(k==='shake'&&opts.shake>0){shake=0;addShake(8);}})));
 $('#bHelp').addEventListener('click',()=>openSub('help'));
