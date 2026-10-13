@@ -68,7 +68,11 @@ body{font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-t
 .btn.small{width:auto;min-height:40px;padding:8px 14px;font-size:15px}
 .btn:active,.card:active{transform:translateY(1px)}
 .pill{font-size:12px;font-weight:800;padding:2px 8px;border-radius:99px;background:rgba(232,196,119,.16);color:var(--gold);font-variant-numeric:tabular-nums}
-.link{background:none;border:0;color:var(--muted);font:600 14px var(--body);cursor:pointer;padding:8px;text-decoration:underline;text-underline-offset:3px}
+/* no menu inicial o nome do botão fica sempre no centro; o contador vai para a direita */
+.stack .btn{position:relative}
+.stack .btn .pill{position:absolute;right:12px;top:50%;transform:translateY(-50%)}
+.btn.primary .pill{background:rgba(26,18,8,.18);color:#3a2a10}
+.link{background:none;border:0;color:var(--muted);font:600 14px var(--body);cursor:pointer;padding:12px 14px;min-height:44px;text-decoration:underline;text-underline-offset:3px}
 
 /* Menu */
 .menu-inner{width:min(380px,100%);display:grid;justify-items:center;text-align:center;gap:6px}
@@ -78,7 +82,7 @@ body{font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-t
 .menu .stack{width:100%;margin-top:0}
 .avgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px;margin-top:14px}
 .avitem{display:grid;justify-items:center;gap:2px;padding:8px 6px 10px;border-radius:12px;border:1px solid var(--line);background:rgba(28,23,38,.9);color:var(--text);cursor:pointer;font:inherit}
-.avitem canvas{width:64px;height:64px}.avitem b{font:600 12.5px var(--body);text-align:center;line-height:1.2}.avitem small{font-size:11px;color:var(--muted);text-align:center;line-height:1.25}
+.avitem canvas{width:64px;height:64px}.avitem b{font:600 12.5px var(--body);text-align:center;line-height:1.2}.avitem small{font-size:12px;color:var(--muted);text-align:center;line-height:1.25}
 .avitem.sel{border-color:var(--gold);background:rgba(232,196,119,.14)}.avitem.sel small{color:var(--gold)}.avitem.locked{cursor:default}.avitem.locked b{color:var(--muted)}
 .seg{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
 .seg button{flex:1 1 auto;min-height:40px;padding:6px 10px;border-radius:10px;border:1px solid var(--line);background:rgba(28,23,38,.9);color:var(--text);font:600 14px var(--body);cursor:pointer}
@@ -93,6 +97,9 @@ body{font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-t
 .mk{display:inline-block;width:9px;height:9px;border-radius:50%;margin:0 3px 0 8px;vertical-align:middle}
 .mk.you{background:#fff;box-shadow:0 0 0 2px var(--gold)}.mk.spring{background:#3aa7ff}.mk.goal{background:var(--gold);border-radius:2px;transform:rotate(45deg)}
 .chbtns{display:flex;gap:8px;flex-wrap:wrap}
+.tutcall{border:1px solid var(--gold);border-radius:14px;padding:12px 14px;margin:6px 0 14px;background:rgba(232,196,119,.08);display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.tutcall p{margin:0;flex:1 1 220px;font-size:14px}
+.tutcall .chbtns{flex:0 0 auto}
 .saved{margin:6px 0 0;font-size:13px;color:#7cc8ff}
 .diff-note{font-size:13px;text-align:center;margin-top:8px}
 .diff-note:empty{display:none}
@@ -149,11 +156,24 @@ body{font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-t
 .btn:disabled{opacity:.45;cursor:default}
 .arc-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
 .arc-row span{font:700 12px var(--body);color:var(--gold);border:1px solid var(--line);border-radius:6px;padding:3px 7px}
+.arcbox{margin-top:10px;border:1px solid var(--line);border-radius:10px;padding:8px 12px}
+.arcbox summary{cursor:pointer;font:700 14px var(--body);color:var(--gold);min-height:28px;display:flex;align-items:center}
+.arcbox .arc-row{margin-top:6px}
 @media (prefers-reduced-motion: reduce){.tarot-in{transition:none}}
+@media (max-height:520px){.tarot{width:auto;max-width:none;height:min(40vh,200px);justify-self:center}}
+/* bênçãos da Arena com o celular deitado: arcanos à esquerda, bênçãos à direita */
+@media (max-height:520px) and (orientation:landscape) and (min-width:640px){
+  #sUp .panel{width:min(980px,100%);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:18px;align-items:start}
+  #sUp #upTitle,#sUp .panel>.stack{grid-column:1/-1}
+  #sUp .panel>h3:nth-of-type(1){grid-column:1;grid-row:2}#sUp #upArcana{grid-column:1;grid-row:3}
+  #sUp .panel>h3:nth-of-type(2){grid-column:2;grid-row:2}#sUp #upCards{grid-column:2;grid-row:3;margin-top:10px;gap:6px}
+  #sUp .card{padding:7px 10px;gap:10px;grid-template-columns:34px 1fr}#sUp .card b{font-size:17px}#sUp .card small{font-size:12.5px}
+  #sUp .panel>.stack{grid-row:4}
+}
 
 /* Bestiário */
 .chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
-.chip{font:700 11px var(--body);padding:2px 8px;border-radius:99px;border:1px solid var(--c,var(--line));color:var(--c,var(--muted))}
+.chip{font:700 12px var(--body);padding:2px 8px;border-radius:99px;border:1px solid var(--c,var(--line));color:var(--c,var(--muted))}
 .chip.off{border-style:dashed;color:var(--muted)}
 #banner small{display:block;font-size:14px;font-weight:700;color:var(--text);opacity:.85;text-shadow:0 1px 6px #000;margin-top:6px}
 
@@ -175,6 +195,7 @@ body{font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-t
   padding:5px 12px;border-radius:99px;background:rgba(10,8,16,.72);border:1px solid var(--line);color:var(--text);font:600 12.5px var(--body);
   text-align:center;pointer-events:none;text-wrap:balance}
 #objective b{color:var(--gold);font-weight:800}
+@media (max-height:520px) and (orientation:landscape){#objective{max-width:min(52%,520px);top:calc(env(safe-area-inset-top,0px) + 50px);font-size:12px;padding:4px 10px}}
 .screen.dialog{align-items:flex-end;background:rgba(8,6,12,.25);cursor:pointer}
 .dbox{width:min(560px,100%);background:var(--panel);border:1px solid var(--gold);border-radius:14px;padding:14px 16px 12px;box-shadow:0 10px 40px rgba(0,0,0,.6);margin-bottom:min(30vh,240px)}
 .dbox small{display:block;font:800 11px var(--body);letter-spacing:.16em;text-transform:uppercase;color:var(--gold)}
@@ -225,7 +246,7 @@ body{font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-t
     <div class="menu-inner">
       <p class="eyebrow">Fogo · Água · Terra · Ar</p>
       <h1>Elementa</h1>
-      <p class="lede">Domine os quatro elementos e misture-os para descobrir magias novas. Explore o mundo no Modo História ou enfrente ondas sorteadas na Arena.</p>
+      <p class="lede">Domine os quatro elementos e misture&#8209;os para descobrir magias novas. Explore o mundo no Modo História ou enfrente ondas sorteadas na Arena.</p>
       <div class="stack">
         <button id="bStory" class="btn primary">Modo História <span id="storyPill" class="pill">Capítulo I</span></button>
         <button id="bPlay" class="btn">Arena</button>
@@ -276,6 +297,7 @@ body{font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-t
   <section id="sHelp" class="screen help" hidden>
     <div class="panel">
       <div class="ph"><h2>Como jogar</h2><button class="btn small" data-back>Voltar</button></div>
+      <div class="tutcall" id="tutHelp"><p>Prefere aprender jogando? O tutorial ensina o básico numa fase curta.</p><button class="btn primary small" id="bTutHelp">Jogar o tutorial</button></div>
       <dl>
         <dt>Mover</dt>
         <dd>Arraste o dedo na metade esquerda da tela. No computador, use <kbd data-k="up">W</kbd><kbd data-k="left">A</kbd><kbd data-k="down">S</kbd><kbd data-k="right">D</kbd> ou as setas. As teclas podem ser trocadas em Opções.</dd>
@@ -290,7 +312,7 @@ body{font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-t
         <dt>Evoluções e bênçãos</dt>
         <dd>Entre as ondas você escolhe uma bênção. Algumas evoluem uma magia que você já conhece: Bola de Fogo vira três, Tornado vira dois, Relâmpago salta mais longe.</dd>
         <dt>Modo História</dt>
-        <dd>Mundos abertos para explorar, com a câmera seguindo você. Cada capítulo desperta um elemento. Capítulo I, A Nascente: só com a Água, apague o fogo do vale e vença Ignis para ganhar o Fogo. Capítulo II, A Terra Partida: com Água e Fogo, quebre rochas com Explosão, atravesse a Mina Esquecida no escuro, faça os cristais cantarem com Vapor e vença Gorgo para ganhar a Terra. Capítulo III, Os Picos Uivantes: derreta o gelo com Magma, cresça uma ponte com Vinhas, desperte o terceiro selo, derrube os totens com Terremoto e vença Zéfira para ganhar o Ar. Capítulo IV, O Coração da Quintessência: com os quatro elementos, conclua em qualquer ordem os santuários das Marés (Gelo), da Forja (Tornado), da Tempestade (Relâmpago) e das Dunas (Tempestade de Areia), vença os ecos dos antigos chefes e enfrente O Desequilíbrio, cujos escudos só cedem à fraqueza certa. Capítulo V, A Cidade Submersa: atravesse canais que enchem com a maré (ou congele a água), segure o portão com um Golem sobre a placa, parta os selos com Meteoro e vença Nerith para ganhar o Passo Etéreo. Capítulo VI, O Vazio Entre as Estrelas: salte vãos com o Passo Etéreo, use portais, resista aos poços gravitacionais, prenda as quatro âncoras com os rituais de equilíbrio e vença Nihil, o Devorador, que rouba seus elementos. Capítulo VII, O Bosque das Estações: cruze as ravinas com os cogumelos-saltadores, toque os sinos na ordem que as pedras ensinam, proteja a muda por 40 segundos e vença Cerne, que muda de estação e de fraqueza. Capítulo VIII, O Eclipse da Nascente: as sombras só sentem dor na luz das lanternas; seu eco repete seus passos três segundos depois e pode segurar placas; vença Umbra, a sua própria sombra, que copia suas magias e apaga as luzes. Capítulo IX, As Ruínas do Tempo: gire espelhos com a Rajada para levar a luz aos receptores, pare as engrenagens com uma Tempestade de Areia na ampulheta e vença Aion, que volta no tempo. Capítulo X, A Fonte dos Elementos: fuja do caminho que desmorona quebrando barreiras com as lições da jornada, ouça as quatro vozes antigas e vença a Origem, a última batalha. Capítulo XI, A Caravana da Aurora: escolte a Tartaruga Aurora, abra o caminho com Cataclismos (Supernova, Oceano Primordial, Titã e Olho do Furacão) e vença Drakonis, o dragão que muda de elemento a cada pouso. Capítulo XII, A Torre do Alquimista: abra os selos com Infusões na ordem certa e vença a Quimera Primordial, derrubando cada cabeça com a sua fraqueza. Capítulo XIII, A Tundra Eterna: controle o frio ficando perto do fogo, atravesse o gelo fino sem parar, acenda as quatro Grandes Fogueiras com Meteoro e derreta a armadura de Glaciara com Fogo. Capítulo XIV, O Arquipélago das Nuvens: use as plataformas flutuantes, resista às rajadas nas pontes de vento, abra as gaiolas com Cataclismos de dois elementos e quebre o ovo de Aurelion com Água antes que ela renasça. Capítulo XV, As Minas de Cristal: gire os espelhos com magias de Ar para levar os feixes de luz até os cristais, desvie da luz que queima e atraia Prismara para dentro de um feixe para quebrar o escudo dela. Capítulo XVI, A Fortaleza dos Vigias: fique fora dos cones de visão das torres, esconda-se nos arbustos e atrás das caixas, cegue os vigias com Água + Terra, roube as quatro chaves e ataque Argos pelas costas. As fontes azuis curam e marcam onde você volta se cair.</dd>
+        <dd>A história de Elementa, contada em capítulos. Você começa só com a Água e vai despertando os outros elementos pelo caminho.</dd>
         <dt>Corridas aleatórias (Arena)</dt>
         <dd>A corrida é dividida em fases de 5 ondas. Cada fase sorteia um cenário, as criaturas que vão aparecer (golems, diabretes, lodos, espectros, sentinelas, feras, morcegos e xamãs, de qualquer elemento), um presságio que muda as regras e o chefe da quinta onda. Você nunca joga a mesma corrida duas vezes.</dd>
         <dt>Reações elementais</dt>
@@ -304,7 +326,7 @@ body{font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-t
         <dt>Quintessência</dt>
         <dd>Derrotar inimigos enche o arco dourado no canto direito dos botões. Cheio, toque nele (ou <kbd data-k="ult">Q</kbd>) para virar Avatar dos Elementos: uma onda dos quatro elementos varre a arena e, por 7 segundos, suas magias não gastam mana e recarregam na metade do tempo.</dd>
         <dt>Fraquezas</dt>
-        <dd>Cada espírito leva quase o dobro de dano do elemento que o vence e resiste ao próprio elemento. Números amarelos mostram um golpe eficaz.</dd>
+        <dd>Água vence Fogo, Terra vence Água, Ar vence Terra e Fogo vence Ar. Cada espírito leva quase o dobro de dano do elemento que o vence e resiste ao próprio elemento. Números amarelos mostram um golpe eficaz.</dd>
         <dt>Os símbolos</dt>
         <dd>São os triângulos da alquimia clássica.
           <div class="glyphs" id="helpGlyphs"></div>
@@ -411,8 +433,9 @@ body{font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-t
     <div class="panel">
       <div class="ph"><h2>Modo História</h2><button class="btn small" data-back>Voltar</button></div>
       <p class="sub">Cada capítulo desperta um novo elemento. Seu progresso fica salvo.</p>
-      <p class="sub" id="chFinds"></p>
-      <p class="sub" id="chLevel"></p>
+      <div id="tutBox"></div>
+      <p class="note" id="chFinds"></p>
+      <p class="note" id="chLevel"></p>
       <h3>Dificuldade</h3>
       <div class="diff" id="sdRow"><button id="sdPrev" aria-label="Dificuldade anterior">‹</button><div><b id="sdName">Normal</b><small id="sdDesc"></small></div><button id="sdNext" aria-label="Próxima dificuldade">›</button></div>
       <h3>Capítulos</h3>
@@ -445,11 +468,11 @@ body{font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-t
 
   <section id="sPause" class="screen" hidden>
     <div class="panel" style="width:min(360px,100%)">
-      <h2>Pausado</h2>
+      <div class="ph"><h2>Pausado</h2><button class="btn small primary" id="bResumeTop">Continuar</button></div>
       <p class="sub" id="pausePhase"></p>
-      <div class="arc-row" id="pauseArc"></div>
       <canvas id="pauseMap" width="320" height="320" hidden></canvas>
       <p class="note map-legend" id="mapLegend" hidden><span class="mk you"></span>você <span class="mk spring"></span>fonte <span class="mk goal"></span>objetivo <b>?</b> achado que falta</p>
+      <details class="arcbox" id="pauseArcBox" hidden><summary id="pauseArcSum">Arcanos ativos</summary><div class="arc-row" id="pauseArc"></div></details>
       <div class="stack">
         <button id="bResume" class="btn primary">Continuar</button>
         <button id="bPGrim" class="btn">Grimório</button>
@@ -1404,6 +1427,9 @@ addEventListener('keydown',e=>{
   keys[e.code]=true;
   const act=actOf(e.code);
   if(state==='dialog'&&(e.code==='Space'||e.code==='Enter'||act==='cast')&&!e.repeat){e.preventDefault();dialogNext();return;}
+  if(e.code==='Escape'&&state!=='play'&&!e.repeat){
+    if(state==='pause'){e.preventDefault();resumeGame();return;}
+    const scr=screens[state],bk=scr&&!scr.hidden&&scr.querySelector('[data-back]');if(bk){e.preventDefault();bk.click();return;}}
   if(state!=='play'||!act)return;
   audioInit();
   if(act!=='up'&&act!=='down'&&act!=='left'&&act!=='right')e.preventDefault();
@@ -2475,7 +2501,7 @@ function updateHUD(){
   setText('mnTxt',P.avatarT>0?'Avatar: mana livre':`${Math.floor(P.mana)} / ${P.maxMana}`);
   {const xb=$('#xpBar'),on=mode==='story'&&!!story;if(xb.hidden===on)xb.hidden=!on;
     if(on){const mx=lvMax();$('#xpFill').style.transform=`scaleX(${mx?1:clamp(LV.xp/xpNeed(LV.lvl),0,1)})`;setText('xpTxt',mx?`Nível ${LV.lvl} · máximo`:`Nível ${LV.lvl} · ${LV.xp} / ${xpNeed(LV.lvl)} XP`);}}
-  if(mode==='story'&&story){setText('waveTxt','Capítulo '+CH().rn);setText('leftTxt',story.region?story.region.name:'');setText('scoreTxt',String(score));
+  if(mode==='story'&&story){setText('waveTxt',CH().label||'Capítulo '+CH().rn);setText('leftTxt',story.region?story.region.name:'');setText('scoreTxt',String(score));
     const o=storyObjective();if(story.objText!==o.text){story.objText=o.text;$('#objective').innerHTML=`<b>◆</b> ${o.text}`;}
     $('#mnBar').classList.toggle('low',P.noManaT>0);return;}
   setText('waveTxt',`Onda ${wave.n}`);
@@ -3343,7 +3369,7 @@ function srand(seed){let a=seed>>>0;return()=>{a=a+0x6D2B79F5|0;let t=Math.imul(
 const GS=.5; // escala do chão pré-desenhado
 const SPIRIT='Espírito da Nascente';
 const STORY_DIFF=[
-  {name:'Tranquilo',desc:'Inimigos e chefes com menos vida e menos dano. Bom para conhecer a história. Essência −25%.',hp:.6,boss:.7,dmg:.6,spd:1,ess:.75},
+  {name:'Tranquilo',desc:'Inimigos e chefes com menos vida e menos dano. Bom para conhecer a história.',hp:.6,boss:.7,dmg:.6,spd:1,ess:1},
   {name:'Normal',desc:'O equilíbrio pensado para a jornada.',hp:1,boss:1,dmg:1,spd:1,ess:1},
   {name:'Desafio',desc:'Inimigos 40% mais fortes, chefes mais resistentes e mais rápidos nos ataques. Essência +50% e uma ★ no capítulo.',hp:1.4,boss:1.35,dmg:1.3,spd:1.2,ess:1.5}];
 let storyDiff=clamp(store.get('storyDiff',1),0,2),storyLoad=null;
@@ -3352,7 +3378,7 @@ const CH=()=>CHAPTERS[story.ch];
 function nearPath(path,x,y,m){for(let i=1;i<path.length;i++){const [ax,ay]=path[i-1],[bx,by]=path[i],dx=bx-ax,dy=by-ay,l2=dx*dx+dy*dy,t=clamp(((x-ax)*dx+(y-ay)*dy)/l2,0,1);
   if(d2(x,y,ax+dx*t,ay+dy*t)<m*m)return true;}return false;}
 function addProp(S,o){o.maxHp=o.hp;o.alive=true;S.props.push(o);if(o.solid)S.solids.push(o);return o;}
-const NEED_HINT={'luz':'Só a luz dos espelhos acende este cristal','WE':'Lama (Água + Terra) cega o vigia por 15 segundos','FFF':'Só um Meteoro a acende (Fogo, Fogo, Fogo)','c:FFWW':'A gaiola pede Caldeira: Fogo, Fogo, Água, Água','c:FFAA':'A gaiola pede Tempestade Solar: Fogo, Fogo, Ar, Ar','c:WWAA':'A gaiola pede Inverno Eterno: Água, Água, Ar, Ar','c:EEAA':'A gaiola pede Cinturão de Rochas: Terra, Terra, Ar, Ar','c:FFFF':'Só uma Supernova a derrete (Fogo ×4)','c:WWWW':'Só um Oceano Primordial o enche (Água ×4)','c:EEEE':'Só um Titã o tira do caminho (Terra ×4)','c:AAAA':'Só um Olho do Furacão a desfaz (Ar ×4)',
+const NEED_HINT={'b:F':'Use uma magia com Fogo','FF':'Toque em Fogo duas vezes e lance a Explosão','luz':'Só a luz dos espelhos acende este cristal','WE':'Lama (Água + Terra) cega o vigia por 15 segundos','FFF':'Só um Meteoro a acende (Fogo, Fogo, Fogo)','c:FFWW':'A gaiola pede Caldeira: Fogo, Fogo, Água, Água','c:FFAA':'A gaiola pede Tempestade Solar: Fogo, Fogo, Ar, Ar','c:WWAA':'A gaiola pede Inverno Eterno: Água, Água, Ar, Ar','c:EEAA':'A gaiola pede Cinturão de Rochas: Terra, Terra, Ar, Ar','c:FFFF':'Só uma Supernova a derrete (Fogo ×4)','c:WWWW':'Só um Oceano Primordial o enche (Água ×4)','c:EEEE':'Só um Titã o tira do caminho (Terra ×4)','c:AAAA':'Só um Olho do Furacão a desfaz (Ar ×4)',
   'i:FFFW':'O selo pede Meteoro + Água: Fogo, Fogo, Fogo e por último Água','i:FEAF':'O selo pede Erupção + Fogo: Fogo, Terra, Ar e por último Fogo','i:WEEF':'O selo pede Avalanche de Lama + Fogo: Água, Terra, Terra e por último Fogo','i:FWAW':'O selo pede Raio Prismático + Água: Fogo, Água, Ar e por último Água',a:'O espelho gira com o Ar',sa:'A ampulheta pede uma Tempestade de Areia (Terra + Ar)',w:'O cogumelo murcho pede Água',f:'A lanterna pede Fogo','b:W':'Este sino responde à Água','b:F':'Este sino responde ao Fogo','b:E':'Este sino responde à Terra','b:A':'Este sino responde ao Ar',FFF:'Só um Meteoro parte a pedra-pome','R:FEA':'A âncora pede Erupção','R:WEA':'A âncora pede o Bosque Ancestral','R:FWA':'A âncora pede o Raio Prismático','R:FWE':'A âncora pede a Fonte Termal',AA:'A fornalha pede um Tornado',FA:'O pilar pede um Relâmpago',WA:'A fonte pede Gelo',EA:'O monte pede uma Tempestade de Areia',W:'Só Água apaga',FF:'Só uma Explosão quebra',FW:'O cristal pede Vapor',FE:'Só Magma derrete este gelo',WE:'As raízes pedem Vinhas',EE:'Só um Terremoto derruba'};
 function needMatch(need,els){if(need.startsWith('c:')||need.startsWith('i:'))return els===need.slice(2);if(need==='a')return els.includes('A');if(need==='sa')return els.includes('E')&&els.includes('A');if(need==='w')return els.includes('W');if(need==='f')return els.includes('F');if(need.startsWith('b:'))return els.includes(need[2]);if(need==='W')return els.includes('W');if(need==='FF')return (els.match(/F/g)||[]).length>=2;if(need==='FW')return els.includes('F')&&els.includes('W');
   if(need==='FE')return els.includes('F')&&els.includes('E');if(need==='WE')return els.includes('W')&&els.includes('E');
@@ -3372,7 +3398,89 @@ function scatter(S,R,list,n,x0,x1,y0,y1,rad,mk,avoid){
     const o=mk(x,y);list.push(o);S.solids.push(o);}
 }
 
-const CHAPTERS=[null,
+const CHAPTERS=[
+// ===================== Tutorial · Campo de Treino =====================
+{num:0,tutorial:true,noSave:true,finds:0,rn:'Tutorial',label:'Tutorial',title:'Campo de Treino',w:1200,h:2600,start:{x:600,y:2500},elems:['W','F','E','A'],reward:null,seals:2,iconKey:'FWEA',
+ rewardToast:['Tutorial concluído','Cristal do Aprendiz','Agora você conhece o básico de Elementa'],
+ bossKind:null,bossArea:'treino',bossPos:[600,500],relicPos:[600,480],relicGlyph:'FWEA',relicName:'o Cristal do Aprendiz',firstEss:40,
+ desc:'Aprenda o básico: andar, carregar elementos, lançar, misturar e usar a fraqueza dos inimigos.',
+ path:[[600,2600],[600,450]],
+ gates:[2100,1700,1300,900],
+ regions:[{name:'Campo de Treino',biome:'ruinas',test:()=>true}],
+ intro:['Bem-vindo a Elementa! Este é o Campo de Treino. Aqui nada é para valer: aprenda com calma.',
+   'Primeiro, ande. No celular, arraste o dedo na metade esquerda da tela. No computador, use W A S D ou as setas. Vá até o círculo dourado.'],
+ bossDeadLine:'',
+ final:['Muito bem! Você já sabe andar, carregar elementos, lançar, misturar e usar a fraqueza de cada inimigo.',
+   'Mais adiante você ganha mais selos: com três elementos saem rituais, e com quatro, Cataclismos. Cada magia nova vai para o Grimório.',
+   'Na História, você começa só com a Água e desperta os outros elementos pelo caminho. Boa jornada, guardião!'],
+ doneText:'Você terminou o tutorial. O Capítulo I, A Nascente, espera por você.',
+ build(S,R){
+   S.step=0;S.tEn=[];
+   S.tgates=CHAPTERS[0].gates.map(y=>{const g={rect:[480,y,720,y+40],open:false};S.solids.push({rect:[0,y,480,y+40]},{rect:[720,y,S.w,y+40]},g);return g;});
+   S.mark={x:600,y:2250,r:46};
+   S.dum1=addProp(S,{kind:'dummy',x:600,y:1880,r:26,hp:14,need:'b:F',solid:true,seed:R()*9});
+   S.dum2=addProp(S,{kind:'dummy',x:600,y:1480,r:26,hp:40,need:'FF',solid:true,seed:R()*9,big:true});
+   S.springs.push({x:600,y:1100,r:55});
+ },
+ populate(place,R){},
+ objective(S){
+   const g=S.tgates;
+   switch(S.step){
+     case 0:return {text:'Ande até o círculo dourado',x:S.mark.x,y:S.mark.y};
+     case 1:return {text:'Toque em Fogo e lance a magia no boneco',x:S.dum1.x,y:S.dum1.y};
+     case 2:return {text:'Toque em Fogo duas vezes e lance a Explosão no boneco',x:S.dum2.x,y:S.dum2.y};
+     case 3:{const n=S.tEn.filter(e=>!e.dead).length;const e=S.tEn.find(o=>!o.dead);return {text:`Derrote os espíritos usando a fraqueza de cada um (${n} restante${n===1?'':'s'})`,x:e?e.x:600,y:e?e.y:1200};}
+     case 4:return {text:'Pise na fonte azul',x:600,y:1100};
+     case 5:{const n=S.tEn.filter(e=>!e.dead).length;const e=S.tEn.find(o=>!o.dead);return {text:`Desafio final: derrote os ${n} espíritos`,x:e?e.x:600,y:e?e.y:700};}
+     case 6:return {text:'Toque no Cristal do Aprendiz',x:600,y:480};
+   }
+   return {text:'Tutorial concluído',x:null,y:null};
+ },
+ bossReady:()=>false,
+ open(S,i){const g=S.tgates[i];if(!g||g.open)return;g.open=true;const [x0,y0,x1,y1]=g.rect;
+   for(let k=0;k<26;k++)puff(rand(x0,x1),rand(y0,y1),{vx:rand(-90,90),vy:rand(-120,20),life:rand(.5,1),size:rand(4,7),color:'#e8c477',add:true,drag:2});sfx('seal');S.checkpoint={x:600,y:y0+90};},
+ spawn(S,list){wave.n=1;for(const [fam,el,x,y] of list){const e=spawnEnemy({fam,el,area:'treino',aggro:true},x,y);e.hp=e.maxHp=e.maxHp*.6;e.dmg*=.5;S.tEn.push(e);}},
+ update(S,dt){
+   const C=CHAPTERS[0],coarse=matchMedia('(pointer:coarse)').matches;
+   if(S.step===0&&d2(P.x,P.y,S.mark.x,S.mark.y)<S.mark.r*S.mark.r){S.step=1;C.open(S,0);
+     return say([{who:SPIRIT,text:'Isso! Agora, as magias. Os quatro símbolos à direita são os elementos: Fogo, Água, Terra e Ar. Toque em Fogo para carregá-lo num selo.'},
+       {who:SPIRIT,text:coarse?'Depois toque no círculo grande do meio para lançar no inimigo mais perto, ou toque em qualquer ponto da metade direita da tela para mirar ali. Acerte o boneco.':`Depois aperte ${keyName(KM.cast)} para lançar no alvo mais perto, ou clique onde quiser mirar. Teclas: ${keyName(KM.F)} Fogo, ${keyName(KM.W)} Água, ${keyName(KM.E)} Terra, ${keyName(KM.A)} Ar.`}]);}
+   if(S.step===3&&S.tEn.length&&S.tEn.every(e=>e.dead)){S.step=4;S.tEn=[];C.open(S,2);
+     return say([{who:SPIRIT,text:'Perfeito. Viu os números amarelos? Eles mostram um golpe eficaz. Sempre que puder, use o elemento que vence o inimigo.'},
+       {who:SPIRIT,text:'Agora pise na fonte azul logo à frente. As fontes curam a vida e a mana e, na História, salvam o seu progresso.'}]);}
+   if(S.step===4&&d2(P.x,P.y,600,1100)<55*55){S.step=5;C.open(S,3);
+     C.spawn(S,[['imp','F',480,700],['slime','E',720,720],['imp','A',600,620]]);
+     return say([{who:SPIRIT,text:'Último teste: três espíritos de elementos diferentes. Olhe a cor de cada um e escolha a fraqueza: Fogo cai com Água, Terra cai com Ar e Ar cai com Fogo.'}]);}
+   if(S.step===5&&S.tEn.length&&S.tEn.every(e=>e.dead)){S.step=6;S.tEn=[];S.pickups.push({x:600,y:480,kind:'relic',glyph:'FWEA'});burst(600,480,'#e8c477',40,300);sfx('ult');
+     return say([{who:SPIRIT,text:'Você venceu! Toque no Cristal do Aprendiz para terminar o treino.'}]);}
+ },
+ onProp(S,pr){const C=CHAPTERS[0];burst(pr.x,pr.y-20,'#e0b36a',30,260,{add:false});addShake(6);
+   if(pr===S.dum1){S.step=2;C.open(S,1);
+     return say([{who:SPIRIT,text:'Acertou! Agora, as misturas. Você tem dois selos: carregue dois elementos e eles viram uma magia nova. Toque em Fogo duas vezes e lance: é a Explosão.'},
+       {who:SPIRIT,text:'Com os selos cheios, o próximo toque começa uma combinação nova. O botão × esvazia os selos quando você errar.'}]);}
+   if(pr===S.dum2){S.step=3;
+     C.spawn(S,[['slime','F',480,1220],['slime','W',720,1220]]);
+     return say([{who:SPIRIT,text:'Boa! Agora, inimigos de verdade. Cada espírito tem um elemento, e a cor mostra qual é. Todo elemento perde para outro.'},
+       {who:SPIRIT,text:'Água vence Fogo. Terra vence Água. Ar vence Terra. Fogo vence Ar. Use Água no espírito laranja e Terra no espírito azul.'}]);}
+ },
+ onDeath(S){for(const e of S.tEn)e.dead=true;enemies=enemies.filter(e=>!e.dead);S.tEn=[];
+   if(S.step===3)CHAPTERS[0].spawn(S,[['slime','F',480,1220],['slime','W',720,1220]]);
+   if(S.step===5)CHAPTERS[0].spawn(S,[['imp','F',480,700],['slime','E',720,720],['imp','A',600,620]]);},
+ ground(g,S,R){
+   g.fillStyle='#2a2630';g.fillRect(0,0,S.w,S.h);groundNoise(g,S,R);
+   g.strokeStyle='rgba(0,0,0,.2)';g.lineWidth=2;for(let y=0;y<S.h;y+=60){g.beginPath();g.moveTo(0,y);g.lineTo(S.w,y);g.stroke();}
+   for(let i=0;i<300;i++){g.fillStyle='rgba(120,170,100,.12)';g.fillRect(R()*S.w,R()*S.h,2,6+R()*6);}
+   groundPath(g,S);
+   for(const y of CHAPTERS[0].gates)for(const [a,b] of[[0,480],[720,S.w]]){g.fillStyle='#3a3440';g.fillRect(a,y,b-a,40);g.strokeStyle='#6a6070';g.lineWidth=2;g.strokeRect(a,y,b-a,40);}
+   g.fillStyle='rgba(232,196,119,.12)';g.font='700 20px sans-serif';g.textAlign='center';
+   [['1 · Andar',2380],['2 · Lançar',1990],['3 · Misturar',1590],['4 · Fraquezas',1190],['5 · Desafio',800]].forEach(([t,y])=>{g.fillStyle='rgba(232,196,119,.35)';g.fillText(t,600,y);});
+ },
+ drawExtra(S){
+   for(const g of S.tgates){if(g.open)continue;const [x0,y0,x1,y1]=g.rect;if(!inViewR(600,y0,300))continue;ctx.fillStyle=`rgba(232,196,119,${.25+.1*Math.sin(T*3)})`;ctx.fillRect(x0,y0,x1-x0,y1-y0);ctx.strokeStyle='#e8c477';ctx.lineWidth=2;ctx.strokeRect(x0,y0,x1-x0,y1-y0);}
+   if(S.step===0){const m=S.mark;additive(()=>drawGlow(m.x,m.y,70,'#e8c477',.5+.2*Math.sin(T*4)));ctx.strokeStyle='#e8c477';ctx.lineWidth=3;ctx.beginPath();ctx.arc(m.x,m.y,m.r*(.8+.1*Math.sin(T*4)),0,TAU);ctx.stroke();}
+   if(S.step===4){additive(()=>drawGlow(600,1100,90,'#7cc8ff',.4+.2*Math.sin(T*4)));}
+ }
+},
 // ===================== Capítulo I · A Nascente =====================
 {num:1,finds:2,rn:'I',title:'A Nascente',w:2400,h:2400,start:{x:1200,y:2190},elems:['W'],reward:'F',rewardName:'Fogo',
  bossKind:'ignis',bossArea:'cratera',bossPos:[1200,260],relicPos:[1200,300],relicGlyph:'F',relicName:'a Chama Ancestral',firstEss:60,
@@ -5489,6 +5597,13 @@ function storyStart(){
     kills:0,t:0,areaTotal:{},areaDead:{},checkpoint:{x:C.start.x,y:C.start.y},region:null,objText:'',diff:storyLoad?storyLoad.diff:storyDiff,deadPop:[],inSpring:true};
   story=S;groundCv=null;
   C.build(S,R);
+  // objetos altos (pedras, totens, pilares, sinos, lanternas...) colidem com o corpo inteiro que aparece na tela, não só com a base
+  {const TALL={totem:[58,16],pylon:[60,13],bell:[74,12],lantern:[72,10],hourglass:[50,18],crystal:[46,16]},mark=(o,t)=>{o.tall=t[0];o.hw=Math.max(t[1],o.r*.7);};
+   for(const o of S.solids){if(o.rect||o.tall)continue;
+     if(o.kind&&TALL[o.kind]){mark(o,TALL[o.kind]);continue;}
+     if(S.stones.some(st=>st.x===o.x&&st.y===o.y)){mark(o,[34,14]);continue;}
+     if(S.pillars&&S.pillars.some(pl=>pl.x===o.x&&pl.y===o.y)){mark(o,[56,14]);continue;}
+     const pr=S.props.find(q=>!q.rect&&q.x===o.x&&q.y===o.y&&TALL[q.kind]);if(pr)mark(o,TALL[pr.kind]);}}
   S.seenCs=150;S.seen=new Array(Math.ceil(S.w/150)*Math.ceil(S.h/150)).fill(0);
   {const got=store.get('achados',{});let k=0;for(const pk of S.pickups)if(pk.kind==='hp'||pk.kind==='mp'){pk.id=C.num+':'+(k++);if(got[pk.id])pk.taken=true;}}
   wave={n:1,queue:[],spawnT:0,interval:1,cleared:false,clearT:0};
@@ -5576,7 +5691,8 @@ function collideSolids(o){
   for(const s of story.solids){
     if(s.alive===false||s.open)continue;
     if(s.tide&&story.floes&&story.floes.some(f=>d2(o.x,o.y,f.x,f.y)<f.r*f.r))continue;
-    if(s.rect){const [x0,y0,x1,y1]=s.rect;if(o.x<x0-o.r||o.x>x1+o.r||o.y<y0-o.r||o.y>y1+o.r)continue;
+    const rc=s.rect||(s.tall?[s.x-s.hw,s.y-s.tall,s.x+s.hw,s.y+s.r*.6]:null);
+    if(rc){const [x0,y0,x1,y1]=rc;if(o.x<x0-o.r||o.x>x1+o.r||o.y<y0-o.r||o.y>y1+o.r)continue;
       const cx=clamp(o.x,x0,x1),cy=clamp(o.y,y0,y1),dx=o.x-cx,dy=o.y-cy,d=Math.hypot(dx,dy);
       if(d>.001){if(d<o.r){o.x=cx+dx/d*o.r;o.y=cy+dy/d*o.r;}}
       else{const l=o.x-x0,r=x1-o.x,t=o.y-y0,b=y1-o.y,m=Math.min(l,r,t,b);if(m===l)o.x=x0-o.r;else if(m===r)o.x=x1+o.r;else if(m===t)o.y=y0-o.r;else o.y=y1+o.r;}}
@@ -5632,7 +5748,7 @@ function updateStory(dt){
   camX+=(tx-camX)*k;camY+=(ty-camY)*k;
   const reg=C.regions.find(r=>r.test(P.x,P.y));
   if(reg!==S.region){S.region=reg;biome=BIOMES.find(b=>b.id===reg.biome);if(S.t>1)banner(reg.name,'','');}
-  {const inSp=S.springs.some(sp=>d2(P.x,P.y,sp.x,sp.y)<sp.r*sp.r);if(inSp&&!S.inSpring&&S.t>4&&!S.flags.relic){saveStory(S,C);addText(P.x,P.y-56,'Progresso salvo','#7cc8ff');}S.inSpring=inSp;}
+  {const inSp=S.springs.some(sp=>d2(P.x,P.y,sp.x,sp.y)<sp.r*sp.r);if(inSp&&!S.inSpring&&S.t>4&&!S.flags.relic&&!C.noSave){saveStory(S,C);addText(P.x,P.y-56,'Progresso salvo','#7cc8ff');}S.inSpring=inSp;}
   for(const sp of S.springs)if(d2(P.x,P.y,sp.x,sp.y)<sp.r*sp.r){P.hp=Math.min(P.maxHp,P.hp+10*dt);P.mana=Math.min(P.maxMana,P.mana+18*dt);
     if(S.checkpoint.x!==sp.x||S.checkpoint.y!==sp.y-70){S.checkpoint={x:sp.x,y:sp.y-70};addText(P.x,P.y-34,'Fonte marcada','#7cc8ff');}
     if(Math.random()<.3)puff(P.x+rand(-12,12),P.y,{vy:-50,life:.6,size:3,color:'#7cc8ff',drag:1});}
@@ -5670,7 +5786,7 @@ function storyComplete(){
   if(S.diff===2&&!prog['ch'+C.num+'x']){prog['ch'+C.num+'x']=true;store.set('story',prog);}
   store.set('save'+C.num,null);checkConq();
   const m=Math.floor(S.t/60),sec=Math.floor(S.t%60);
-  $('#chTitle').textContent=`Capítulo ${C.rn} concluído`;
+  $('#chTitle').textContent=C.label?`${C.label} concluído`:`Capítulo ${C.rn} concluído`;
   $('#chTime').textContent=`${m}:${String(sec).padStart(2,'0')}`;$('#chKills').textContent=S.kills;$('#chEss').textContent='+'+ess;
   $('#chSub').textContent=C.doneText+` Dificuldade: ${D.name}${S.diff===2?' ★':''}.`;
   {const nx=CHAPTERS[C.num+1],bn=$('#bChNext');bn.hidden=!nx;if(nx)bn.textContent=`Ir para o Capítulo ${nx.rn} · ${nx.title}`;$('#bChGo').classList.toggle('primary',!nx);}
@@ -5709,10 +5825,15 @@ $('#bChNext').addEventListener('click',()=>{if(!story||!CHAPTERS[story.ch+1])ret
 $('#bChGo').addEventListener('click',()=>{last=performance.now();setState('play');});
 $('#bChMenu').addEventListener('click',()=>{P=null;story=null;mode='arena';groundCv=null;parts.length=0;setState('menu');});
 // ----- escolha de capítulo -----
+function startTutorial(){audioInit();storyLoad=null;storyCh=0;mode='story';groundCv=null;newGame();}
 function renderChapters(){
   const prog=store.get('story',{}),got=store.get('achados',{}),fb=findBonus(),total=CHAPTERS.slice(1).reduce((n,C)=>n+(C.finds||0),0);
   $('#chFinds').textContent=`Achados permanentes: ${fb.n} de ${total}`+(fb.n?` · +${fb.hp} de vida e +${fb.mp} de mana em todos os capítulos.`:'. Cada item que você encontra no mapa fortalece o seu personagem para sempre.');
   $('#chLevel').textContent=`Nível ${LV.lvl}${lvMax()?' (máximo)':` · ${LV.xp} / ${xpNeed(LV.lvl)} XP`}. `+(LV.cards.length?`Arcanos permanentes: ${LV.cards.map(n=>ARCANA[n].name).join(', ')}.`:'Derrote monstros para subir de nível e ganhar Arcanos que valem em todos os capítulos.');
+  {const box=$('#tutBox'),ask=!prog.ch0&&!store.get('tutSkip',false);
+   box.innerHTML=ask?`<div class="tutcall"><p><b>Primeira vez em Elementa?</b> Quer aprender a jogar? O tutorial ensina o básico numa fase curta.</p><div class="chbtns"><button class="btn primary small" data-tut="go">Sim, me ensine</button><button class="btn small" data-tut="skip">Não, já sei jogar</button></div></div>`
+     :`<div class="chbtns" style="margin:4px 0 10px"><button class="btn small" data-tut="go">${prog.ch0?'Refazer o tutorial':'Jogar o tutorial'}</button></div>`;
+   box.querySelectorAll('[data-tut]').forEach(b=>b.addEventListener('click',()=>{if(b.dataset.tut==='go')startTutorial();else{store.set('tutSkip',true);renderChapters();}}));}
   $('#chList').innerHTML=CHAPTERS.slice(1).map(C=>{
     const done=!!prog['ch'+C.num],open=C.num===1||!!prog['ch'+(C.num-1)],sv=open?store.get('save'+C.num,null):null;
     return `<li${open?'':' class="unknown"'}><span class="g">${open?(C.reward?glyphSVG(C.reward,40):C.iconKey?glyphSVG(C.iconKey,40):quadSVG(40)):glyphSVG('?',40)}</span><div><b>Capítulo ${C.rn} · ${C.title}</b>
@@ -5739,6 +5860,12 @@ function drawStoryGround(){
 }
 const inViewR=(x,y,r)=>x+r>camX&&x-r<camX+W&&y+r>camY&&y-r<camY+H;
 function drawProp(pr){
+  if(pr.kind==='dummy'){if(!pr.alive||!inViewR(pr.x,pr.y,80))return;const sh=pr.hp<pr.maxHp?Math.sin(T*30)*2*(pr.hitT=(pr.hitT||0)):0,s=pr.big?1.25:1;
+    ctx.save();ctx.translate(pr.x+sh,pr.y);ctx.scale(s,s);ell(4,12,20,7,'rgba(0,0,0,.3)');ctx.fillStyle='#5a3d22';ctx.fillRect(-3,-20,6,32);ctx.fillRect(-18,-14,36,5);
+    circ(0,-34,16,'#c8a868','#7a5a30',2);circ(0,-34,10,'#e8d8b0');circ(0,-34,5,'#d04a3a');ctx.restore();
+    const need=pr.need==='FF'?['F','F']:['F'];need.forEach((el,i)=>glyph(ctx,el,pr.x-(need.length-1)*10+i*20,pr.y-64*s,7,EL[el].c,2));
+    if(pr.hp<pr.maxHp){ctx.fillStyle='rgba(0,0,0,.6)';ctx.fillRect(pr.x-22,pr.y+20,44,5);ctx.fillStyle='#e8c477';ctx.fillRect(pr.x-22,pr.y+20,44*pr.hp/pr.maxHp,5);}
+    return;}
   if(pr.kind==='mirror'){if(!inViewR(pr.x,pr.y,50))return;
     circ(pr.x,pr.y,22,'#2a2438','#8a80a0',2.5);ctx.save();ctx.translate(pr.x,pr.y);ctx.rotate(pr.o?Math.PI/4:-Math.PI/4);
     ctx.fillStyle='#dfe6f0';ctx.fillRect(-20,-4,40,8);ctx.fillStyle='rgba(255,255,255,.9)';ctx.fillRect(-18,-3,36,2.5);ctx.restore();
@@ -5977,7 +6104,7 @@ function setState(s){
   for(const k in screens)screens[k].hidden=k!==s;
   $('#app').classList.toggle('story',!!(P&&mode==='story'));
   hud.hidden=!(P&&(s==='play'||s==='pause'||s==='upgrade'||s==='dialog'||s==='level'));
-  $('#objective').hidden=!(P&&mode==='story'&&(s==='play'||s==='dialog'));
+  $('#objective').hidden=!(P&&mode==='story'&&s==='play');
   if(s==='play'){holds.clear();joy.active=false;joy.dx=joy.dy=0;}
   if(s==='menu'){refreshMenu();if(biome!==BIOMES[0]){biome=BIOMES[0];makeBg();}}
   if(s==='grimoire')renderGrimoire();
@@ -5985,7 +6112,7 @@ function setState(s){
   if(s==='chapters')renderChapters();
   if(s==='arena'){refreshDiff();refreshDaily();}
   if(s==='opts')renderOpts();else keyWait=null;
-  if(s==='help')refreshKeyHints();
+  if(s==='help'){refreshKeyHints();$('#tutHelp').hidden=returnTo!=='menu';}
   if(s==='avatar')renderAvatars();
   const focusMap={chapter:'#bChNext',level:'#lvGo',opts:'#optBack',menu:'#bStory',arena:'#bArenaGo',pause:'#bResume',over:'#bAgain',upgrade:'#up0'};
   if(focusMap[s]&&!coarse){const el=$(focusMap[s]);if(el)el.focus({preventScroll:true});}
@@ -5994,7 +6121,7 @@ function refreshMenu(){
   $('#grimCount').textContent=seal4()?`${countDisc()+cataDisc()+infDisc.size}/${COMBOS.length+MIX4.length+INF_ALL.length}`:`${countDisc()}/${COMBOS.length}`;$('#avPill').textContent=`${AVATARS.filter(avUnlocked).length}/${AVATARS.length}`;
   $('#recordTxt').textContent=best.wave?`Recorde: onda ${best.wave} · ${best.score} pontos${meta.wins?` · ${meta.wins} ${meta.wins===1?'vitória':'vitórias'}`:''}`:'';
   $('#essPill').textContent=meta.essence;refreshDiff();
-  {const pr=store.get('story',{}),n=CHAPTERS.slice(1).filter(C=>pr['ch'+C.num]).length;$('#storyPill').textContent=`${n}/${CHAPTERS.length-1} capítulos`;}
+  {const pr=store.get('story',{}),n=CHAPTERS.slice(1).filter(C=>pr['ch'+C.num]).length;$('#storyPill').textContent=`${n}/${CHAPTERS.length-1}`;$('#storyPill').title=`${n} de ${CHAPTERS.length-1} capítulos concluídos`;}
   soundLabels();
 }
 function soundLabels(){const t=`Som: ${muted?'desligado':'ligado'}`,m=`Música: ${M.on?'ligada':'desligada'}`;
@@ -6066,10 +6193,15 @@ document.querySelectorAll('#sOpts .seg[data-opt]').forEach(g=>g.querySelectorAll
   const k=g.dataset.opt,v=b.dataset.v;opts[k]=v==='true'?true:v==='false'?false:+v;store.set('opts',opts);layout();renderOpts();sfx('tick','A');
   if(k==='vib'&&opts.vib){try{navigator.vibrate&&navigator.vibrate(30);}catch(_){}}if(k==='shake'&&opts.shake>0){shake=0;addShake(8);}})));
 $('#bHelp').addEventListener('click',()=>openSub('help'));
+$('#bTutHelp').addEventListener('click',()=>startTutorial());
 $('#bPGrim').addEventListener('click',()=>openSub('grimoire'));
 $('#bPHelp').addEventListener('click',()=>openSub('help'));
 $('#pauseBtn').addEventListener('click',pauseGame);
 $('#bResume').addEventListener('click',resumeGame);
+$('#bResumeTop').addEventListener('click',resumeGame);
+function fillPauseArc(list){const box=$('#pauseArcBox');box.hidden=!list.length;box.open=false;
+  $('#pauseArcSum').textContent=`Arcanos ativos (${list.length})`;
+  $('#pauseArc').innerHTML=list.map(n=>{const c=ARCANA[n];return `<span title="${c.desc}">${c.rn} · ${c.name}</span>`;}).join('');}
 $('#bQuit').addEventListener('click',()=>{if(mode==='arena'&&run.daily&&P)recordDaily(run.won);awardEssence();P=null;story=null;mode='arena';groundCv=null;parts.length=0;setState('menu');});
 $('#bAgain').addEventListener('click',()=>{audioInit();newGame();});
 $('#bMenu').addEventListener('click',()=>{P=null;parts.length=0;setState('menu');});
@@ -6128,10 +6260,10 @@ $('#bAltar').addEventListener('click',()=>openSub('altar'));
 $('#bWinGo').addEventListener('click',()=>{showUpgrade();});
 $('#bWinMenu').addEventListener('click',()=>{P=null;parts.length=0;setState('menu');});
 function pauseGame(){if(state==='play'){
-  if(mode==='story'&&story){$('#pausePhase').textContent=`Capítulo ${CH().rn} · ${CH().title} · ${story.region?story.region.name:''} · ${STORY_DIFF[story.diff].name}. ${storyObjective().text}`;$('#pauseArc').innerHTML=LV.cards.map(n=>{const c=ARCANA[n];return `<span title="${c.desc}">${c.rn} · ${c.name}</span>`;}).join('');drawPauseMap();setState('pause');return;}
+  if(mode==='story'&&story){$('#pausePhase').textContent=`${CH().label||'Capítulo '+CH().rn} · ${CH().title} · ${story.region?story.region.name:''} · ${STORY_DIFF[story.diff].name}. ${storyObjective().text}`;fillPauseArc(LV.cards);drawPauseMap();setState('pause');return;}
   $('#pausePhase').textContent=phaseLine()+(run.phase&&run.phase.omens.length?'. '+run.phase.omens.map(o=>o.desc).join(' '):'');
   $('#pauseMap').hidden=true;$('#mapLegend').hidden=true;
-  $('#pauseArc').innerHTML=P.arcRun.length?P.arcRun.map(n=>{const c=ARCANA[n];return `<span title="${c.desc}">${c.rn} · ${c.name}</span>`;}).join(''):'';
+  fillPauseArc(P.arcRun);
   setState('pause');}}
 function resumeGame(){if(state==='pause'){last=performance.now();setState('play');}}
 function gameOver(){
