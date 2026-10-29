@@ -4,6 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#0d0b14">
+<meta name="description" content="Jogo de magia grátis: misture fogo, água, terra e ar para descobrir magias escondidas. Modo História com 16 capítulos e Arena com desafio do dia. Funciona offline.">
+<meta property="og:title" content="Elementa">
+<meta property="og:description" content="Misture fogo, água, terra e ar e descubra magias escondidas. Modo História com 16 capítulos e Arena com desafio do dia.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:url" content="https://adlercachuba.github.io/elementa-jogo/">
+<meta property="og:image" content="https://adlercachuba.github.io/elementa-jogo/icon-512.png">
+<meta name="twitter:card" content="summary">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -12,12 +20,11 @@
 <link rel="icon" href="icon-192.png">
 <link rel="manifest" href="manifest.webmanifest">
 <script>if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));</script>
-</head>
-<body>
+<script>window.ELEMENTA_VERSION="12.0";</script>
 <title>Elementa</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Alegreya+Sans:wght@400;500;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Alegreya+Sans:wght@400;500;700;800&display=swap" media="print" onload="this.media='all'">
 <style>
 /* Layout: arena em tela cheia (canvas); faixa de status no topo; menus como painéis de tinta e ouro sobre a arena */
 :root{
@@ -37,8 +44,8 @@ body{font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-t
 #sa{position:fixed;inset:0;padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px);visibility:hidden;pointer-events:none}
 
 /* HUD */
-#hud{position:absolute;top:0;left:0;right:0;display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:calc(env(safe-area-inset-top,0px) + 10px) calc(env(safe-area-inset-right,0px) + 12px) 0 calc(env(safe-area-inset-left,0px) + 12px);pointer-events:none;font-variant-numeric:tabular-nums}
-.bars{display:grid;gap:5px;width:min(40vw,220px)}
+#hud{position:absolute;top:0;left:0;right:0;display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:start;column-gap:10px;padding:calc(env(safe-area-inset-top,0px) + 10px) calc(env(safe-area-inset-right,0px) + 12px) 0 calc(env(safe-area-inset-left,0px) + 12px);pointer-events:none;font-variant-numeric:tabular-nums}
+.bars{display:grid;gap:5px;width:min(100%,220px)}
 .bar{position:relative;height:16px;border-radius:4px;background:rgba(10,8,16,.78);border:1px solid var(--line);overflow:hidden}
 .bar i{position:absolute;inset:0;transform-origin:left center;background:var(--hp)}
 .bar.mana i{background:var(--mana)}
@@ -48,15 +55,24 @@ body{font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-t
 .wave{display:grid;justify-items:center;text-align:center}
 .wave b{font-family:var(--display);font-size:21px;font-weight:400;color:var(--gold);line-height:1.05}
 .wave small{font-size:11px;color:var(--muted);font-weight:500}
-.hud-right{display:flex;align-items:center;gap:10px}
+.num{font-family:var(--body);font-weight:800;font-size:.86em;letter-spacing:0}
+.hud-right{display:flex;align-items:center;gap:10px;justify-self:end}
+/* celular em pé: barras e pausa na 1ª linha, título centralizado na 2ª */
+@media (orientation:portrait) and (max-width:600px){
+  #hud{grid-template-columns:minmax(0,1fr) auto;row-gap:6px}
+  .bars{grid-column:1;grid-row:1;width:min(64vw,240px)}
+  .hud-right{grid-column:2;grid-row:1}
+  .wave{grid-column:1/-1;grid-row:2;justify-self:center}
+}
 #scoreTxt{font-weight:800;font-size:16px;letter-spacing:.02em}
-.icon-btn{pointer-events:auto;width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:rgba(10,8,16,.78);color:var(--gold);font:800 13px var(--body);letter-spacing:.06em;cursor:pointer;display:grid;place-items:center}
+.icon-btn{pointer-events:auto;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:rgba(10,8,16,.78);color:var(--gold);font:800 13px var(--body);letter-spacing:.06em;cursor:pointer;display:grid;place-items:center}
 .icon-btn:focus-visible,.btn:focus-visible,.card:focus-visible,.link:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 
 /* Telas */
 .screen{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:calc(env(safe-area-inset-top,0px) + 16px) calc(env(safe-area-inset-right,0px) + 16px) calc(env(safe-area-inset-bottom,0px) + 16px) calc(env(safe-area-inset-left,0px) + 16px);background:rgba(8,6,12,.6);overflow-y:auto}
 .screen.menu{background:transparent}
-.panel{width:min(560px,100%);max-height:100%;overflow-y:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 18px;box-shadow:0 20px 60px rgba(0,0,0,.5);touch-action:pan-y}
+.screen:not(.dialog)>*{margin-block:auto}
+.panel{box-sizing:border-box;width:min(598px,100%);max-height:100%;overflow-y:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 18px;box-shadow:0 20px 60px rgba(0,0,0,.5);touch-action:pan-y}
 .panel h2{margin:0;font-family:var(--display);font-weight:400;font-size:30px;color:var(--gold);text-wrap:balance;line-height:1.1}
 .panel h3{margin:22px 0 4px;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);font-weight:700}
 .ph{display:flex;align-items:center;justify-content:space-between;gap:12px}
@@ -65,7 +81,7 @@ body{font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-t
 
 .btn{font:700 17px var(--body);color:var(--text);background:rgba(28,23,38,.9);border:1px solid var(--line);border-radius:10px;padding:12px 18px;min-height:50px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;width:100%}
 .btn.primary{background:var(--gold);color:#1d1408;border-color:transparent}
-.btn.small{width:auto;min-height:40px;padding:8px 14px;font-size:15px}
+.btn.small{width:auto;min-height:44px;padding:8px 14px;font-size:15px}
 .btn:active,.card:active{transform:translateY(1px)}
 .pill{font-size:12px;font-weight:800;padding:2px 8px;border-radius:99px;background:rgba(232,196,119,.16);color:var(--gold);font-variant-numeric:tabular-nums}
 /* no menu inicial o nome do botão fica sempre no centro; o contador vai para a direita */
@@ -80,6 +96,15 @@ body{font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-t
 .menu h1{margin:0;font-family:var(--display);font-weight:400;font-size:clamp(58px,17vw,108px);line-height:.95;color:var(--text);letter-spacing:.01em;text-shadow:0 0 28px rgba(232,196,119,.35),0 2px 0 #000}
 .lede{margin:6px 0 18px;color:var(--text);opacity:.85;font-size:17px;line-height:1.4;max-width:30ch;text-wrap:balance}
 .menu .stack{width:100%;margin-top:0}
+.menu-inner{grid-template-columns:1fr 1fr;column-gap:4px}
+.menu-inner>*{grid-column:1/-1}
+.menu-inner>.link{grid-column:auto}
+#bSound{justify-self:end}#bMusic{justify-self:start}
+.ver{margin:0;font-size:12px;color:var(--muted);opacity:.75;font-variant-numeric:tabular-nums}
+.ver:empty,.savewarn:empty{display:none}
+.savewarn{margin:4px 0 0;font-size:13px;color:#ffb09a;max-width:34ch;text-wrap:balance}
+@media (max-height:800px){.menu h1{font-size:clamp(44px,min(17vw,12vh),96px)}.lede{margin:2px 0 10px;font-size:16px}.menu .stack{gap:8px}.menu .stack .btn{min-height:46px;padding-block:8px}}
+@media (max-height:520px) and (orientation:landscape){.menu-inner{width:min(620px,100%)}.lede{display:none}.menu .stack{grid-template-columns:1fr 1fr}.menu .stack .btn{min-height:44px}.menu .stack .btn.primary{grid-column:1/-1}}
 .avgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px;margin-top:14px}
 .avitem{display:grid;justify-items:center;gap:2px;padding:8px 6px 10px;border-radius:12px;border:1px solid var(--line);background:rgba(28,23,38,.9);color:var(--text);cursor:pointer;font:inherit}
 .avitem canvas{width:64px;height:64px}.avitem b{font:600 12.5px var(--body);text-align:center;line-height:1.2}.avitem small{font-size:12px;color:var(--muted);text-align:center;line-height:1.25}
@@ -87,6 +112,7 @@ body{font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-t
 .seg{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
 .seg button{flex:1 1 auto;min-height:40px;padding:6px 10px;border-radius:10px;border:1px solid var(--line);background:rgba(28,23,38,.9);color:var(--text);font:600 14px var(--body);cursor:pointer}
 .seg button.on{border-color:var(--gold);background:rgba(232,196,119,.16);color:var(--gold)}
+.kbd-hide #kbdSec{display:none}
 .keys{display:grid;grid-template-columns:1fr auto;gap:6px 12px;align-items:center;margin-top:8px}
 .keys span{font:600 14px var(--body);color:var(--text)}
 .keys button{min-width:120px;min-height:38px;padding:4px 12px;border-radius:10px;border:1px solid var(--line);background:rgba(28,23,38,.9);color:var(--gold);font:700 14px var(--body);cursor:pointer}
@@ -101,16 +127,18 @@ body{font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-t
 .tutcall p{margin:0;flex:1 1 220px;font-size:14px}
 .tutcall .chbtns{flex:0 0 auto}
 .saved{margin:6px 0 0;font-size:13px;color:#7cc8ff}
-.diff-note{font-size:13px;text-align:center;margin-top:8px}
+.diff-note{font-size:13px;margin-top:8px;text-wrap:pretty}
+#diffNote{text-align:center;text-wrap:balance}
 .diff-note:empty{display:none}
-.record{margin:12px 0 0;color:var(--muted);font-size:14px;font-variant-numeric:tabular-nums;min-height:1.2em}
+.record{margin:12px 0 0;color:var(--muted);font-size:14px;font-variant-numeric:tabular-nums}
+.record:empty{display:none}
 
 /* Grimório */
 .cycle{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
 .cycle div{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:8px;padding:6px 8px;min-width:0}
 .cycle b{color:var(--text);font-weight:700}
 .spells{list-style:none;margin:0;padding:0}
-.spells li{display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.spells li{display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:start;padding:10px 0;border-top:1px solid var(--line)}
 .spells li>div{min-width:0}
 .spells b{display:block;font-family:var(--display);font-weight:400;font-size:19px;line-height:1.1}
 .recipe{display:block;font-size:12px;color:var(--gold);letter-spacing:.06em;text-transform:uppercase;font-weight:700;margin-top:2px}
@@ -118,11 +146,14 @@ body{font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-t
 .spells li.unknown b{color:var(--muted)}
 .spells li.unknown p{font-style:italic}
 .g{display:grid;place-items:center}
+.spells li>.g{padding-top:2px}
+.spells li.unknown .recipe{color:var(--muted)}
 
 /* Como jogar */
-.help dl{margin:14px 0 0;display:grid;gap:12px}
-.help dt{font-weight:800;color:var(--gold);font-size:13px;letter-spacing:.12em;text-transform:uppercase}
-.help dd{margin:2px 0 0;font-size:15px;line-height:1.45;color:var(--text)}
+.help dl{margin:14px 0 0}
+.help dt{font-weight:800;color:var(--gold);font-size:13px;letter-spacing:.12em;text-transform:uppercase;margin-top:18px}
+.help dt:first-child{margin-top:0}
+.help dd{margin:4px 0 0;font-size:15px;line-height:1.45;color:var(--text)}
 .help kbd{font:700 12px var(--body);border:1px solid var(--line);border-radius:4px;padding:0 5px;color:var(--gold)}
 .glyphs{display:flex;gap:14px;flex-wrap:wrap;margin-top:6px}
 .glyphs span{display:flex;align-items:center;gap:4px;font-size:14px}
@@ -191,11 +222,11 @@ body{font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-t
 .ess{color:var(--gold);font-weight:800}
 
 /* Modo História */
-#objective{position:absolute;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top,0px) + 60px);max-width:calc(100% - 32px);
+#objective{position:absolute;left:calc(env(safe-area-inset-left,0px) + 16px);right:calc(env(safe-area-inset-right,0px) + 16px);margin:0 auto;width:fit-content;box-sizing:border-box;top:var(--objTop,calc(env(safe-area-inset-top,0px) + 76px));
   padding:5px 12px;border-radius:99px;background:rgba(10,8,16,.72);border:1px solid var(--line);color:var(--text);font:600 12.5px var(--body);
   text-align:center;pointer-events:none;text-wrap:balance}
 #objective b{color:var(--gold);font-weight:800}
-@media (max-height:520px) and (orientation:landscape){#objective{max-width:min(52%,520px);top:calc(env(safe-area-inset-top,0px) + 50px);font-size:12px;padding:4px 10px}}
+@media (max-height:520px) and (orientation:landscape){#objective{max-width:min(56%,560px);font-size:12px;padding:4px 10px}}
 .screen.dialog{align-items:flex-end;background:rgba(8,6,12,.25);cursor:pointer}
 .dbox{width:min(560px,100%);background:var(--panel);border:1px solid var(--gold);border-radius:14px;padding:14px 16px 12px;box-shadow:0 10px 40px rgba(0,0,0,.6);margin-bottom:min(30vh,240px)}
 .dbox small{display:block;font:800 11px var(--body);letter-spacing:.16em;text-transform:uppercase;color:var(--gold)}
@@ -210,20 +241,25 @@ body{font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-t
 .stats span{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700}
 
 /* Avisos */
-#toast{position:absolute;left:50%;top:calc(env(safe-area-inset-top,0px) + 74px);transform:translate(-50%,-16px);opacity:0;display:flex;gap:12px;align-items:center;padding:10px 18px 10px 12px;background:var(--panel);border:1px solid var(--gold);border-radius:12px;pointer-events:none;transition:opacity .3s,transform .3s;max-width:calc(100% - 32px);box-shadow:0 0 30px rgba(232,196,119,.25)}
-#toast.show{opacity:1;transform:translate(-50%,0)}
-#app.story #toast{top:calc(env(safe-area-inset-top,0px) + 140px)}
+#toast{position:absolute;z-index:30;left:calc(env(safe-area-inset-left,0px) + 16px);right:calc(env(safe-area-inset-right,0px) + 16px);margin:0 auto;width:fit-content;box-sizing:border-box;top:var(--toastTop,calc(env(safe-area-inset-top,0px) + 74px));transform:translateY(-16px);opacity:0;display:flex;gap:12px;align-items:center;padding:10px 18px 10px 12px;background:var(--panel);border:1px solid var(--gold);border-radius:12px;pointer-events:none;transition:opacity .3s,transform .3s;max-width:calc(100% - 32px);box-shadow:0 0 30px rgba(232,196,119,.25)}
+#toast.show{opacity:1;transform:none}
+#app.menus #toast{top:auto;bottom:calc(env(safe-area-inset-bottom,0px) + 16px)}
+#app.talk #toast{top:calc(env(safe-area-inset-top,0px) + 8px)}
+@media (max-height:520px) and (orientation:landscape){#app.playing #toast{top:auto;bottom:calc(env(safe-area-inset-bottom,0px) + 8px);left:var(--laneL,16px);right:var(--laneR,16px)}#app #toast b{font-size:19px}}
 #toast small{display:block;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);font-weight:800}
 #toast b{display:block;font-family:var(--display);font-weight:400;font-size:24px;line-height:1.1}
 #toast em{display:block;font-style:normal;font-size:13px;color:var(--muted)}
-#banner{position:absolute;left:16px;right:16px;top:28%;text-align:center;pointer-events:none;opacity:0;transition:opacity .45s}
+#banner{position:absolute;left:var(--bnL,16px);right:var(--bnR,16px);top:max(28%,calc(var(--bnTop,0px) + 86px));text-align:center;pointer-events:none;opacity:0;transition:opacity .45s}
 #banner.show{opacity:1}
 #banner b{display:block;font-family:var(--display);font-weight:400;font-size:clamp(32px,8vw,48px);color:var(--gold);text-shadow:0 2px 14px #000}
 #banner span{display:block;font-size:16px;color:var(--text);text-shadow:0 1px 6px #000,0 0 2px #000;margin-top:4px;font-weight:500}
 #banner i{display:block;font-style:normal;font-size:14px;color:var(--gold);text-shadow:0 1px 6px #000;margin-top:6px}
+@media (max-height:520px) and (orientation:landscape){#banner{top:max(28%,var(--bnTop,0px))}#banner b{font-size:clamp(22px,8vh,40px)}#banner span,#banner i{font-size:13px}}
 @media (prefers-reduced-motion: reduce){#toast,#banner{transition:none}}
 </style>
 
+</head>
+<body>
 <div id="app">
   <canvas id="cv"></canvas>
   <div id="sa"></div>
@@ -247,6 +283,7 @@ body{font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-t
       <p class="eyebrow">Fogo · Água · Terra · Ar</p>
       <h1>Elementa</h1>
       <p class="lede">Domine os quatro elementos e misture&#8209;os para descobrir magias novas. Explore o mundo no Modo História ou enfrente ondas sorteadas na Arena.</p>
+      <p class="savewarn" id="saveWarn"></p>
       <div class="stack">
         <button id="bStory" class="btn primary">Modo História <span id="storyPill" class="pill">Capítulo I</span></button>
         <button id="bPlay" class="btn">Arena</button>
@@ -258,6 +295,7 @@ body{font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-t
       </div>
       <button id="bSound" class="link">Som: ligado</button>
       <button id="bMusic" class="link">Música: ligada</button>
+      <p class="ver" id="verTxt"></p>
     </div>
   </section>
 
@@ -280,7 +318,7 @@ body{font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-t
       <p class="note" id="arcNote"></p>
       <ul class="spells" id="grimArc"></ul>
       <h3>Rituais de três elementos</h3>
-      <p class="note">O terceiro selo desperta na onda 4.</p>
+      <p class="note">Na Arena, o terceiro selo desperta na onda 4; na História, no Capítulo III.</p>
       <ul class="spells" id="grimRit"></ul>
       <h3>Cataclismos · quarto selo</h3>
       <p class="note" id="cataNote"></p>
@@ -300,31 +338,33 @@ body{font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-t
       <div class="tutcall" id="tutHelp"><p>Prefere aprender jogando? O tutorial ensina o básico numa fase curta.</p><button class="btn primary small" id="bTutHelp">Jogar o tutorial</button></div>
       <dl>
         <dt>Mover</dt>
-        <dd>Arraste o dedo na metade esquerda da tela. No computador, use <kbd data-k="up">W</kbd><kbd data-k="left">A</kbd><kbd data-k="down">S</kbd><kbd data-k="right">D</kbd> ou as setas. As teclas podem ser trocadas em Opções.</dd>
+        <dd>Arraste o dedo na metade <span data-side="joy">esquerda</span> da tela. No computador, use <kbd data-k="up">W</kbd><kbd data-k="left">A</kbd><kbd data-k="down">S</kbd><kbd data-k="right">D</kbd> ou as setas. As teclas podem ser trocadas em Opções.</dd>
         <dt>Carregar elementos</dt>
-        <dd>Toque nos quatro símbolos à direita. Cada toque ocupa um selo. Você começa com dois selos; quando todos estão cheios, o próximo toque começa uma combinação nova. O botão <b>×</b> no canto esquerdo esvazia os selos. Teclado: <kbd data-k="F">1</kbd> Fogo, <kbd data-k="W">2</kbd> Água, <kbd data-k="E">3</kbd> Terra, <kbd data-k="A">4</kbd> Ar, <kbd data-k="clear">X</kbd> limpar.</dd>
+        <dd>Toque nos quatro símbolos à <span data-side="btn">direita</span>. Cada toque ocupa um selo. Você começa com dois selos; quando todos estão cheios, o próximo toque começa uma combinação nova. O botão <b>×</b>, junto aos símbolos, esvazia os selos. Teclado: <kbd data-k="F">1</kbd> Fogo, <kbd data-k="W">2</kbd> Água, <kbd data-k="E">3</kbd> Terra, <kbd data-k="A">4</kbd> Ar, <kbd data-k="clear">X</kbd> limpar.</dd>
         <dt>Terceiro selo</dt>
-        <dd>Na onda 4 desperta o terceiro selo. Com três elementos você conjura rituais: meteoros, golems, fênix, vulcões, nevascas e mais 15.</dd>
+        <dd>Na Arena, o terceiro selo desperta na onda 4; na História, no Capítulo III. Com três elementos você conjura rituais: meteoros, golems, fênix, vulcões, nevascas e mais 15.</dd>
         <dt>Lançar</dt>
-        <dd>Toque no círculo central para mirar no inimigo mais próximo, ou toque em qualquer ponto da metade direita da arena para mirar ali. Segure para lançar sem parar. Teclado: <kbd data-k="cast">Espaço</kbd> ou clique do mouse.</dd>
+        <dd>Toque no círculo central para mirar no inimigo mais próximo, ou toque em qualquer ponto da metade <span data-side="btn">direita</span> da tela para mirar ali. Segure para lançar sem parar. Teclado: <kbd data-k="cast">Espaço</kbd> ou clique do mouse.</dd>
+        <dt>Passo Etéreo</dt>
+        <dd>Depois do Capítulo V (no Desafio do dia, desde o início), toque no botão roxo de setas, junto aos símbolos, ou aperte <kbd data-k="dash">Shift</kbd> para avançar rápido sem levar dano. Serve para cruzar vãos e desviar de golpes, também na Arena.</dd>
         <dt>Misturas</dt>
         <dd>São 10 misturas de dois elementos e 20 rituais de três, todos escondidos. Na primeira vez que você lançar um, ele é registrado no Grimório.</dd>
         <dt>Evoluções e bênçãos</dt>
-        <dd>Entre as ondas você escolhe uma bênção. Algumas evoluem uma magia que você já conhece: Bola de Fogo vira três, Tornado vira dois, Relâmpago salta mais longe.</dd>
+        <dd>Entre as ondas você escolhe uma bênção. Algumas evoluem uma magia que você já conhece: Bola de Fogo vira três, Tornado vira dois, Relâmpago salta entre mais inimigos.</dd>
         <dt>Modo História</dt>
         <dd>A história de Elementa, contada em capítulos. Você começa só com a Água e vai despertando os outros elementos pelo caminho.</dd>
         <dt>Corridas aleatórias (Arena)</dt>
-        <dd>A corrida é dividida em fases de 5 ondas. Cada fase sorteia um cenário, as criaturas que vão aparecer (golems, diabretes, lodos, espectros, sentinelas, feras, morcegos e xamãs, de qualquer elemento), um presságio que muda as regras e o chefe da quinta onda. Você nunca joga a mesma corrida duas vezes.</dd>
+        <dd>A corrida é dividida em fases de 5 ondas. Cada fase sorteia um cenário, as criaturas que vão aparecer (golems, diabretes, lodos, espectros, sentinelas, feras, morcegos e xamãs, de qualquer elemento), um presságio que muda as regras e o chefe da quinta onda. Fora do Desafio do dia, você nunca joga a mesma corrida duas vezes.</dd>
         <dt>Reações elementais</dt>
         <dd>Água deixa os inimigos molhados. Relâmpago em quem está molhado eletrocuta todos por perto; vento em quem está queimando espalha o fogo; Terra em quem está congelado estilhaça com dano dobrado; água sobre lava vira uma parede de obsidiana.</dd>
         <dt>Fim da corrida, Altar e Provações</dt>
         <dd>Na quinta onda da fase 4 aparece a Quintessência. Vença-a para ganhar a corrida e, se quiser, continue no modo infinito. Toda corrida rende Essência para o Altar, onde você compra melhorias permanentes. Cada vitória desbloqueia a próxima Provação, que soma uma regra mais difícil e rende mais Essência.</dd>
         <dt>Quarto selo</dt>
-        <dd>Ao concluir o Capítulo X, você ganha o Quarto Selo e passa a carregar quatro elementos. Onze combinações viram Cataclismos, magias enormes como a Supernova, o Titã e a Quintessência. As outras viram Infusões: os três primeiros toques formam um ritual e o quarto elemento o reforça, então a ordem importa. Na Arena, o quarto selo desperta na onda 10.</dd>
+        <dd>Ao concluir o Capítulo X, você ganha o Quarto Selo e passa a carregar quatro elementos. Onze combinações viram Cataclismos, magias enormes como a Supernova, o Titã e a Quintessência. As outras viram Infusões: os três primeiros toques formam um ritual e o quarto elemento o reforça, então a ordem importa. Na Arena, o Quarto Selo desperta na onda 10.</dd>
         <dt>Arcanos Maiores</dt>
         <dd>Ao vencer uma onda, o tempo desacelera e três cartas de tarot aparecem. Escolha uma: cada Arcano dá um bônus para o resto da partida e entra na sua coleção no Grimório.</dd>
         <dt>Quintessência</dt>
-        <dd>Derrotar inimigos enche o arco dourado no canto direito dos botões. Cheio, toque nele (ou <kbd data-k="ult">Q</kbd>) para virar Avatar dos Elementos: uma onda dos quatro elementos varre a arena e, por 7 segundos, suas magias não gastam mana e recarregam na metade do tempo.</dd>
+        <dd>Derrotar inimigos enche o arco dourado junto aos símbolos. Cheio, toque nele (ou <kbd data-k="ult">Q</kbd>) para virar Avatar dos Elementos: uma onda dos quatro elementos varre a arena e, por 7 segundos, suas magias não gastam mana e recarregam na metade do tempo.</dd>
         <dt>Fraquezas</dt>
         <dd>Água vence Fogo, Terra vence Água, Ar vence Terra e Fogo vence Ar. Cada espírito leva quase o dobro de dano do elemento que o vence e resiste ao próprio elemento. Números amarelos mostram um golpe eficaz.</dd>
         <dt>Os símbolos</dt>
@@ -342,7 +382,7 @@ body{font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-t
       <div class="arcana" id="upArcana"></div>
       <h3>Escolha uma bênção</h3>
       <div class="cards" id="upCards"></div>
-      <div class="stack"><button id="upGo" class="btn primary" disabled>Escolha uma carta e uma bênção</button></div>
+      <div class="stack"><button id="upGo" class="btn primary" disabled>Escolha um Arcano e uma bênção</button></div>
     </div>
   </section>
 
@@ -360,12 +400,13 @@ body{font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-t
     <div class="panel">
       <div class="ph"><h2>Altar</h2><button class="btn small" data-back>Voltar</button></div>
       <p class="sub">Você tem <span class="ess" id="altarEss">0</span> de Essência. Cada corrida rende Essência, e vencer a Quintessência rende mais. Melhorias compradas aqui valem para todas as corridas.</p>
+      <h3>Melhorias</h3>
       <ul class="spells" id="altarList"></ul>
     </div>
   </section>
 
   <section id="sWin" class="screen" hidden>
-    <div class="panel" style="width:min(440px,100%)">
+    <div class="panel" style="width:min(478px,100%)">
       <p class="eyebrow">Vitória</p>
       <h2>A Quintessência caiu</h2>
       <p class="sub" id="winSub"></p>
@@ -382,7 +423,7 @@ body{font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-t
   </section>
 
   <section id="sArena" class="screen" hidden>
-    <div class="panel" style="width:min(460px,100%)">
+    <div class="panel" style="width:min(498px,100%)">
       <div class="ph"><h2>Arena</h2><button class="btn small" data-back>Voltar</button></div>
       <p class="sub">Ondas de inimigos em fases de cinco. Cada fase sorteia cenário, criaturas, presságio e chefe. Na onda 20, a Quintessência.</p>
       <p class="record" id="recordTxt"></p>
@@ -395,7 +436,7 @@ body{font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-t
       <p class="sub" id="dailyPrev"></p>
       <p class="sub diff-note">Todo mundo que jogar hoje recebe as mesmas fases, criaturas, chefes e cartas. Sem Altar, sem Provação e sem recompensas da História: todos começam iguais. Compare a pontuação com seus amigos.</p>
       <p class="record" id="dailyBest"></p>
-      <div class="stack"><button id="bDaily" class="btn">Jogar o desafio do dia</button></div>
+      <div class="stack"><button id="bDaily" class="btn">Jogar o Desafio do dia</button></div>
     </div>
   </section>
 
@@ -408,7 +449,7 @@ body{font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-t
   </section>
 
   <section id="sOpts" class="screen" hidden>
-    <div class="panel" style="width:min(460px,100%)">
+    <div class="panel" style="width:min(498px,100%)">
       <div class="ph"><h2>Opções</h2><button class="btn small" id="optBack" data-back>Voltar</button></div>
       <p class="sub">As opções ficam salvas neste aparelho.</p>
       <h3>Tamanho dos botões</h3>
@@ -422,17 +463,20 @@ body{font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-t
       <h3>Símbolos dos elementos nos inimigos</h3>
       <div class="seg" data-opt="sym"><button data-v="false">Só a cor</button><button data-v="true">Cor e símbolo</button></div>
       <p class="sub diff-note">Cor e símbolo mostra o triângulo do elemento sobre cada inimigo. Ajuda a jogar com daltonismo ou em telas pequenas.</p>
+      <div id="fsSec" hidden><h3>Tela</h3><div class="seg"><button id="bFull">Tela cheia</button></div></div>
+      <div id="kbdSec">
       <h3>Teclado</h3>
       <p class="sub diff-note">Clique num comando e aperte a tecla nova. Se a tecla já estiver em uso, os dois comandos trocam de tecla. Esc cancela. As setas sempre andam e Esc sempre pausa. No celular, os botões da tela continuam iguais.</p>
       <div class="keys" id="keyList"></div>
       <div class="seg"><button id="keyReset">Restaurar teclas padrão</button></div>
+      </div>
     </div>
   </section>
 
   <section id="sChapters" class="screen" hidden>
     <div class="panel">
       <div class="ph"><h2>Modo História</h2><button class="btn small" data-back>Voltar</button></div>
-      <p class="sub">Cada capítulo desperta um novo elemento. Seu progresso fica salvo.</p>
+      <p class="sub">Os três primeiros capítulos despertam os elementos; os seguintes dão poderes que valem para sempre. No meio de um capítulo, o progresso é salvo cada vez que você pisa numa fonte.</p>
       <div id="tutBox"></div>
       <p class="note" id="chFinds"></p>
       <p class="note" id="chLevel"></p>
@@ -449,7 +493,7 @@ body{font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-t
   </section>
 
   <section id="sChapter" class="screen" hidden>
-    <div class="panel" style="width:min(440px,100%)">
+    <div class="panel" style="width:min(478px,100%)">
       <p class="eyebrow">Modo História</p>
       <h2 id="chTitle">Capítulo I concluído</h2>
       <p class="sub" id="chSub"></p>
@@ -467,7 +511,7 @@ body{font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-t
   </section>
 
   <section id="sPause" class="screen" hidden>
-    <div class="panel" style="width:min(360px,100%)">
+    <div class="panel" style="width:min(398px,100%)">
       <div class="ph"><h2>Pausado</h2><button class="btn small primary" id="bResumeTop">Continuar</button></div>
       <p class="sub" id="pausePhase"></p>
       <canvas id="pauseMap" width="320" height="320" hidden></canvas>
@@ -486,14 +530,14 @@ body{font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-t
   </section>
 
   <section id="sOver" class="screen" hidden>
-    <div class="panel" style="width:min(420px,100%)">
+    <div class="panel" style="width:min(458px,100%)">
       <h2>Fim da jornada</h2>
       <p class="sub" id="overSub"></p>
       <p class="sub" id="overEss"></p>
       <div class="stats">
         <div><b id="oWave">0</b><span>Onda</span></div>
         <div><b id="oScore">0</b><span>Pontos</span></div>
-        <div><b id="oDisc">0</b><span>Misturas</span></div>
+        <div><b id="oDisc">0</b><span>Descobertas</span></div>
       </div>
       <div class="stack">
         <button id="bAgain" class="btn primary">Jogar de novo</button>
@@ -737,7 +781,7 @@ const ALTAR=[
   {id:'mana',name:'Fonte Interior',max:5,cost:l=>20+l*20,fx:l=>`+${10*l} de mana máxima`,icon:()=>upIcon('reserva')},
   {id:'regen',name:'Fluxo Antigo',max:5,cost:l=>25+l*20,fx:l=>`+${6*l}% de regeneração de mana`,icon:()=>upIcon('fluxo')},
   {id:'dano',name:'Poder Ancestral',max:5,cost:l=>30+l*25,fx:l=>`+${5*l}% de dano`,icon:()=>upIcon('poder')},
-  {id:'centelha',name:'Centelha',max:3,cost:l=>40+l*30,fx:l=>`Começa com ${25*l}% de Quintessência`,icon:()=>upIcon('quint')},
+  {id:'centelha',name:'Centelha',max:3,cost:l=>40+l*30,fx:l=>`Começa com ${25*l}% de Quintessência${store.get('story',{}).ch4?' (na Arena ela já começa cheia)':''}`,icon:()=>upIcon('quint')},
   {id:'coleta',name:'Colecionador',max:3,cost:l=>50+l*40,fx:l=>`+${20*l}% de Essência ganha`,icon:()=>upIcon('mare')},
   {id:'selo',name:'Selo Antigo',max:1,cost:()=>120,fx:()=>'Começa com o terceiro selo desperto',icon:()=>glyphSVG('FWE',34)},
   {id:'taro',name:'Baralho Ampliado',max:1,cost:()=>150,fx:()=>'Quatro Arcanos para escolher em vez de três',icon:()=>arcGlyph(ARCANA[1],34)},
@@ -772,10 +816,10 @@ function gainXP(n){if(mode!=='story'||lvMax())return;LV.xp+=n;
 const CONQ=[
   {id:'cap1',name:'Primeira Gota',desc:'Conclua o Capítulo I.'},
   {id:'cap3',name:'Os Quatro Despertos',desc:'Conclua o Capítulo III e desperte os quatro elementos.'},
-  {id:'cap10',name:'De Volta à Fonte',desc:'Conclua o Capítulo X, o fim da história.'},
+  {id:'cap10',name:'De Volta à Fonte',desc:'Conclua o Capítulo X, A Fonte dos Elementos.'},
   {id:'desafio',name:'Prova de Fogo',desc:'Vença um capítulo na dificuldade Desafio.'},
-  {id:'desafio10',name:'Lenda dos Elementos',desc:'Vença os dez capítulos na dificuldade Desafio.'},
-  {id:'achados',name:'Olhos Atentos',desc:'Encontre os 18 achados permanentes da História.'},
+  {id:'desafio10',name:'Lenda dos Elementos',desc:'Vença dez capítulos na dificuldade Desafio.'},
+  {id:'achados',name:'Olhos Atentos',desc:'Encontre todos os achados permanentes da História.'},
   {id:'intocavel',name:'Intocável',desc:'Vença um chefe da História sem levar nenhum golpe na luta.'},
   {id:'sinos',name:'Ouvido Perfeito',desc:'Toque os sinos do Capítulo VII na ordem certa sem errar.'},
   {id:'muda',name:'Mão Verde',desc:'Proteja a muda do Capítulo VII com mais da metade da vida dela.'},
@@ -852,7 +896,7 @@ function comboGlyph(c,k,x,y,s,lw){
   else {const o=isUp(k[0])===isUp(k[1])?s*.32:0;glyph(c,k[0],x-o,y,s*(o?.8:1),EL[k[0]].c,lw);glyph(c,k[1],x+o,y,s*(o?.8:1),EL[k[1]].c,lw);}
 }
 function glyphSVG(k,size){
-  if(k==='?') return `<svg viewBox="0 0 100 100" width="${size}" height="${size}" aria-hidden="true"><circle cx="50" cy="50" r="34" fill="none" stroke="#4d4559" stroke-width="5" stroke-dasharray="7 9"/><text x="50" y="65" text-anchor="middle" font-size="44" font-family="Georgia,serif" fill="#6f6680">?</text></svg>`;
+  if(k==='?') return `<svg viewBox="0 0 100 100" width="${size}" height="${size}" aria-hidden="true"><circle cx="50" cy="50" r="34" fill="none" stroke="#4d4559" stroke-width="5" stroke-dasharray="7 9"/><text x="50" y="65" text-anchor="middle" font-size="44" font-family="'IM Fell English SC',Georgia,serif" fill="#6f6680">?</text></svg>`;
   const parts=[];
   const tri=(el,s,col,ox,oy)=>{
     const up=isUp(el),kk=up?1:-1,cx=50+(ox||0),cy=50+(oy||0);
@@ -906,11 +950,15 @@ function layout(){
   UI.br=br;UI.cast={x:cx,y:cy,r:br*1.2,flash:0};
   const pos={A:[0,-d],F:[d*L,0],E:[0,d],W:[-d*L,0]};
   UI.els=RING.split('').map(e=>({e,x:cx+pos[e][0],y:cy+pos[e][1],r:br,flash:0}));
-  UI.clear={x:cx-d*.95*L,y:cy-d*.95,r:br*.55,flash:0};
+  UI.clear={x:cx-d*.95*L,y:cy-d*.95,r:br*.62,flash:0};
   UI.ult={x:cx+d*.95*L,y:cy-d*.95,r:br*.62,flash:0};
   UI.dash={x:cx-d*.95*L,y:cy+d*.95,r:br*.6,flash:0};
   UI.joyR=clamp(base*.13,46,70)*opts.btn;
   UI.joyHome={x:opts.left?W-SA.r-pad-UI.joyR-12:SA.l+pad+UI.joyR+12,y:H-SA.b-pad-UI.joyR-12};
+  // com o celular deitado, avisos e banner ficam na faixa livre entre o joystick e os botões
+  const app=$('#app'),low=W>H&&H<=520,jl=UI.joyHome.x-UI.joyR,jr=UI.joyHome.x+UI.joyR,cl=cx-br*3.3,cr=cx+br*3.3;
+  app.style.setProperty('--laneL',((opts.left?cr:jr)+8)+'px');app.style.setProperty('--laneR',(W-(opts.left?jl:cl)+8)+'px');
+  app.style.setProperty('--bnL',(low&&opts.left?cr+8:SA.l+16)+'px');app.style.setProperty('--bnR',(low&&!opts.left?W-cl+8:SA.r+16)+'px');
 }
 function makeBg(){
   const B=biome||BIOMES[0];
@@ -1165,7 +1213,7 @@ function newGame(){
   if(mode==='story')storyStart();else{story=null;if(prog.ch4)P.ether=100;
     if(prog.ch6){const c=pick(ARCANA.filter(c=>!c.unique));c.apply();P.arcRun.push(c.n);P.arcCycle.add(c.n);setTimeout(()=>{if(state==='play'&&mode==='arena')showToast('Coroa das Estrelas',`${c.rn} · ${c.name}`,c.desc,arcGlyph(c,46));},600);}
     startWave(1);}
-  setState('play');
+  setState('play');updateHUD();
   if(mode==='story'){if(story.loaded)say([{who:SPIRIT,text:'Você volta à última fonte em que bebeu. Tudo o que você já fez continua feito.'}]);else storyIntro();}
 }
 
@@ -1218,7 +1266,7 @@ function startWaveNow(n){
   let title,sub,w='',tip='';
   if(idx===1){title=`${pn===FINAL_PHASE&&!run.won?'Fase final':'Fase '+pn} · ${ph.biome.name}`;sub=rosterText(R);w=weakText(R);tip=ph.omens.map(o=>`Presságio ${o.name}. ${o.desc}`).join(' ');}
   else if(final){title='A Quintessência';sub=BOSSES.quint.desc;w='Vença-a para ganhar a corrida';}
-  else if(boss){const B=BOSSES[ph.boss];title=`Onda ${n} · ${B.name}`;sub=B.desc;w=ph.boss==='guardiao'?'Troque de magia quando ele mudar de cor':weakText([{el:R[0].el}]);}
+  else if(boss){const B=BOSSES[ph.boss];title=`Onda ${n} · ${B.name}`;sub=B.desc;w=ph.boss==='guardiao'?'Troque de magia quando ele mudar de cor':'Fraco contra '+EL[WEAK[R[0].el]].name;}
   else{title=`Onda ${n}`;sub=rosterText(avail);if(idx===3&&eliteP>0)w='Inimigos de elite podem aparecer';}
   if(n===1&&!tip)tip=coarse?'Toque no círculo central para lançar':`${keyName(KM.cast)} ou clique para lançar`;
   else if(n===2&&countDisc()===0)tip='Dica: carregue dois elementos para criar uma mistura';
@@ -1275,9 +1323,10 @@ function checkWaveClear(){
 function drawClearCards(){
   if(!wave.cleared||state!=='play')return;
   const p=clamp(1-wave.clearT/CLEAR_TIME,0,1),e=1-Math.pow(1-p,3);
-  const w=Math.min(84,W*.2),h=w*5/3;
+  const w=Math.min(84,W*.2,H*.22),h=w*5/3;
+  const mid=W>H&&H<=520?(opts.left?(UI.cast.x+UI.br*3.3+W-SA.r)/2:(SA.l+UI.cast.x-UI.br*3.3)/2):W/2;
   for(let i=0;i<3;i++){
-    const tx=W/2+(i-1)*(w+14),ty=H*.44;
+    const tx=mid+(i-1)*(w+14),ty=H*.44;
     const x=P.x+(tx-P.x)*e,y=P.y+(ty-P.y)*e;
     const sx=Math.cos(p*Math.PI*2+i*.5);
     ctx.save();ctx.translate(x,y);ctx.scale(Math.max(.04,Math.abs(sx))*(.4+.6*e),.4+.6*e);ctx.globalAlpha=Math.min(1,p*3);
@@ -1334,10 +1383,10 @@ function showUpgradeNow(){
   if(evoPool.length&&Math.random()<.8)picks.push(take(evoPool));
   const rest=gen.concat(evoPool);
   while(picks.length<3&&rest.length)picks.push(take(rest));
-  $('#upTitle').textContent=`Onda ${wave.n} vencida`;
+  $('#upTitle').innerHTML=numHTML(`Onda ${wave.n} vencida`);
   let selArc=null,selUp=null;
   const go=$('#upGo');
-  const refresh=()=>{go.disabled=!(selArc&&selUp);go.textContent=go.disabled?(selArc?'Agora escolha uma bênção':selUp?'Agora escolha um Arcano':'Escolha uma carta e uma bênção'):`Seguir para a onda ${wave.n+1}`;};
+  const refresh=()=>{go.disabled=!(selArc&&selUp);go.textContent=go.disabled?(selArc?'Agora escolha uma bênção':selUp?'Agora escolha um Arcano':'Escolha um Arcano e uma bênção'):`Seguir para a onda ${wave.n+1}`;};
   const abox=$('#upArcana');abox.innerHTML=arcs.map(arcCardHTML).join('');abox.style.gridTemplateColumns=`repeat(${arcs.length},minmax(0,1fr))`;
   arcs.forEach((c,i)=>{
     const btn=$('#arc'+i);
@@ -1370,7 +1419,7 @@ function showUpgradeNow(){
 // ---------------- Entrada ----------------
 function pressElement(e){
   if(!P.elems.has(e)){addText(P.x,P.y-30,`${EL[e].name} ainda não despertou`,'#a79f8f');sfx('nomana');return;}
-  if(P.stolen===e){addText(P.x,P.y-30,`Nihil está com ${EL[e].name==='Ar'?'o':'a'} ${EL[e].name}`,'#b48cff');sfx('nomana');return;}
+  if(P.stolen===e){addText(P.x,P.y-30,`Nihil está com ${ART[e]} ${EL[e].name}`,'#b48cff');sfx('nomana');return;}
   if(slots.length>=P.maxSlots) slots=[e]; else slots.push(e);
   sfx('tick',e);
 }
@@ -1389,8 +1438,9 @@ function onDown(e){
   e.preventDefault();audioInit();
   const x=e.clientX,y=e.clientY;
   try{cv.setPointerCapture(e.pointerId);}catch(_){}
+  {const c=UI.cast;if(d2(x,y,c.x,c.y)<c.r*c.r){c.flash=.18;holds.set(e.pointerId,{auto:true,x,y});tryCast(x,y,true,false);return;}}
   for(const b of UI.els){if(d2(x,y,b.x,b.y)<(b.r*1.2)**2){pressElement(b.e);b.flash=.18;return;}}
-  if(d2(x,y,UI.clear.x,UI.clear.y)<(UI.clear.r*1.4)**2){clearSlots();return;}
+  if(d2(x,y,UI.clear.x,UI.clear.y)<(UI.clear.r*1.35)**2){clearSlots();return;}
   if(d2(x,y,UI.ult.x,UI.ult.y)<(UI.ult.r*1.4)**2){ultimate();return;}
   if(P.canDash&&d2(x,y,UI.dash.x,UI.dash.y)<(UI.dash.r*1.4)**2){dash();return;}
   const c=UI.cast;
@@ -1425,11 +1475,14 @@ cv.addEventListener('contextmenu',e=>e.preventDefault());
 addEventListener('keydown',e=>{
   if(keyWait){e.preventDefault();e.stopPropagation();if(state==='opts')bindKey(e.code,e.key);else keyWait=null;return;}
   keys[e.code]=true;
+  if(e.repeat&&state!=='play'&&(e.code==='Space'||e.code==='Enter'||e.code==='NumpadEnter')){e.preventDefault();return;}
+  if(state!=='play'&&state!=='dialog'&&performance.now()-screenAt<350&&(e.code==='Space'||e.code==='Enter')){e.preventDefault();return;}
   const act=actOf(e.code);
   if(state==='dialog'&&(e.code==='Space'||e.code==='Enter'||act==='cast')&&!e.repeat){e.preventDefault();dialogNext();return;}
   if(e.code==='Escape'&&state!=='play'&&!e.repeat){
     if(state==='pause'){e.preventDefault();resumeGame();return;}
-    const scr=screens[state],bk=scr&&!scr.hidden&&scr.querySelector('[data-back]');if(bk){e.preventDefault();bk.click();return;}}
+    const scr=screens[state],bk=scr&&!scr.hidden&&scr.querySelector('[data-back]');if(bk){e.preventDefault();bk.click();return;}
+    const alt={over:'#bMenu',win:'#bWinMenu',chapter:'#bChMenu'}[state];if(alt&&performance.now()-screenAt>500){e.preventDefault();$(alt).click();return;}}
   if(state!=='play'||!act)return;
   audioInit();
   if(act!=='up'&&act!=='down'&&act!=='left'&&act!=='right')e.preventDefault();
@@ -1619,7 +1672,7 @@ function ultimate(){
   banner('Avatar dos Elementos',`Magias sem custo e recarga pela metade por ${P.avatarDur} segundos`,'');
 }
 function showToast(kind,name,recipe,svg){
-  $('#tKind').textContent=kind;$('#tGlyph').innerHTML=svg;$('#tName').textContent=name;$('#tRecipe').textContent=recipe;
+  $('#tKind').textContent=kind;$('#tGlyph').innerHTML=svg;$('#tName').innerHTML=numHTML(name);$('#tRecipe').textContent=recipe;
   const t=$('#toast');t.classList.add('show');clearTimeout(showToast.tm);showToast.tm=setTimeout(()=>t.classList.remove('show'),2800);
 }
 function discover(k){
@@ -1828,7 +1881,7 @@ function updatePlayer(dt){
   for(const q of P.echoQ){q.t-=dt;if(q.t<=0){cast(q.k,q.ax,q.ay,Math.atan2(q.ay-P.y,q.ax-P.x));addText(P.x,P.y-30,P.arcRun.includes(6)&&Math.random()<.5?'Yeah, science!':'Eco','#e8c477');}}
   P.echoQ=P.echoQ.filter(q=>q.t>0);
   for(const h of holds.values())tryCast(h.x,h.y,h.auto,true);
-  if(keys.Space)tryCast(0,0,true,true);
+  if(held('cast'))tryCast(0,0,true,true);
 }
 function updateAllies(dt){
   const b=bounds();
@@ -2129,7 +2182,7 @@ function bossAI(e,dt,dist,a,disabled){
     const hpf=e.hp/e.maxHp;mv=.5;
     e.thiefT=(e.thiefT==null?5:e.thiefT)-dt;
     if(e.thiefT<=0&&ready){e.thiefT=12;const opts=[...P.elems].filter(x=>x!==P.stolen),el=pick(opts);P.stolen=el;P.stolenT=8;slots=slots.filter(s=>s!==el);e.el=el;
-      addText(P.x,P.y-44,`Nihil engoliu ${el==='A'?'o':'a'} ${EL[el].name}!`,EL[el].c);
+      addText(P.x,P.y-44,`Nihil engoliu ${ART[el]} ${EL[el].name}!`,EL[el].c);
       for(let i=0;i<20;i++){const t=i/20;puff(P.x+(e.x-P.x)*t,P.y+(e.y-P.y)*t,{life:.6,size:4,color:EL[el].c,drag:2});}sfx('ult');}
     e.wellT=(e.wellT==null?4:e.wellT)-dt;
     if(e.wellT<=0&&ready){e.wellT=hpf<.5?5:7;hazards.push({kind:'vortex',x:P.x+rand(-60,60),y:P.y+rand(-60,60),r:170,t:3.5,max:3.5,dmg:0,el:'A'});sfx('AA');}
@@ -2493,7 +2546,16 @@ function updateOrbs(dt){
 // ---------------- HUD ----------------
 const hud=$('#hud'),hpFill=$('#hpFill'),mnFill=$('#mnFill');
 const txtCache={};
+const numHTML=s=>String(s).replace(/\d+/g,'<span class="num">$&</span>');
 function setText(id,v){if(txtCache[id]!==v){txtCache[id]=v;document.getElementById(id).textContent=v;}}
+function hudStack(){
+  // mede o fundo do HUD e do objetivo para empilhar objetivo, barra do chefe e avisos sem sobreposição
+  if(hud.hidden)return;const app=$('#app'),hb=hud.getBoundingClientRect().bottom,ob=$('#objective');
+  const ot=Math.round(hb+6);if(UI.objTop!==ot){UI.objTop=ot;app.style.setProperty('--objTop',ot+'px');}
+  if(!ob.hidden)UI.objB=ob.getBoundingClientRect().bottom;
+  UI.topB=Math.max(hb,mode==='story'&&UI.objB?UI.objB:0);
+  const tt=Math.round(Math.max(UI.topB,UI.bossBot||0)+8);if(UI.toastTop!==tt){UI.toastTop=tt;app.style.setProperty('--toastTop',tt+'px');app.style.setProperty('--bnTop',tt+'px');}
+}
 function updateHUD(){
   hpFill.style.transform=`scaleX(${clamp(P.hp/P.maxHp,0,1)})`;
   mnFill.style.transform=`scaleX(${clamp(P.mana/P.maxMana,0,1)})`;
@@ -2501,17 +2563,17 @@ function updateHUD(){
   setText('mnTxt',P.avatarT>0?'Avatar: mana livre':`${Math.floor(P.mana)} / ${P.maxMana}`);
   {const xb=$('#xpBar'),on=mode==='story'&&!!story;if(xb.hidden===on)xb.hidden=!on;
     if(on){const mx=lvMax();$('#xpFill').style.transform=`scaleX(${mx?1:clamp(LV.xp/xpNeed(LV.lvl),0,1)})`;setText('xpTxt',mx?`Nível ${LV.lvl} · máximo`:`Nível ${LV.lvl} · ${LV.xp} / ${xpNeed(LV.lvl)} XP`);}}
-  if(mode==='story'&&story){setText('waveTxt',CH().label||'Capítulo '+CH().rn);setText('leftTxt',story.region?story.region.name:'');setText('scoreTxt',String(score));
+  if(mode==='story'&&story){setText('waveTxt',CH().label||'Capítulo '+CH().rn);setText('leftTxt',story.region?story.region.name:'');setText('scoreTxt','');
     const o=storyObjective();if(story.objText!==o.text){story.objText=o.text;$('#objective').innerHTML=`<b>◆</b> ${o.text}`;}
-    $('#mnBar').classList.toggle('low',P.noManaT>0);return;}
-  setText('waveTxt',`Onda ${wave.n}`);
+    $('#mnBar').classList.toggle('low',P.noManaT>0);hudStack();return;}
+  {const wt=`Onda ${wave.n}`;if(txtCache.waveTxt!==wt){txtCache.waveTxt=wt;$('#waveTxt').innerHTML=numHTML(wt);}}
   const left=wave.queue.length+enemies.length;
   setText('leftTxt',(run.won?'Infinito · ':`Fase ${run.phase?run.phase.num:1} de ${FINAL_PHASE} · `)+(left?`${left} ${left===1?'inimigo':'inimigos'}`:'arena limpa'));
   setText('scoreTxt',String(score));
-  $('#mnBar').classList.toggle('low',P.noManaT>0);
+  $('#mnBar').classList.toggle('low',P.noManaT>0);hudStack();
 }
 function banner(t,s,tip,w){
-  $('#bnT').textContent=t;$('#bnS').textContent=s||'';$('#bnTip').textContent=tip||'';$('#bnW').textContent=w||'';
+  $('#bnT').innerHTML=numHTML(t);$('#bnS').textContent=s||'';$('#bnTip').textContent=tip||'';$('#bnW').textContent=w||'';
   const b=$('#banner');b.classList.add('show');clearTimeout(banner.tm);banner.tm=setTimeout(()=>b.classList.remove('show'),tip||w?4200:2600);
 }
 
@@ -2520,6 +2582,7 @@ const GROUND=new Set(['lava','vines','swamp','spring','volcano','lift']);
 function render(){
   if(!cv.width||!cv.height||!bg.width||!bg.height){if(innerWidth&&innerHeight)resize();return;}
   ctx.setTransform(DPR,0,0,DPR,0,0);
+  ctx.textAlign='start';ctx.textBaseline='alphabetic';ctx.shadowBlur=0;ctx.globalAlpha=1;
   const inStory=mode==='story'&&story&&P&&!menuScene();
   if(inStory)drawStoryGround();else ctx.drawImage(bg,0,0,W,H);
   if(menuScene()||!P){drawMenuScene();return;}
@@ -2542,14 +2605,14 @@ function render(){
   drawStrikesAir();
   drawParts();
   drawBolts();
-  drawNums();
   ctx.restore();
   if(inStory)drawStoryDark();
-  if(inStory&&CH().hud)CH().hud(story);
   if(hasOmen('eclipse')){const g=ctx.createRadialGradient(P.x,P.y,80,P.x,P.y,240);g.addColorStop(0,'rgba(4,3,8,0)');g.addColorStop(1,'rgba(4,3,8,.94)');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);}
+  ctx.save();if(inStory)ctx.translate(-camX,-camY);drawNums();ctx.restore();
+  if(inStory&&CH().hud)CH().hud(story);
   drawBossBar();
-  if(state==='play')drawControls();
   drawClearCards();
+  if(state==='play')drawControls();
 }
 function menuScene(){return state==='menu'||((state==='grimoire'||state==='help'||state==='altar'||state==='chapters'||state==='arena'||state==='opts'||state==='avatar')&&returnTo==='menu');}
 function drawMenuScene(){
@@ -3258,35 +3321,45 @@ function drawBolts(){
 }
 function drawNums(){
   ctx.textAlign='center';ctx.textBaseline='middle';ctx.lineJoin='round';
+  const L=camX+SA.l+6,R=camX+W-SA.r-6,mw=R-L;
   for(const n of nums){ctx.globalAlpha=Math.min(1,n.life/n.max*1.6);ctx.font=`800 ${n.big?17:13}px ${BODY}`;
-    ctx.strokeStyle='rgba(0,0,0,.75)';ctx.lineWidth=3;ctx.strokeText(n.txt,n.x,n.y);ctx.fillStyle=n.col;ctx.fillText(n.txt,n.x,n.y);}
+    const hw=Math.min(ctx.measureText(n.txt).width,mw)/2,x=clamp(n.x,L+hw,R-hw);
+    ctx.strokeStyle='rgba(0,0,0,.75)';ctx.lineWidth=3;ctx.strokeText(n.txt,x,n.y,mw);ctx.fillStyle=n.col;ctx.fillText(n.txt,x,n.y,mw);}
   ctx.globalAlpha=1;
 }
 function drawBossBar(){
-  const b=enemies.find(e=>e.boss&&!e.dead);if(!b)return;
-  const w=Math.min(W-40,420),x=(W-w)/2,y=SA.t+(mode==='story'?100:66);
+  const b=enemies.find(e=>e.boss&&!e.dead);if(!b){UI.bossBot=0;return;}
+  const y=Math.round(Math.max(SA.t+(mode==='story'?100:66),(UI.topB||0)+8));
+  // em telas baixas, se a barra encostar no nome da magia, ela vai para o lado oposto aos botões
+  let x0=SA.l+20,x1=W-SA.r-20;const lyTop=UI.els[0].y-UI.br-24-34;
+  if(state==='play'&&lyTop<y+40&&W-SA.l-SA.r-40-262>=150){if(opts.left)x0=SA.l+262;else x1=W-SA.r-262;}
+  const w=Math.min(x1-x0,420),x=x0+(x1-x0-w)/2,cx=x+w/2,mw=Math.min(w+40,W-SA.l-SA.r-16);
+  let bot=y+30;
+  const put=(s,yy)=>{if(ctx.measureText(s).width<=mw){ctx.fillText(s,cx,yy);bot=Math.max(bot,yy+16);return;}
+    const i=s.indexOf(' · ');if(i<0){ctx.fillText(s,cx,yy,mw);bot=Math.max(bot,yy+16);return;}
+    ctx.fillText(s.slice(0,i),cx,yy,mw);ctx.fillText(s.slice(i+3),cx,yy+16,mw);bot=Math.max(bot,yy+32);};
   ctx.fillStyle='rgba(10,8,16,.8)';ctx.fillRect(x,y,w,10);
   ctx.fillStyle=EL[b.el].c;ctx.fillRect(x,y,w*Math.max(0,b.hp/b.maxHp),10);
   ctx.strokeStyle='rgba(232,196,119,.5)';ctx.lineWidth=1;ctx.strokeRect(x+.5,y+.5,w-1,9);
   ctx.textAlign='center';ctx.textBaseline='top';ctx.font=`600 13px ${BODY}`;ctx.fillStyle='#efe7d6';
   ctx.shadowColor='#000';ctx.shadowBlur=4;
   const nm=b.title||BOSSES[b.kind].name;
-  if(b.kind==='nerith'&&b.diving){ctx.fillText(`${nm} · submersa: ela vai emergir sob você`,W/2,y+14);ctx.shadowBlur=0;return;}
+  if(b.kind==='nerith'&&b.diving){put(`${nm} · submersa: ela vai emergir sob você`,y+14);ctx.shadowBlur=0;UI.bossBot=bot;return;}
   if(b.kind==='deseq'||(b.kind==='origem'&&b.shieldEl)){
     if(b.shieldEl){ctx.fillStyle='rgba(10,8,16,.8)';ctx.fillRect(x,y+12,w,5);ctx.fillStyle=EL[WEAK[b.shieldEl]].c;ctx.fillRect(x,y+12,w*Math.max(0,b.shieldHp/b.shieldMax),5);}
-    ctx.fillText(b.invuln?`${nm} · invulnerável: vença os quatro orbes`:b.shieldEl?`${nm} · escudo de ${EL[b.shieldEl].name}: use ${EL[WEAK[b.shieldEl]].name}`:`${nm} · sem escudo: ataque!`,W/2,y+20);
-  } else if(b.kind==='umbra')ctx.fillText(inLight(b.x,b.y)?`${nm} · na luz: ataque! · fraco contra ${EL[WEAK[b.el]].name}`:`${nm} · no escuro: imune. Lute perto das lanternas`,W/2,y+14);
-  else if(b.kind==='drakonis'&&b.flying)ctx.fillText(`${nm} · no ar: saia da marca de pouso!`,W/2,y+14);
+    put(b.invuln?`${nm} · invulnerável: vença os quatro orbes`:b.shieldEl?`${nm} · escudo de ${EL[b.shieldEl].name}: use ${EL[WEAK[b.shieldEl]].name}`:`${nm} · sem escudo: ataque!`,y+20);
+  } else if(b.kind==='umbra')put(inLight(b.x,b.y)?`${nm} · na luz: ataque! · fraco contra ${EL[WEAK[b.el]].name}`:`${nm} · no escuro: imune. Lute perto das lanternas`,y+14);
+  else if(b.kind==='drakonis'&&b.flying)put(`${nm} · no ar: saia da marca de pouso!`,y+14);
   else if(b.kind==='glaciara'){if(b.iceArmor>0){ctx.fillStyle='rgba(10,8,16,.8)';ctx.fillRect(x,y+12,w,5);ctx.fillStyle='#ff8a3d';ctx.fillRect(x,y+12,w*Math.max(0,b.iceArmor/b.iceArmorMax),5);ctx.fillStyle='#efe7d6';}
-    ctx.fillText(b.iceArmor>0?`${nm} · armadura de gelo: use Fogo`:b.breathT>0?`${nm} · o ar congela: fique perto do fogo`:nm,W/2,y+(b.iceArmor>0?20:14));}
-  else if(b.kind==='prismara')ctx.fillText(b.exposedT>0?`${nm} · sem escudo: ataque! (${Math.ceil(b.exposedT)}s)`:`${nm} · escudo de cristal: leve-a até um feixe de luz`,W/2,y+14);
-  else if(b.kind==='argos')ctx.fillText(b.vigilT>0?`${nm} · Vigília Total: desvie dos raios`:b.seesP?`${nm} · ele vê você: saia do olhar`:`${nm} · cego para você: ataque pelas costas!`,W/2,y+14);
-  else if(b.kind==='aurelion')ctx.fillText(b.egg?`${nm} · ovo: quebre com Água (${Math.ceil(b.eggT)}s)`:b.diving?`${nm} · mergulho: saia da frente!`:nm,W/2,y+14);
-  else if(b.kind==='quimera'){const h=enemies.filter(o=>!o.dead&&o.headOf===b).length;ctx.fillText(h?`${nm} · ${h} cabeças: vença cada uma com a fraqueza`:`${nm} · exposta: ataque!`,W/2,y+14);}
-  else if(b.kind==='aion'&&story&&story.aionLock>0)ctx.fillText(`${nm} · tempo parado: ataque!`,W/2,y+14);
-  else if(b.kind==='cerne')ctx.fillText(`${nm} · ${['Inverno','Primavera','Verão','Outono'][b.season||0]} · fraco contra ${EL[WEAK[b.el]].name}`,W/2,y+14);
-  else ctx.fillText(`${nm} · ${EL[b.el].name} · fraco contra ${EL[WEAK[b.el]].name}`,W/2,y+14);
-  ctx.shadowBlur=0;
+    put(b.iceArmor>0?`${nm} · armadura de gelo: use Fogo`:b.breathT>0?`${nm} · o ar congela: fique perto do fogo`:nm,y+(b.iceArmor>0?20:14));}
+  else if(b.kind==='prismara')put(b.exposedT>0?`${nm} · sem escudo: ataque! (${Math.ceil(b.exposedT)}s)`:`${nm} · escudo de cristal: leve-a até a luz`,y+14);
+  else if(b.kind==='argos')put(b.vigilT>0?`${nm} · Vigília Total: desvie dos raios`:b.seesP?`${nm} · ele vê você: saia do olhar`:`${nm} · cego para você: ataque pelas costas!`,y+14);
+  else if(b.kind==='aurelion')put(b.egg?`${nm} · ovo: quebre com Água (${Math.ceil(b.eggT)}s)`:b.diving?`${nm} · mergulho: saia da frente!`:nm,y+14);
+  else if(b.kind==='quimera'){const h=enemies.filter(o=>!o.dead&&o.headOf===b).length;put(h?(h===1?`${nm} · última cabeça: use a fraqueza dela`:`${nm} · ${h} cabeças: vença cada uma com a fraqueza`):`${nm} · exposta: ataque!`,y+14);}
+  else if(b.kind==='aion'&&story&&story.aionLock>0)put(`${nm} · tempo parado: ataque!`,y+14);
+  else if(b.kind==='cerne')put(`${nm} · ${['Inverno','Primavera','Verão','Outono'][b.season||0]} · fraco contra ${EL[WEAK[b.el]].name}`,y+14);
+  else put(`${nm} · ${EL[b.el].name} · fraco contra ${EL[WEAK[b.el]].name}`,y+14);
+  ctx.shadowBlur=0;UI.bossBot=bot;
 }
 function drawControls(){
   const R=UI.joyR;
@@ -3341,24 +3414,26 @@ function drawControls(){
   ctx.strokeStyle=free?EL[ORDER[(T*6|0)%4]].g:can?'#e8c477':'rgba(217,67,74,.85)';ctx.lineWidth=2.5;ctx.stroke();
   if(c.flash>0)additive(()=>drawGlow(c.x,c.y,c.r*1.6,'#e8c477',c.flash*4));
   const ly=UI.els[0].y-UI.br-24;
+  let lx=c.x,name='',recipe='',known=false;
+  const hint=coarse?'Toque em um elemento':`Elementos: ${['F','W','E','A'].map(e=>keyName(KM[e])).join(' ')}`;
+  if(k){known=k.length===1||(k.includes('>')?infDisc.has(sp.multi):discovered.has(k));name=known?sp.name:'???';
+    recipe=`${slots.map(s=>EL[s].name).join(' + ')} · ${free?'grátis':costOf(k,sp)+' mana'}`;
+    ctx.font=`20px ${DISPLAY}`;const w1=ctx.measureText(name).width;ctx.font=`700 12px ${BODY}`;const w2=ctx.measureText(recipe).width;
+    const half=Math.min(Math.max(w1,w2),W-SA.l-SA.r-24)/2;lx=clamp(c.x,SA.l+12+half,W-SA.r-12-half);}
+  else{ctx.font=`700 12px ${BODY}`;const half=ctx.measureText(hint).width/2;lx=clamp(c.x,SA.l+12+half,W-SA.r-12-half);}
   // selos (pips)
-  const pw=14,px0=c.x-(P.maxSlots-1)*pw/2;
+  const pw=14,px0=lx-(P.maxSlots-1)*pw/2;
   for(let i=0;i<P.maxSlots;i++){const s=slots[i];ctx.beginPath();ctx.arc(px0+i*pw,ly-26,4.5,0,TAU);
     if(s){ctx.fillStyle=EL[s].c;ctx.fill();}else{ctx.strokeStyle='rgba(232,196,119,.5)';ctx.lineWidth=1.5;ctx.stroke();}}
   ctx.textAlign='center';ctx.textBaseline='alphabetic';ctx.shadowColor='#000';ctx.shadowBlur=6;
   if(k){ctx.globalAlpha=can?1:.45;comboGlyph(ctx,k,c.x,c.y+1,c.r*.5,3);ctx.globalAlpha=1;
     const cd=cds[k]||0;
     if(cd>0){const f=clamp(cd/(sp.cd*P.cdMul*(free?.5:1)),0,1);ctx.beginPath();ctx.moveTo(c.x,c.y);ctx.arc(c.x,c.y,c.r,-Math.PI/2,-Math.PI/2+TAU*f);ctx.closePath();ctx.fillStyle='rgba(0,0,0,.5)';ctx.fill();}
-    const known=k.length===1||(k.includes('>')?infDisc.has(sp.multi):discovered.has(k));
-    const name=known?sp.name:'???';
-    const recipe=`${slots.map(s=>EL[s].name).join(' + ')} · ${free?'grátis':costOf(k,sp)+' mana'}`;
-    ctx.font=`20px ${DISPLAY}`;const w1=ctx.measureText(name).width;
-    ctx.font=`700 12px ${BODY}`;const w2=ctx.measureText(recipe).width;
-    const lx=Math.min(c.x,W-SA.r-12-Math.max(w1,w2)/2);
-    ctx.font=`20px ${DISPLAY}`;ctx.fillStyle=known?'#efe7d6':'#e8c477';ctx.fillText(name,lx,ly);
-    ctx.font=`700 12px ${BODY}`;ctx.fillStyle='#b9b0a0';ctx.fillText(recipe,lx,ly+16);
+    const mw=W-SA.l-SA.r-24;
+    ctx.font=`20px ${DISPLAY}`;ctx.fillStyle=known?'#efe7d6':'#e8c477';ctx.fillText(name,lx,ly,mw);
+    ctx.font=`700 12px ${BODY}`;ctx.fillStyle='#b9b0a0';ctx.fillText(recipe,lx,ly+16,mw);
   } else {
-    ctx.font=`700 12px ${BODY}`;ctx.fillStyle='#b9b0a0';ctx.fillText('Toque em um elemento',Math.min(c.x,W-SA.r-80),ly+8);
+    ctx.font=`700 12px ${BODY}`;ctx.fillStyle='#b9b0a0';ctx.fillText(hint,lx,ly+8);
   }
   ctx.shadowBlur=0;
 }
@@ -3378,8 +3453,9 @@ const CH=()=>CHAPTERS[story.ch];
 function nearPath(path,x,y,m){for(let i=1;i<path.length;i++){const [ax,ay]=path[i-1],[bx,by]=path[i],dx=bx-ax,dy=by-ay,l2=dx*dx+dy*dy,t=clamp(((x-ax)*dx+(y-ay)*dy)/l2,0,1);
   if(d2(x,y,ax+dx*t,ay+dy*t)<m*m)return true;}return false;}
 function addProp(S,o){o.maxHp=o.hp;o.alive=true;S.props.push(o);if(o.solid)S.solids.push(o);return o;}
+const ART={F:'o',W:'a',E:'a',A:'o'}; // artigo de cada elemento: o Fogo, a Água, a Terra, o Ar
 const NEED_HINT={'b:F':'Use uma magia com Fogo','FF':'Toque em Fogo duas vezes e lance a Explosão','luz':'Só a luz dos espelhos acende este cristal','WE':'Lama (Água + Terra) cega o vigia por 15 segundos','FFF':'Só um Meteoro a acende (Fogo, Fogo, Fogo)','c:FFWW':'A gaiola pede Caldeira: Fogo, Fogo, Água, Água','c:FFAA':'A gaiola pede Tempestade Solar: Fogo, Fogo, Ar, Ar','c:WWAA':'A gaiola pede Inverno Eterno: Água, Água, Ar, Ar','c:EEAA':'A gaiola pede Cinturão de Rochas: Terra, Terra, Ar, Ar','c:FFFF':'Só uma Supernova a derrete (Fogo ×4)','c:WWWW':'Só um Oceano Primordial o enche (Água ×4)','c:EEEE':'Só um Titã o tira do caminho (Terra ×4)','c:AAAA':'Só um Olho do Furacão a desfaz (Ar ×4)',
-  'i:FFFW':'O selo pede Meteoro + Água: Fogo, Fogo, Fogo e por último Água','i:FEAF':'O selo pede Erupção + Fogo: Fogo, Terra, Ar e por último Fogo','i:WEEF':'O selo pede Avalanche de Lama + Fogo: Água, Terra, Terra e por último Fogo','i:FWAW':'O selo pede Raio Prismático + Água: Fogo, Água, Ar e por último Água',a:'O espelho gira com o Ar',sa:'A ampulheta pede uma Tempestade de Areia (Terra + Ar)',w:'O cogumelo murcho pede Água',f:'A lanterna pede Fogo','b:W':'Este sino responde à Água','b:F':'Este sino responde ao Fogo','b:E':'Este sino responde à Terra','b:A':'Este sino responde ao Ar',FFF:'Só um Meteoro parte a pedra-pome','R:FEA':'A âncora pede Erupção','R:WEA':'A âncora pede o Bosque Ancestral','R:FWA':'A âncora pede o Raio Prismático','R:FWE':'A âncora pede a Fonte Termal',AA:'A fornalha pede um Tornado',FA:'O pilar pede um Relâmpago',WA:'A fonte pede Gelo',EA:'O monte pede uma Tempestade de Areia',W:'Só Água apaga',FF:'Só uma Explosão quebra',FW:'O cristal pede Vapor',FE:'Só Magma derrete este gelo',WE:'As raízes pedem Vinhas',EE:'Só um Terremoto derruba'};
+  'i:FFFW':'O lacre pede Meteoro + Água: Fogo, Fogo, Fogo e por último Água','i:FEAF':'O lacre pede Erupção + Fogo: Fogo, Terra, Ar e por último Fogo','i:WEEF':'O lacre pede Avalanche de Lama + Fogo: Água, Terra, Terra e por último Fogo','i:FWAW':'O lacre pede Raio Prismático + Água: Fogo, Água, Ar e por último Água',a:'O espelho gira com o Ar',sa:'A ampulheta pede uma Tempestade de Areia (Terra + Ar)',w:'O cogumelo murcho pede Água',f:'A lanterna pede Fogo','b:W':'Este sino responde à Água','b:F':'Este sino responde ao Fogo','b:E':'Este sino responde à Terra','b:A':'Este sino responde ao Ar',FFF:'Só um Meteoro parte a pedra-pome','R:FEA':'A âncora pede Erupção','R:WEA':'A âncora pede o Bosque Ancestral','R:FWA':'A âncora pede o Raio Prismático','R:FWE':'A âncora pede a Fonte Termal',AA:'A fornalha pede um Tornado',FA:'O pilar pede um Relâmpago',WA:'A fonte pede Gelo',EA:'O monte pede uma Tempestade de Areia',W:'Só Água apaga',FF:'Só uma Explosão quebra',FW:'O cristal pede Vapor',FE:'Só Magma derrete este gelo',WE:'As raízes pedem Vinhas',EE:'Só um Terremoto derruba'};
 function needMatch(need,els){if(need.startsWith('c:')||need.startsWith('i:'))return els===need.slice(2);if(need==='a')return els.includes('A');if(need==='sa')return els.includes('E')&&els.includes('A');if(need==='w')return els.includes('W');if(need==='f')return els.includes('F');if(need.startsWith('b:'))return els.includes(need[2]);if(need==='W')return els.includes('W');if(need==='FF')return (els.match(/F/g)||[]).length>=2;if(need==='FW')return els.includes('F')&&els.includes('W');
   if(need==='FE')return els.includes('F')&&els.includes('E');if(need==='WE')return els.includes('W')&&els.includes('E');
   if(need==='EE')return (els.match(/E/g)||[]).length>=2;
@@ -3408,7 +3484,7 @@ const CHAPTERS=[
  gates:[2100,1700,1300,900],
  regions:[{name:'Campo de Treino',biome:'ruinas',test:()=>true}],
  intro:['Bem-vindo a Elementa! Este é o Campo de Treino. Aqui nada é para valer: aprenda com calma.',
-   'Primeiro, ande. No celular, arraste o dedo na metade esquerda da tela. No computador, use W A S D ou as setas. Vá até o círculo dourado.'],
+   'Primeiro, ande. No celular, arraste o dedo na metade {lado} da tela. No computador, use {mover} ou as setas. Vá até o círculo dourado.'],
  bossDeadLine:'',
  final:['Muito bem! Você já sabe andar, carregar elementos, lançar, misturar e usar a fraqueza de cada inimigo.',
    'Mais adiante você ganha mais selos: com três elementos saem rituais, e com quatro, Cataclismos. Cada magia nova vai para o Grimório.',
@@ -3418,8 +3494,8 @@ const CHAPTERS=[
    S.step=0;S.tEn=[];
    S.tgates=CHAPTERS[0].gates.map(y=>{const g={rect:[480,y,720,y+40],open:false};S.solids.push({rect:[0,y,480,y+40]},{rect:[720,y,S.w,y+40]},g);return g;});
    S.mark={x:600,y:2250,r:46};
-   S.dum1=addProp(S,{kind:'dummy',x:600,y:1880,r:26,hp:14,need:'b:F',solid:true,seed:R()*9});
-   S.dum2=addProp(S,{kind:'dummy',x:600,y:1480,r:26,hp:40,need:'FF',solid:true,seed:R()*9,big:true});
+   S.dum1=addProp(S,{kind:'dummy',x:600,y:1880,r:26,hp:14,need:'b:F',hint:'Toque em Fogo e lance no boneco',solid:true,seed:R()*9});
+   S.dum2=addProp(S,{kind:'dummy',x:600,y:1480,r:26,hp:40,need:'FF',hint:'Toque em Fogo duas vezes e lance a Explosão',solid:true,seed:R()*9,big:true});
    S.springs.push({x:600,y:1100,r:55});
  },
  populate(place,R){},
@@ -3431,7 +3507,7 @@ const CHAPTERS=[
      case 2:return {text:'Toque em Fogo duas vezes e lance a Explosão no boneco',x:S.dum2.x,y:S.dum2.y};
      case 3:{const n=S.tEn.filter(e=>!e.dead).length;const e=S.tEn.find(o=>!o.dead);return {text:`Derrote os espíritos usando a fraqueza de cada um (${n} restante${n===1?'':'s'})`,x:e?e.x:600,y:e?e.y:1200};}
      case 4:return {text:'Pise na fonte azul',x:600,y:1100};
-     case 5:{const n=S.tEn.filter(e=>!e.dead).length;const e=S.tEn.find(o=>!o.dead);return {text:`Desafio final: derrote os ${n} espíritos`,x:e?e.x:600,y:e?e.y:700};}
+     case 5:{const n=S.tEn.filter(e=>!e.dead).length;const e=S.tEn.find(o=>!o.dead);return {text:`Desafio final: derrote ${n===1?'o último espírito':'os '+n+' espíritos'}`,x:e?e.x:600,y:e?e.y:700};}
      case 6:return {text:'Toque no Cristal do Aprendiz',x:600,y:480};
    }
    return {text:'Tutorial concluído',x:null,y:null};
@@ -3443,8 +3519,8 @@ const CHAPTERS=[
  update(S,dt){
    const C=CHAPTERS[0],coarse=matchMedia('(pointer:coarse)').matches;
    if(S.step===0&&d2(P.x,P.y,S.mark.x,S.mark.y)<S.mark.r*S.mark.r){S.step=1;C.open(S,0);
-     return say([{who:SPIRIT,text:'Isso! Agora, as magias. Os quatro símbolos à direita são os elementos: Fogo, Água, Terra e Ar. Toque em Fogo para carregá-lo num selo.'},
-       {who:SPIRIT,text:coarse?'Depois toque no círculo grande do meio para lançar no inimigo mais perto, ou toque em qualquer ponto da metade direita da tela para mirar ali. Acerte o boneco.':`Depois aperte ${keyName(KM.cast)} para lançar no alvo mais perto, ou clique onde quiser mirar. Teclas: ${keyName(KM.F)} Fogo, ${keyName(KM.W)} Água, ${keyName(KM.E)} Terra, ${keyName(KM.A)} Ar.`}]);}
+     return say([{who:SPIRIT,text:`Isso! Agora, as magias. Os quatro símbolos à ${opts.left?'esquerda':'direita'} são os elementos: Fogo, Água, Terra e Ar. Toque em Fogo para carregá-lo num selo.`},
+       {who:SPIRIT,text:coarse?'Depois toque no círculo grande do meio para lançar no inimigo mais perto, ou toque em qualquer ponto da metade '+(opts.left?'esquerda':'direita')+' da tela para mirar ali. Acerte o boneco.':`Depois aperte ${keyName(KM.cast)} para lançar no alvo mais perto, ou clique onde quiser mirar. Teclas: ${keyName(KM.F)} Fogo, ${keyName(KM.W)} Água, ${keyName(KM.E)} Terra, ${keyName(KM.A)} Ar.`}]);}
    if(S.step===3&&S.tEn.length&&S.tEn.every(e=>e.dead)){S.step=4;S.tEn=[];C.open(S,2);
      return say([{who:SPIRIT,text:'Perfeito. Viu os números amarelos? Eles mostram um golpe eficaz. Sempre que puder, use o elemento que vence o inimigo.'},
        {who:SPIRIT,text:'Agora pise na fonte azul logo à frente. As fontes curam a vida e a mana e, na História, salvam o seu progresso.'}]);}
@@ -3472,10 +3548,10 @@ const CHAPTERS=[
    for(let i=0;i<300;i++){g.fillStyle='rgba(120,170,100,.12)';g.fillRect(R()*S.w,R()*S.h,2,6+R()*6);}
    groundPath(g,S);
    for(const y of CHAPTERS[0].gates)for(const [a,b] of[[0,480],[720,S.w]]){g.fillStyle='#3a3440';g.fillRect(a,y,b-a,40);g.strokeStyle='#6a6070';g.lineWidth=2;g.strokeRect(a,y,b-a,40);}
-   g.fillStyle='rgba(232,196,119,.12)';g.font='700 20px sans-serif';g.textAlign='center';
-   [['1 · Andar',2380],['2 · Lançar',1990],['3 · Misturar',1590],['4 · Fraquezas',1190],['5 · Desafio',800]].forEach(([t,y])=>{g.fillStyle='rgba(232,196,119,.35)';g.fillText(t,600,y);});
- },
+    },
  drawExtra(S){
+   ctx.font=`800 19px ${BODY}`;ctx.textAlign='center';ctx.textBaseline='alphabetic';ctx.fillStyle='rgba(232,196,119,.55)';
+   for(const [t,y] of [['1 · Andar',2380],['2 · Lançar',1990],['3 · Misturar',1590],['4 · Fraquezas',1190],['5 · Desafio',800]])if(inViewR(600,y,80))ctx.fillText(t,600,y);
    for(const g of S.tgates){if(g.open)continue;const [x0,y0,x1,y1]=g.rect;if(!inViewR(600,y0,300))continue;ctx.fillStyle=`rgba(232,196,119,${.25+.1*Math.sin(T*3)})`;ctx.fillRect(x0,y0,x1-x0,y1-y0);ctx.strokeStyle='#e8c477';ctx.lineWidth=2;ctx.strokeRect(x0,y0,x1-x0,y1-y0);}
    if(S.step===0){const m=S.mark;additive(()=>drawGlow(m.x,m.y,70,'#e8c477',.5+.2*Math.sin(T*4)));ctx.strokeStyle='#e8c477';ctx.lineWidth=3;ctx.beginPath();ctx.arc(m.x,m.y,m.r*(.8+.1*Math.sin(T*4)),0,TAU);ctx.stroke();}
    if(S.step===4){additive(()=>drawGlow(600,1100,90,'#7cc8ff',.4+.2*Math.sin(T*4)));}
@@ -3735,7 +3811,7 @@ const CHAPTERS=[
  bossLine:{who:'Zéfira',text:'Você subiu até aqui arrastando pedras e brasas? O vento não se deixa prender.'},
  bossDeadLine:'Zéfira se dissipou. A Pena do Vento Primordial flutua no topo do cume. Toque nela.',
  final:['O Ar agora responde a você. Os quatro elementos estão reunidos em suas mãos pela primeira vez desde o desastre.',
-   'Mas o que partiu os elementos ainda pulsa no centro do mundo. A Quintessência espera no último capítulo.'],
+   'Mas o que partiu os elementos ainda pulsa no centro do mundo, no Coração da Quintessência. É para lá que vamos.'],
  doneText:'Você despertou o Ar e reuniu os quatro elementos. Experimente Água + Ar = Gelo, Fogo + Ar = Relâmpago e Terra + Ar = Tempestade de Areia. O Capítulo IV, O Coração da Quintessência, já está disponível.',
  build(S,R){
    const rr=(a,b)=>a+R()*(b-a);
@@ -3987,7 +4063,7 @@ const CHAPTERS=[
    showToast('Fragmento do equilíbrio',`Fragmento de ${EL[pk.el].name}`,`${n} de 4`,glyphSVG(pk.el,46));
    if(n===4){S.heart.open=true;S.checkpoint={x:1600,y:2380};addShake(12);sfx('seal');
      return say([{who:SPIRIT,text:'Os quatro fragmentos brilham na praça, e o Coração se abriu. Respire na fonte antes de entrar: o que está lá dentro muda de forma.'}]);}
-   return say([{who:SPIRIT,text:`O fragmento de ${EL[pk.el].name} voltou para a praça. Faltam ${4-n}.`}]);
+   return say([{who:SPIRIT,text:`O fragmento de ${EL[pk.el].name} voltou para a praça. ${4-n===1?'Falta 1':'Faltam '+(4-n)}.`}]);
  },
  onProp(S,pr){
    if(pr.kind==='iceford'){S.canalGate.open=true;S.iceT=12;burst(2650,2650,'#e6f8ff',40,260);sfx('WA');addText(2650,2580,'Ponte de gelo: 12 s','#e6f8ff');}
@@ -4049,7 +4125,7 @@ const CHAPTERS=[
 },
 // ===================== Capítulo V · A Cidade Submersa =====================
 {num:5,finds:2,rn:'V',title:'A Cidade Submersa',w:2600,h:3200,start:{x:1300,y:3080},elems:['W','F','E','A'],reward:null,seals:3,iconKey:'WWA',unlock:'dash',
- rewardToast:['Nova habilidade','Passo Etéreo','Toque no botão de passo (ou a tecla do Passo Etéreo) para atravessar o espaço'],
+ rewardToast:['Nova habilidade','Passo Etéreo','Toque no botão roxo de setas (ou aperte {dash}) para atravessar o espaço'],
  bossKind:'nerith',bossEl:'W',bossArea:'palacio',bossPos:[1300,330],relicPos:[1300,360],relicGlyph:'W',relicName:'a Pérola do Abismo',firstEss:180,
  desc:'Desça até Vel\'Maran, a cidade que o mar engoliu. A maré sobe e desce como uma respiração.',
  path:[[1300,3150],[1300,2700],[1250,2300],[1350,1950],[1300,1650],[1300,1500],[1250,1100],[1300,700],[1300,400]],
@@ -4065,7 +4141,7 @@ const CHAPTERS=[
  bossDeadLine:'Nerith voltou para a água. A Pérola do Abismo brilha onde ela caiu. Toque nela.',
  final:['Nerith era só uma serva. Ela guardava uma passagem: no fundo do palácio, o mar se abre para o Vazio.',
    'A Pérola ensina seu corpo a atravessar o espaço num piscar: o Passo Etéreo. Use-o para cruzar vãos e escapar de golpes. Ele também vale na Arena.'],
- doneText:'Você ganhou o Passo Etéreo: um avanço rápido em que nada atinge você (botão de passo ou a tecla do Passo Etéreo). Ele também vale na Arena. O Capítulo VI, O Vazio Entre as Estrelas, já está disponível.',
+ doneText:'Você ganhou o Passo Etéreo: um avanço rápido em que nada atinge você (botão roxo de setas ou {dash}). Ele também vale na Arena. O Capítulo VI, O Vazio Entre as Estrelas, já está disponível.',
  build(S,R){
    const rr=(a,b)=>a+R()*(b-a);
    S.canals=[];for(const [y0,y1] of[[2450,2540],[2150,2240],[1850,1940]]){const c={rect:[0,y0,2600,y1],tide:true,open:true};S.canals.push(c);S.solids.push(c);}
@@ -4226,7 +4302,7 @@ const CHAPTERS=[
  objective(S){
    const left=S.props.filter(p=>p.kind==='anchor'&&p.alive);
    if(left.length){const tg=nearestOf(left),C=CH();
-     return {text:`Prenda a âncora ${{W:'da Água',F:'do Fogo',E:'da Terra',A:'do Ar'}[tg.el]} com ${C.anchors[tg.el].ritual} (${4-left.length}/4)`,x:tg.x,y:tg.y};}
+     return {text:`Prenda a âncora ${{W:'da Água',F:'do Fogo',E:'da Terra',A:'do Ar'}[tg.el]} com ${C.anchors[tg.el].ritual} · ${4-left.length}/4`,x:tg.x,y:tg.y};}
    return null;
  },
  bossReady:S=>S.voidgate.open&&P.y<790,
@@ -4238,7 +4314,7 @@ const CHAPTERS=[
    for(const w of S.wells){const dx=w.x-P.x,dy=w.y-P.y,d=Math.hypot(dx,dy)||1;
      if(d<w.r&&P.dashT<=0){const f=90*(1-d/w.r);P.x+=dx/d*f*dt;P.y+=dy/d*f*dt;}
      if(Math.random()<.5){const a=rand(0,TAU),r=rand(30,w.r);puff(w.x+Math.cos(a)*r,w.y+Math.sin(a)*r,{vx:-Math.sin(a)*120-Math.cos(a)*90,vy:Math.cos(a)*120-Math.sin(a)*90,life:.5,size:1.8,color:'#b48cff',drag:1,streak:true});}}
-   if(!S.said.dash&&P.y<2560){S.said.dash=1;return say([{who:SPIRIT,text:`Um vão. Corra até a borda e use o Passo Etéreo (o botão de passo, ou ${keyName(KM.dash)}) na direção da próxima ilha.`}]);}
+   if(!S.said.dash&&P.y<2560){S.said.dash=1;return say([{who:SPIRIT,text:`Um vão. Corra até a borda e use o Passo Etéreo (o botão roxo de setas, ou ${keyName(KM.dash)}) na direção da próxima ilha.`}]);}
    if(!S.said.hub&&P.y<2150){S.said.hub=1;return say([{who:SPIRIT,text:'As âncoras ficam nas quatro ilhas em volta. Cada uma pede o ritual que deixa o próprio elemento de fora. As pontes de luz e as pedras que somem têm ritmo: observe antes de pular.'}]);}
  },
  onProp(S,pr){
@@ -4504,7 +4580,7 @@ const CHAPTERS=[
    const E=S.ep;
    if(!S.flags.pass1)return {text:S.said.p1?'Fique uns segundos na placa e corra até o portão: o seu eco vai segurar a placa':'Siga até o portão do eco. Acenda as lanternas com Fogo para ferir as sombras',x:E.p1.x,y:E.p1.y};
    if(!S.g2.open)return {text:'As duas placas precisam ser pisadas ao mesmo tempo: por você e pelo seu eco',x:(E.p2a.x+E.p2b.x)/2,y:E.p2a.y};
-   if(!S.g3.open)return {text:`Três placas ao mesmo tempo: você, o seu eco e um Golem (Terra + Terra + Terra) (${S.eplates.filter(p=>p.id[1]==='3'&&p.on).length}/3)`,x:E.p3b.x,y:E.p3b.y};
+   if(!S.g3.open)return {text:`Três placas ao mesmo tempo: você, o seu eco e um Golem (Terra + Terra + Terra) · ${S.eplates.filter(p=>p.id[1]==='3'&&p.on).length}/3`,x:E.p3b.x,y:E.p3b.y};
    if(S.flags.bossDead)return null;
    const off=S.altarL.filter(l=>l.alive);
    if(off.length){const tg=nearestOf(off),b=S.flags.bossSpawned;
@@ -4657,7 +4733,7 @@ const CHAPTERS=[
    for(const bm of S.beams){
      if(bm.hit&&bm.hit.set===bm.em.set&&!S.solved[bm.em.set]){const k=bm.em.set;S.solved[k]=true;bm.hit.lit=true;(k===1?S.d1:S.d2).open=true;addShake(8);sfx('seal');
        burst(bm.hit.x,bm.hit.y,'#fff1c9',40,300);S.checkpoint=k===1?{x:1300,y:2290}:{x:1300,y:1720};
-       return say([{who:SPIRIT,text:k===1?'O receptor acendeu e o portão se abriu. A galeria adiante tem quatro espelhos.':'A luz chegou ao fim da galeria. O corredor das engrenagens está aberto, mas as lâminas não param... a não ser que a ampulheta pare.'}]);}
+       return say([{who:SPIRIT,text:k===1?'O receptor acendeu e o portão se abriu. A galeria adiante tem quatro espelhos.':'A luz chegou ao fim da galeria. O corredor das engrenagens está aberto, mas as lâminas não param… a não ser que a ampulheta pare.'}]);}
      if(!tick)continue;
      for(let i=1;i<bm.pts.length;i++){const [ax,ay]=bm.pts[i-1],[bx,by]=bm.pts[i];
        const dd=(x,y)=>{const vx=bx-ax,vy=by-ay,l2=vx*vx+vy*vy||1,t=clamp(((x-ax)*vx+(y-ay)*vy)/l2,0,1);return Math.hypot(x-ax-vx*t,y-ay-vy*t);};
@@ -4726,7 +4802,7 @@ const CHAPTERS=[
 {num:10,finds:2,rn:'X',title:'A Fonte dos Elementos',w:2400,h:4200,start:{x:1200,y:4080},elems:['W','F','E','A'],reward:null,seals:3,dash:true,unlock:'crown',
  rewardToast:['O Quarto Selo','Coroa da Fonte','Misture os quatro elementos · +10% de dano'],
  bossKind:'origem',bossEl:'F',bossArea:'fonte',bossPos:[1200,420],relicPos:[1200,470],relicGlyph:'FWEA',relicName:'a Fonte dos Elementos',firstEss:500,
- desc:'O fim da jornada. Suba até a Fonte enquanto o caminho desmorona atrás de você, ouça as vozes antigas e enfrente a Origem de todos os elementos.',
+ desc:'Suba até a Fonte enquanto o caminho desmorona atrás de você, ouça as vozes antigas e enfrente a Origem de todos os elementos.',
  path:[[1200,4150],[1200,3700],[1200,1650],[1200,1300],[1200,950],[1200,500]],
  regions:[
   {name:'Escadaria da Fonte',biome:'ruinas',test:(x,y)=>y>3700},
@@ -4742,13 +4818,13 @@ const CHAPTERS=[
    'O mundo se refaz: a Nascente corre de novo, a montanha dorme, o vento volta para casa, o mar respira, e até o Vazio tem o seu lugar.',
    'A Fonte lhe deixa a Coroa e o Quarto Selo: agora você carrega os quatro elementos de uma vez. Misture-os e descubra os Cataclismos.',
    'A história da Fonte termina aqui, mas o mundo novo ainda precisa de você. Lá longe, uma caravana espera para partir.'],
- doneText:'Fim de Elementa. Você levou os quatro elementos de volta à Fonte. Recompensas permanentes: o Quarto Selo, que deixa misturar os quatro elementos (na História e, a partir da onda 10, na Arena), e +10% de dano em todas as batalhas. A aventura continua: o Capítulo XI, A Caravana da Aurora, já está disponível.',
+ doneText:'Você levou os quatro elementos de volta à Fonte. Recompensas permanentes: o Quarto Selo, que deixa misturar os quatro elementos (na História e, a partir da onda 10, na Arena), e +10% de dano em todas as batalhas. A aventura continua: o Capítulo XI, A Caravana da Aurora, já está disponível.',
  build(S,R){
    const rr=(a,b)=>a+R()*(b-a);
    S.solids.push({rect:[0,1600,900,3760]},{rect:[1500,1600,2400,3760]});
    const bar=(kind,y,need,hp,name)=>addProp(S,{kind,rect:[900,y,1500,y+60],hp,need,solid:true,name,seed:R()*9});
-   S.bars=[bar('firewall',3350,'W',150,'Muro de Chamas: Água'),bar('barrier',2950,'FF',200,'Rocha Rachada: Explosão (Fogo + Fogo)'),bar('icewall',2550,'FE',150,'Muralha de Gelo: Magma (Fogo + Terra)'),
-     bar('barrier',2150,'EE',120,'Pilar Caído: Terremoto (Terra + Terra)'),bar('barrier',1750,'FFF',200,'Selo de Pedra-pome: Meteoro (Fogo + Fogo + Fogo)')];
+   S.bars=[bar('firewall',3350,'W',150,'Muro de Chamas (Água)'),bar('barrier',2950,'FF',200,'Rocha Rachada (Explosão: Fogo + Fogo)'),bar('icewall',2550,'FE',150,'Muralha de Gelo (Magma: Fogo + Terra)'),
+     bar('barrier',2150,'EE',120,'Pilar Caído (Terremoto: Terra + Terra)'),bar('barrier',1750,'FFF',200,'Selo de Pedra-pome (Meteoro: Fogo + Fogo + Fogo)')];
    S.col={y:4300,started:false,on:false,speed:80};
    S.solids.push({rect:[0,880,1100,930]},{rect:[1300,880,2400,930]});S.fgate={rect:[1100,880,1300,930],open:false,openT:0};S.solids.push(S.fgate);
    S.mem=[{el:'F',x:600,y:1360,who:'Ignis',text:'Pequena gota. Eu queimei o seu vale, e você me devolveu o juízo. Leve o meu fogo até o fim.'},
@@ -4901,7 +4977,7 @@ const CHAPTERS=[
    const C=S.car;
    if(!C.done){
      if(!C.on)return {text:C.hp<C.maxHp&&S.flags.carFell?'A Tartaruga Aurora descansou. Volte até ela para continuar a escolta':'Chegue perto da Tartaruga Aurora para começar a escolta',x:C.x,y:C.y};
-     if(C.wait){const o=S.obs[CHAPTERS[11].route[C.seg][2]];return {text:`Abra caminho: ${NEED_HINT[o.need]}`,x:(o.rect[0]+o.rect[2])/2,y:o.rect[3]+20};}
+     if(C.wait){const o=S.obs[CHAPTERS[11].route[C.seg][2]];return {text:`Abra caminho com ${{'c:FFFF':'Supernova (Fogo ×4)','c:WWWW':'Oceano Primordial (Água ×4)','c:EEEE':'Titã (Terra ×4)','c:AAAA':'Olho do Furacão (Ar ×4)'}[o.need]||NEED_HINT[o.need]}`,x:(o.rect[0]+o.rect[2])/2,y:o.rect[3]+20};}
      return {text:`Escolte a Tartaruga Aurora (${Math.ceil(C.hp)} de vida)`,x:C.x,y:C.y};}
    return null;
  },
@@ -4966,7 +5042,7 @@ const CHAPTERS=[
 {num:12,finds:2,rn:'XII',title:'A Torre do Alquimista',w:2400,h:3600,start:{x:1200,y:3480},elems:['W','F','E','A'],reward:null,seals:4,dash:true,iconKey:'FWEA',unlock:'stone',
  rewardToast:['Nova bênção','Pedra Filosofal','Cataclismos e Infusões custam 20% menos mana'],
  bossKind:'quimera',bossEl:'F',bossArea:'cupula',bossPos:[1200,330],relicPos:[1200,370],relicGlyph:'FWEA',relicName:'a Pedra Filosofal',firstEss:480,
- desc:'Uma torre surgiu onde a Fonte tocou o céu. Abra os selos alquímicos com Infusões na ordem certa e enfrente a criatura que o Alquimista deixou para trás.',
+ desc:'Uma torre surgiu onde a Fonte tocou o céu. Abra os lacres alquímicos com Infusões na ordem certa e enfrente a criatura que o Alquimista deixou para trás.',
  path:[[1200,3560],[1200,2880],[1200,2120],[1200,1380],[1200,620],[1200,330]],
  regions:[
   {name:'Átrio do Alquimista',biome:'ruinas',test:(x,y)=>y>2900},
@@ -4975,12 +5051,12 @@ const CHAPTERS=[
   {name:'Observatório',biome:'picos',test:(x,y)=>y>650},
   {name:'Cúpula da Transmutação',biome:'vulcao',test:()=>true}],
  intro:['Onde a Fonte tocou o céu, uma torre antiga apareceu. Dizem que nela vivia um Alquimista que aprendeu a misturar os quatro elementos antes de todo mundo.',
-   'Os andares são fechados por selos alquímicos. Cada selo pede uma Infusão exata: um ritual com três toques e, por último, o quarto elemento. A ordem importa.',
+   'Os andares são fechados por lacres alquímicos. Cada lacre pede uma Infusão exata: um ritual com três toques e, por último, o quarto elemento. A ordem importa.',
    'No alto da torre, algo que o Alquimista criou ainda está acordado.'],
  bossLine:{who:'Quimera Primordial',text:'Quatro cabeças, quatro vontades, um corpo só. O Alquimista me fez para provar que os elementos não se dão bem juntos.'},
  bossDeadLine:'A Quimera se desfez em pó colorido. No meio dele, a Pedra Filosofal brilha. Toque nela.',
  final:['A Pedra Filosofal guarda o último segredo do Alquimista: os elementos não brigam quando alguém os carrega com cuidado.',
-   'Você aprendeu a misturar os quatro elementos em qualquer ordem. Agora seus Cataclismos e Infusões custam menos mana em todas as batalhas.',
+   'Você aprendeu a misturar os quatro elementos sem desperdício. Agora seus Cataclismos e Infusões custam menos mana em todas as batalhas.',
    'Do alto da torre, você vê o horizonte ficar branco. Uma neve que não para de cair está cobrindo o mundo novo.'],
  doneText:'Você ganhou a Pedra Filosofal: Cataclismos e Infusões custam 20% menos mana em todas as batalhas. O Capítulo XIII, A Tundra Eterna, já está disponível.',
  locks:[['i:FFFW',2850,200,'Meteoro + Água'],['i:FEAF',2100,150,'Erupção + Fogo'],['i:WEEF',1350,75,'Avalanche de Lama + Fogo'],['i:FWAW',600,150,'Raio Prismático + Água']],
@@ -4989,10 +5065,10 @@ const CHAPTERS=[
    S.locks=CHAPTERS[12].locks.map(([need,y,hp,name])=>{S.solids.push({rect:[0,y,1000,y+50]},{rect:[1400,y,S.w,y+50]});return addProp(S,{kind:'alchlock',rect:[1000,y,1400,y+50],need,hp,solid:true,name,seed:R()*9});});
    ringRocks(S,R,1200,330,300,220,Math.PI/2);
    S.springs.push({x:1200,y:3400,r:52},{x:1650,y:2700,r:45},{x:750,y:1950,r:45},{x:1650,y:1200,r:45},{x:1500,y:560,r:40});
-   S.stones.push({x:1450,y:2960,id:'s1',text:'Primeiro selo: Meteoro + Água. Toque Fogo, Fogo, Fogo e, por último, Água. O meteoro cai encharcado.'},
-     {x:1450,y:2210,id:'s2',text:'Segundo selo: Erupção + Fogo. Fogo, Terra e Ar formam a Erupção; mais um Fogo entra por último.'},
-     {x:1450,y:1460,id:'s3',text:'Terceiro selo: Avalanche de Lama + Fogo. Água, Terra, Terra e, por último, Fogo.'},
-     {x:1450,y:710,id:'s4',text:'Quarto selo: Raio Prismático + Água. Fogo, Água e Ar formam o raio; mais uma Água entra por último.'},
+   S.stones.push({x:1450,y:2960,id:'s1',text:'Primeiro lacre: Meteoro + Água. Toque Fogo, Fogo, Fogo e, por último, Água. O meteoro cai encharcado.'},
+     {x:1450,y:2210,id:'s2',text:'Segundo lacre: Erupção + Fogo. Fogo, Terra e Ar formam a Erupção; mais um Fogo entra por último.'},
+     {x:1450,y:1460,id:'s3',text:'Terceiro lacre: Avalanche de Lama + Fogo. Água, Terra, Terra e, por último, Fogo.'},
+     {x:1450,y:710,id:'s4',text:'Quarto lacre: Raio Prismático + Água. Fogo, Água e Ar formam o raio; mais uma Água entra por último.'},
      {x:950,y:3330,id:'s5',text:'O Alquimista escreveu na parede: "o último elemento a entrar é o que manda".'});
    for(const st of S.stones)S.solids.push({x:st.x,y:st.y,r:16});
    S.pickups.push({x:300,y:3200,kind:'hp',name:'Elixir Vermelho',glyph:'F'},{x:2100,y:1700,kind:'mp',name:'Elixir Azul',glyph:'W'});
@@ -5009,23 +5085,23 @@ const CHAPTERS=[
  },
  objective(S){
    const lk=S.locks.filter(l=>l.alive);if(lk.length){const l=lk.reduce((m,o)=>o.rect[1]>m.rect[1]?o:m);
-     return {text:`Abra o selo alquímico com a Infusão ${l.name}`,x:1200,y:l.rect[3]+20};}
+     return {text:`Abra o lacre alquímico com a Infusão ${l.name}`,x:1200,y:l.rect[3]+20};}
    const b=enemies.find(e=>e.kind==='quimera'&&!e.dead);
-   if(b){const h=enemies.filter(o=>!o.dead&&o.headOf===b).length;return {text:h?`Derrube as ${h} cabeças da Quimera, cada uma com a sua fraqueza`:'A Quimera está exposta: ataque o corpo, Cataclismos causam mais dano',x:b.x,y:b.y};}
+   if(b){const h=enemies.filter(o=>!o.dead&&o.headOf===b).length;return {text:h?(h===1?'Derrube a última cabeça da Quimera com a fraqueza dela':`Derrube as ${h} cabeças da Quimera, cada uma com a sua fraqueza`):'A Quimera está exposta: ataque o corpo, Cataclismos causam mais dano',x:b.x,y:b.y};}
    return null;
  },
  bossReady:S=>!S.locks.some(l=>l.alive)&&P.y<560,
  update(S,dt){
    const reg=S.region,fl=reg?CHAPTERS[12].regions.indexOf(reg):0;
    if(fl>=1&&fl<=3){S.cauldT-=dt;if(S.cauldT<=0){S.cauldT=4;const el=['W','E','A'][fl-1];hazards.push({kind:'slam',x:P.x+rand(-80,80),y:P.y+rand(-80,80),r:70,t:1.1,max:1.1,dmg:16,el});}}
-   if(!S.said.l1&&P.y<3150){S.said.l1=1;return say([{who:SPIRIT,text:'O selo mostra a fórmula: três símbolos, uma seta e o último elemento. Carregue os quatro na ordem e lance contra o selo.'}]);}
+   if(!S.said.l1&&P.y<3150){S.said.l1=1;return say([{who:SPIRIT,text:'O lacre mostra a fórmula: três símbolos, uma seta e o último elemento. Carregue os quatro na ordem e lance contra o lacre.'}]);}
    if(!S.said.caul&&P.y<2850){S.said.caul=1;return say([{who:SPIRIT,text:'Os caldeirões da torre transbordam de tempos em tempos. Fique atento às marcas no chão.'}]);}
  },
  onProp(S,pr){const [x0,y0,x1,y1]=pr.rect;
    for(let i=0;i<36;i++)puff(rand(x0,x1),rand(y0,y1),{vx:rand(-150,150),vy:rand(-150,60),life:rand(.6,1.1),size:rand(4,8),color:EL[pick(['F','W','E','A'])].c,add:true,drag:2});
    addShake(10);sfx('seal');S.checkpoint={x:1200,y:y0-80};
    const left=S.locks.filter(l=>l.alive).length;
-   say([{who:SPIRIT,text:left?`O selo cedeu. Faltam ${left}.`:'O último selo cedeu. A Cúpula da Transmutação está aberta. Algo com muitas cabeças se mexe lá dentro.'}]);},
+   say([{who:SPIRIT,text:left?`O lacre cedeu. ${left===1?'Falta 1':'Faltam '+left}.`:'O último lacre cedeu. A Cúpula da Transmutação está aberta. Algo com muitas cabeças se mexe lá dentro.'}]);},
  ground(g,S,R){
    g.fillStyle='#1c1a22';g.fillRect(0,0,S.w,S.h);groundNoise(g,S,R);
    const tint=[[0,650,'rgba(255,107,44,.06)'],[650,1400,'rgba(191,234,255,.05)'],[1400,2150,'rgba(143,191,106,.06)'],[2150,2900,'rgba(58,167,255,.06)'],[2900,3600,'rgba(232,196,119,.05)']];
@@ -5067,10 +5143,10 @@ const CHAPTERS=[
    S.cold=0;S.iceT=0;S.holes=[];S.lpx=C.start.x;S.lpy=C.start.y;S.iceSafe={x:C.start.x,y:C.start.y};
    S.solids.push({rect:[0,ly0,lx0,ly1]},{rect:[lx1,ly0,S.w,ly1]});
    for(let i=0;i<9;i++){const x=rr(lx0+120,lx1-120),y=rr(ly0+120,ly1-120);if(d2(x,y,C.isle[0],C.isle[1])<260*260||Math.abs(x-1300)<90){i--;continue;}S.holes.push({x,y,r:rr(36,60),perm:true});}
-   S.fires=C.fires.map(([x,y])=>{S.solids.push({x,y,r:24});return addProp(S,{kind:'bonfire',x,y,r:34,hp:90,need:'FFF',seed:R()*9});});
+   S.fires=C.fires.map(([x,y])=>{S.solids.push({x,y,r:24});return addProp(S,{kind:'bonfire',x,y,r:34,hp:90,need:'FFF',hint:'Só um Meteoro a acende (Fogo, Fogo, Fogo)',seed:R()*9});});
    S.gate={rect:[1000,760,1600,820],open:false};S.solids.push(S.gate,{rect:[0,760,1000,820]},{rect:[1600,760,S.w,820]});
    ringRocks(S,R,1300,400,440,300,Math.PI/2);
-   S.braz=[[1020,440],[1580,440],[1300,640]].map(([x,y])=>{const b=addProp(S,{kind:'coldbrazier',x,y,r:24,hp:30,need:'b:F',seed:R()*9});b.alive=false;S.solids.push({x,y,r:18});return b;});
+   S.braz=[[1020,440],[1580,440],[1300,640]].map(([x,y])=>{const b=addProp(S,{kind:'coldbrazier',x,y,r:24,hp:30,need:'b:F',hint:'Braseiro apagado: acenda com Fogo',seed:R()*9});b.alive=false;S.solids.push({x,y,r:18});return b;});
    S.springs.push({x:1300,y:3990,r:52},{x:1150,y:2620,r:45},{x:1300,y:1960,r:42},{x:1680,y:1000,r:42});
    S.stones.push({x:1520,y:3950,id:'s1',text:'O frio sobe devagar quando você está longe do fogo. Fontes, fogueiras e as suas magias de Fogo esquentam o corpo.'},
      {x:1560,y:3720,id:'s2',text:'O gelo do lago é fino. Quem para em cima dele afunda na água gelada. Atravesse sem parar e lute andando.'},
@@ -5139,7 +5215,7 @@ const CHAPTERS=[
  },
  onDeath(S){S.cold=0;S.iceT=0;for(const b of S.braz)b.alive=false;},
  hud(S){
-   const x=SA.l+16,y=SA.t+125,h=Math.max(60,Math.min(150,H*.4)),w=12,f=S.cold/100,c=f>=.85?'#dff6ff':f>=.6?'#a6e0ff':'#7cc8ff';
+   const x=SA.l+16,y=Math.round(Math.max(SA.t+125,(enemies.some(e=>e.boss&&!e.dead)?UI.bossBot||0:UI.topB||0)+30)),bl=opts.left?UI.els[0].y-UI.br-80:UI.joyHome.y-UI.joyR-24,h=clamp(bl-y-24,50,150),w=12,f=S.cold/100,c=f>=.85?'#dff6ff':f>=.6?'#a6e0ff':'#7cc8ff';
    ctx.save();ctx.fillStyle='rgba(10,8,16,.75)';ctx.fillRect(x-3,y-3,w+6,h+6);
    const g=ctx.createLinearGradient(0,y+h,0,y);g.addColorStop(0,'#3aa7ff');g.addColorStop(1,'#ffffff');ctx.fillStyle=g;ctx.fillRect(x,y+h*(1-f),w,h*f);
    ctx.strokeStyle='rgba(232,196,119,.5)';ctx.lineWidth=1;ctx.strokeRect(x-.5,y-.5,w+1,h+1);
@@ -5171,7 +5247,7 @@ const CHAPTERS=[
      ctx.strokeStyle='rgba(124,200,255,.4)';ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(h.x,h.y,h.r*(.4+.3*Math.sin(T*2+h.x)),0,TAU);ctx.stroke();ctx.globalAlpha=1;}
    if(S.iceT>.15){const k=Math.min(1,S.iceT/([2.2,1.4,1][S.diff]||1.4));ctx.strokeStyle=`rgba(255,255,255,${(.4+.5*k).toFixed(2)})`;ctx.lineWidth=2;
      for(let i=0;i<7;i++){const a=i*TAU/7+.3;ctx.beginPath();ctx.moveTo(P.x,P.y+6);ctx.lineTo(P.x+Math.cos(a)*(14+40*k),P.y+6+Math.sin(a)*(10+28*k));ctx.lineTo(P.x+Math.cos(a+.3)*(20+60*k),P.y+6+Math.sin(a+.3)*(14+40*k));ctx.stroke();}
-     if(k>.5&&Math.sin(T*24)>0){ctx.fillStyle='#ffffff';ctx.font=`800 13px ${BODY}`;ctx.textAlign='center';ctx.fillText('Mexa-se!',P.x,P.y-30);}}
+     if(k>.5&&Math.sin(T*24)>0){ctx.font=`800 13px ${BODY}`;ctx.textAlign='center';ctx.textBaseline='alphabetic';ctx.lineJoin='round';ctx.strokeStyle='rgba(0,0,0,.75)';ctx.lineWidth=3;ctx.strokeText('Mexa-se!',P.x,P.y-30);ctx.fillStyle='#ffffff';ctx.fillText('Mexa-se!',P.x,P.y-30);}}
    if(!S.gate.open&&inViewR(1300,790,400)){ctx.fillStyle='rgba(190,235,255,.75)';ctx.fillRect(1000,760,600,60);ctx.strokeStyle='#ffffff';ctx.lineWidth=2;ctx.strokeRect(1000,760,600,60);
      const n=S.fires.filter(f=>!f.alive).length;for(let i=0;i<4;i++){const x=1150+i*100;ctx.beginPath();ctx.arc(x,790,13,0,TAU);ctx.fillStyle=i<n?'#ff6b2c':'rgba(30,50,70,.8)';ctx.fill();ctx.strokeStyle='#e8c477';ctx.lineWidth=2;ctx.stroke();if(i<n)additive(()=>drawGlow(x,790,26,'#ff6b2c',.7));}}
    for(const f of S.fires)if(!f.alive&&inViewR(f.x,f.y,260))additive(()=>drawGlow(f.x,f.y,240,'#ff8a3d',.16+.04*Math.sin(T*5+f.seed)));
@@ -5241,7 +5317,7 @@ const CHAPTERS=[
    const left=S.props.filter(p=>p.kind==='cloudcage'&&p.alive);
    const loose=S.pickups.find(pk=>pk.kind==='shard'&&!pk.taken);
    if(loose)return {text:'Pegue a Pena Celeste',x:loose.x,y:loose.y};
-   if(left.length){const c=nearestOf(left);return {text:`Abra a gaiola com ${c.name} (${4-left.length}/4 penas)`,x:c.x,y:c.y};}
+   if(left.length){const c=nearestOf(left);return {text:`Abra a gaiola com ${c.name} · ${4-left.length}/4 penas`,x:c.x,y:c.y};}
    if(!S.flags.bossSpawned)return {text:'Atravesse a ponte de luz até o Ninho do Sol',x:1500,y:700};
    const b=enemies.find(e=>e.kind==='aurelion'&&!e.dead);
    if(b&&b.egg)return {text:`Quebre o ovo com Água antes que ele choque (${Math.ceil(b.eggT)}s)`,x:b.x,y:b.y};
@@ -5445,7 +5521,7 @@ const CHAPTERS=[
   {name:'Salão de Argos',biome:'vulcao',test:()=>true}],
  intro:['A luz das minas chegou até uma fortaleza antiga. Ali vive Argos, o vigia que nunca fecha todos os olhos.',
    'As torres da fortaleza enxergam longe, mas só na direção para onde olham. Fique fora dos cones de luz, esconda-se nos arbustos e atrás das caixas.',
-   'Se uma torre ver você por tempo demais, ela toca o alarme e chama reforços. Roube as quatro Chaves Elementais e abra o salão.'],
+   'Se uma torre vir você por tempo demais, ela toca o alarme e chama reforços. Roube as quatro Chaves Elementais e abra o salão.'],
  bossLine:{who:'Argos',text:'Cem olhos, guardião. Cem. Eu vi você entrar, vi você se esconder, vi você roubar. Agora veja você.'},
  bossDeadLine:'Argos fechou os olhos pela primeira vez em mil anos. Um olho de cristal rolou até os seus pés. Toque nele.',
  final:['Argos vigiava a fortaleza porque achava que, se piscasse, o mundo desmoronaria. O mundo continuou de pé.',
@@ -5470,7 +5546,7 @@ const CHAPTERS=[
      [900,2500],[600,2250],[350,2650],[180,2350],[1900,2500],[2200,2250],[2450,2650],[2620,2350],
      [900,1600],[600,1350],[300,1700],[180,1450],[1900,1600],[2200,1350],[2500,1700],[2620,1450]].map(([x,y])=>({x,y,r:46,seed:R()*9}));
    S.towers=C.towers.map(([x,y,o])=>{const t=Object.assign({x,y,a:o.c||0,c:0,amp:0,sp:1,off:0,range:300,half:.42,det:0,alarmT:0,blindT:0,ph:0},o);
-     t.prop=addProp(S,{kind:'watchtower',x,y,r:24,hp:1,need:'WE',solid:true,tw:t});return t;});
+     t.prop=addProp(S,{kind:'watchtower',x,y,r:24,hp:1,need:'WE',hint:'Uma magia com Água e Terra cega o vigia por 15 s',solid:true,tw:t});return t;});
    for(let i=0;i<6;i++){const a=i*TAU/6+Math.PI/6,o={x:1400+Math.cos(a)*330,y:620+Math.sin(a)*300,r:40,pillar:true,seed:R()*9};S.rocks.push(o);S.solids.push(o);}
    const near=(x,y,rad)=>S.solids.filter(o=>o.rect?(clamp(x,o.rect[0],o.rect[2])-x)**2+(clamp(y,o.rect[1],o.rect[3])-y)**2<rad*rad:d2(x,y,o.x,o.y)<(rad+o.r)**2);
    for(const t of S.towers)t.near=near(t.x,t.y,t.range+40).filter(o=>o!==t.prop);
@@ -5639,8 +5715,9 @@ function loadStory(S,C,d){
 function drawPauseMap(){
   const S=story,cv2=$('#pauseMap');if(!S||!S.seen){cv2.hidden=true;$('#mapLegend').hidden=true;return;}
   cv2.hidden=false;$('#mapLegend').hidden=false;
-  const sc=360/Math.max(S.w,S.h);cv2.width=Math.round(S.w*sc);cv2.height=Math.round(S.h*sc);
-  const g=cv2.getContext('2d');if(!groundCv)buildGround();g.drawImage(groundCv,0,0,cv2.width,cv2.height);
+  const sc=360/Math.max(S.w,S.h),dk=Math.min(3,window.devicePixelRatio||1),dw=S.w*sc,dh=S.h*sc;cv2.width=Math.round(dw*dk);cv2.height=Math.round(dh*dk);
+  cv2.style.width=`min(100%, ${Math.round(dw)}px, calc(44vh * ${(dw/dh).toFixed(3)}))`;
+  const g=cv2.getContext('2d');g.setTransform(dk,0,0,dk,0,0);if(!groundCv)buildGround();g.drawImage(groundCv,0,0,dw,dh);
   const cs=S.seenCs,gw=Math.ceil(S.w/cs),seen=(x,y)=>S.seen[Math.floor(y/cs)*gw+Math.floor(x/cs)];
   // portões ainda fechados
   g.fillStyle='rgba(232,196,119,.8)';for(const o of S.solids)if(o.open===false&&o.rect&&seen((o.rect[0]+o.rect[2])/2,(o.rect[1]+o.rect[3])/2)){const [x0,y0,x1,y1]=o.rect;g.fillRect(x0*sc,y0*sc,Math.max(2,(x1-x0)*sc),Math.max(2,(y1-y0)*sc));}
@@ -5671,7 +5748,7 @@ function checkConq(silent){
 function openLevelUp(){
   const pool=lvPool();if(!pool.length){LV.pend=0;store.set('nivel',LV);return;}
   const picks=[];while(picks.length<3&&pool.length)picks.push(pool.splice(Math.random()*pool.length|0,1)[0]);
-  const lvNow=LV.lvl-LV.pend+1;$('#lvTitle').textContent=`Nível ${lvNow}!`;
+  const lvNow=LV.lvl-LV.pend+1;$('#lvTitle').innerHTML=numHTML(`Nível ${lvNow}!`);
   const box=$('#lvArcana');box.innerHTML=picks.map((c,i)=>arcCardHTML(c,i).replace(`id="arc${i}"`,`id="lvc${i}"`)).join('');box.style.gridTemplateColumns=`repeat(${picks.length},minmax(0,1fr))`;
   let sel=null;const go=$('#lvGo');go.disabled=true;go.textContent='Escolha um Arcano';
   picks.forEach((c,i)=>{const b=$('#lvc'+i);setTimeout(()=>b.classList.add('open'),reduceMotion?0:180+i*260);
@@ -5685,7 +5762,7 @@ function openLevelUp(){
 }
 function saveFind(pk){if(!pk.id)return;const got=Object.assign({},store.get('achados',{}));if(got[pk.id])return;got[pk.id]=pk.kind;store.set('achados',got);checkConq();}
 function findBonus(){const got=store.get('achados',{});let hp=0,mp=0,n=0;for(const k in got){n++;if(got[k]==='hp')hp+=25;else mp+=25;}return {hp,mp,n};}
-function storyIntro(){say(CH().intro.map(text=>({who:SPIRIT,text})));}
+function storyIntro(){say(CH().intro.map(text=>({who:SPIRIT,text:text.replace('{lado}',opts.left?'direita':'esquerda').replace('{mover}',['up','left','down','right'].map(a=>keyName(KM[a])).join(' '))})));}
 function camSnap(){camX=clamp(P.x-W/2,0,Math.max(0,story.w-W));camY=clamp(P.y-H/2,0,Math.max(0,story.h-H));}
 function collideSolids(o){
   for(const s of story.solids){
@@ -5718,7 +5795,7 @@ function storyHit(x,y,r,els,amt,src,isRing){
       if(pr.need==='W'||pr.need==='FW'||pr.need==='FE')puff(cx,cy-10,{vy:-80,life:.7,size:7,color:'#e8eef3',drag:1});
       else burst(cx,cy,'#c58f45',6,160,{add:false});
       if(pr.hp<=0){pr.alive=false;CH().onProp(S,pr);}
-    } else if(src&&src.vx!=null&&Math.random()<.3)addText(cx,cy-26,NEED_HINT[pr.need],'#a79f8f');
+    } else if(src&&src.vx!=null&&Math.random()<.3)addText(cx,cy-26,pr.hint||NEED_HINT[pr.need]||'Esta magia não funciona aqui','#a79f8f');
   }
   return blocked;
 }
@@ -5774,7 +5851,7 @@ function storyReward(){
   const S=story,C=CH();if(C.onRelic)C.onRelic(S);S.flags.relic=true;if(C.reward)P.elems.add(C.reward);
   for(const el of P.elems)burst(P.x,P.y,EL[el].c,30,360);addShake(8);sfx('ult');
   if(C.reward)showToast('Novo elemento',C.rewardName,`${C.rewardName} agora responde a você`,glyphSVG(C.reward,46));
-  else{const t=C.rewardToast||['Equilíbrio restaurado','Coração da Quintessência','Os quatro elementos em harmonia'];showToast(t[0],t[1],t[2],C.iconKey?glyphSVG(C.iconKey,46):quadSVG(46));
+  else{const t=C.rewardToast||['Equilíbrio restaurado','Coração da Quintessência','Os quatro elementos em harmonia'];showToast(t[0],t[1],t[2].replace('{dash}',keyName(KM.dash)),C.iconKey?glyphSVG(C.iconKey,46):quadSVG(46));
     if(C.unlock==='dash')P.canDash=true;if(C.unlock==='regen'&&!store.get('story',{})['ch'+C.num])P.hpRegen+=1;
     if(C.unlock==='cd'&&!store.get('story',{})['ch'+C.num])P.cdMul*=.9;if(C.unlock==='crown'&&!store.get('story',{})['ch'+C.num])P.dmgMul*=1.1;if(C.unlock==='crown')P.maxSlots=4;if(C.unlock==='wings')P.dashMul=.6;if(C.unlock==='stone')P.stone=true;if(C.unlock==='mantle'&&!store.get('story',{})['ch'+C.num])P.dmgTaken*=.9;if(C.unlock==='phoenix')P.phoenix=true;if(C.unlock==='lens'&&!store.get('story',{})['ch'+C.num])P.mixDmg+=.1;if(C.unlock==='eye')P.crit=.1;P.stolen=null;for(let i=0;i<4;i++)rings.push({kind:'nova',x:P.x,y:P.y,r:10,maxR:600,speed:500,dmg:0,hit:new Set(),delay:i*.3});}
   say(C.final.map(text=>({who:SPIRIT,text})),()=>storyComplete());
@@ -5788,8 +5865,8 @@ function storyComplete(){
   const m=Math.floor(S.t/60),sec=Math.floor(S.t%60);
   $('#chTitle').textContent=C.label?`${C.label} concluído`:`Capítulo ${C.rn} concluído`;
   $('#chTime').textContent=`${m}:${String(sec).padStart(2,'0')}`;$('#chKills').textContent=S.kills;$('#chEss').textContent='+'+ess;
-  $('#chSub').textContent=C.doneText+` Dificuldade: ${D.name}${S.diff===2?' ★':''}.`;
-  {const nx=CHAPTERS[C.num+1],bn=$('#bChNext');bn.hidden=!nx;if(nx)bn.textContent=`Ir para o Capítulo ${nx.rn} · ${nx.title}`;$('#bChGo').classList.toggle('primary',!nx);}
+  $('#chSub').textContent=C.doneText.replace('{dash}',keyName(KM.dash))+` Dificuldade: ${D.name}${S.diff===2?' ★':''}.`;
+  {const nx=CHAPTERS[C.num+1],bn=$('#bChNext');bn.hidden=!nx;if(nx)bn.textContent=`Jogar o Capítulo ${nx.rn}`;$('#bChGo').classList.toggle('primary',!nx);}
   $('#chSub').textContent+=` Nível ${LV.lvl}.`;
   musicFanfare();setState('chapter');
 }
@@ -5810,10 +5887,10 @@ function say(lines,done){
   if(dlg){dlg.lines.push(...lines);if(done)dlg.done=done;return;}
   dlg={lines:lines.slice(),i:0,done};holds.clear();joy.active=false;setState('dialog');showLine();
 }
-function showLine(){const l=dlg.lines[dlg.i];$('#dlgWho').textContent=l.who;$('#dlgText').textContent=l.text;
+function showLine(){const l=dlg.lines[dlg.i];dlg.at=performance.now();$('#dlgWho').textContent=l.who;$('#dlgText').textContent=l.text;
   $('#dlgCount').textContent=dlg.lines.length>1?`${dlg.i+1} de ${dlg.lines.length}`:'';$('#dlgNext').textContent=dlg.i<dlg.lines.length-1?'Continuar':'Fechar';}
 function dialogNext(){
-  if(!dlg)return;dlg.i++;sfx('tick','W');
+  if(!dlg||performance.now()-(dlg.at||0)<450)return;dlg.i++;sfx('tick','W');
   if(dlg.i<dlg.lines.length){showLine();return;}
   const done=dlg.done;dlg=null;last=performance.now();setState('play');if(done)done();
 }
@@ -5837,13 +5914,17 @@ function renderChapters(){
   $('#chList').innerHTML=CHAPTERS.slice(1).map(C=>{
     const done=!!prog['ch'+C.num],open=C.num===1||!!prog['ch'+(C.num-1)],sv=open?store.get('save'+C.num,null):null;
     return `<li${open?'':' class="unknown"'}><span class="g">${open?(C.reward?glyphSVG(C.reward,40):C.iconKey?glyphSVG(C.iconKey,40):quadSVG(40)):glyphSVG('?',40)}</span><div><b>Capítulo ${C.rn} · ${C.title}</b>
-      <span class="recipe">${done?'Concluído':open?'Disponível':'Bloqueado'}${prog['ch'+C.num+'x']?' · ★ Desafio vencido':''} · você começa com ${joinPt(C.elems.map(e=>EL[e].name))}${C.finds&&open?` · achados ${Object.keys(got).filter(k=>k.startsWith(C.num+':')).length}/${C.finds}`:''}</span>
-      <p>${open?C.desc:`Conclua o Capítulo ${CHAPTERS[C.num-1].rn} para liberar.`}</p>
-      ${open?(sv?`<p class="saved">Salvo em ${sv.region||'uma fonte'} · ${STORY_DIFF[sv.diff].name}</p><div class="chbtns"><button class="btn small buy" data-cont="${C.num}">Continuar</button><button class="btn small buy" data-ch="${C.num}">Recomeçar</button></div>`
+      <span class="recipe">${done?'Concluído':open?'Disponível':'Bloqueado'}${prog['ch'+C.num+'x']?' · ★ Desafio':''}${C.finds&&open?` · achados ${Object.keys(got).filter(k=>k.startsWith(C.num+':')).length}/${C.finds}`:''}</span>
+      <p>${open?`${C.desc} Você começa com ${joinPt(C.elems.map(e=>EL[e].name))}.`:`Conclua o Capítulo ${CHAPTERS[C.num-1].rn} para liberar.`}</p>
+      ${open?(sv?`<p class="saved">Último salvamento: ${sv.region||'uma fonte'} · ${STORY_DIFF[sv.diff].name}</p><div class="chbtns"><button class="btn small primary buy" data-cont="${C.num}">Continuar</button><button class="btn small buy" data-ch="${C.num}" data-sv="1">Recomeçar</button></div>`
         :`<button class="btn small buy" data-ch="${C.num}">${done?'Jogar de novo':'Jogar'}</button>`):''}</div></li>`;}).join('')
     +'';
-  $('#chList').querySelectorAll('[data-ch]').forEach(b=>b.addEventListener('click',()=>{audioInit();storyLoad=null;storyCh=+b.dataset.ch;mode='story';newGame();}));
-  $('#chList').querySelectorAll('[data-cont]').forEach(b=>b.addEventListener('click',()=>{audioInit();const n=+b.dataset.cont;storyLoad=store.get('save'+n,null);storyCh=n;mode='story';newGame();}));
+  {const last=CHAPTERS.slice(1).map(C=>({C,sv:store.get('save'+C.num,null)})).filter(o=>o.sv).sort((a,b)=>(b.sv.when||0)-(a.sv.when||0))[0];
+   if(last)$('#tutBox').insertAdjacentHTML('afterbegin',`<button class="btn primary" style="margin:4px 0 12px" data-cont="${last.C.num}">Continuar · Capítulo ${last.C.rn} · ${last.sv.region||'última fonte'}</button>`);}
+  $('#chList').querySelectorAll('[data-ch]').forEach(b=>b.addEventListener('click',()=>{
+    if(b.dataset.sv&&!b.dataset.arm){b.dataset.arm='1';b.textContent='Começar do zero? Toque de novo';setTimeout(()=>{if(b.isConnected){delete b.dataset.arm;b.textContent='Recomeçar';}},3000);return;}
+    audioInit();storyLoad=null;storyCh=+b.dataset.ch;mode='story';newGame();}));
+  $('#sChapters').querySelectorAll('[data-cont]').forEach(b=>b.addEventListener('click',()=>{audioInit();const n=+b.dataset.cont;storyLoad=store.get('save'+n,null);storyCh=n;mode='story';newGame();}));
   const D=STORY_DIFF[storyDiff];$('#sdName').textContent=D.name;$('#sdDesc').textContent=D.desc;$('#sdPrev').disabled=storyDiff<=0;$('#sdNext').disabled=storyDiff>=2;
 }
 // ----- desenho -----
@@ -6099,14 +6180,18 @@ function drawStoryDark(){
 
 // ---------------- Telas ----------------
 const screens={avatar:$('#sAvatar'),level:$('#sLevel'),opts:$('#sOpts'),arena:$('#sArena'),chapters:$('#sChapters'),dialog:$('#sDialog'),chapter:$('#sChapter'),altar:$('#sAltar'),win:$('#sWin'),menu:$('#sMenu'),grimoire:$('#sGrim'),help:$('#sHelp'),upgrade:$('#sUp'),pause:$('#sPause'),over:$('#sOver')};
+let screenAt=0;
 function setState(s){
-  state=s;
+  state=s;screenAt=performance.now();
   for(const k in screens)screens[k].hidden=k!==s;
   $('#app').classList.toggle('story',!!(P&&mode==='story'));
+  {const inGame=s==='play'||s==='dialog';$('#app').classList.toggle('playing',inGame);$('#app').classList.toggle('talk',s==='dialog');$('#app').classList.toggle('menus',!inGame);}
+  // banners de região/onda não ficam pendurados por cima das telas
+  if(s!=='play'&&s!=='dialog'&&s!=='pause'){clearTimeout(banner.tm);$('#banner').classList.remove('show');}
   hud.hidden=!(P&&(s==='play'||s==='pause'||s==='upgrade'||s==='dialog'||s==='level'));
   $('#objective').hidden=!(P&&mode==='story'&&s==='play');
   if(s==='play'){holds.clear();joy.active=false;joy.dx=joy.dy=0;}
-  if(s==='menu'){refreshMenu();if(biome!==BIOMES[0]){biome=BIOMES[0];makeBg();}}
+  if(s==='menu'){if(window.elementaDisarm)window.elementaDisarm();refreshMenu();if(biome!==BIOMES[0]){biome=BIOMES[0];makeBg();}}
   if(s==='grimoire')renderGrimoire();
   if(s==='altar')renderAltar();
   if(s==='chapters')renderChapters();
@@ -6114,10 +6199,19 @@ function setState(s){
   if(s==='opts')renderOpts();else keyWait=null;
   if(s==='help'){refreshKeyHints();$('#tutHelp').hidden=returnTo!=='menu';}
   if(s==='avatar')renderAvatars();
-  const focusMap={chapter:'#bChNext',level:'#lvGo',opts:'#optBack',menu:'#bStory',arena:'#bArenaGo',pause:'#bResume',over:'#bAgain',upgrade:'#up0'};
+  const focusMap={win:'#bWinGo',chapter:$('#bChNext').hidden?'#bChGo':'#bChNext',level:'#lvGo',opts:'#optBack',menu:'#bStory',arena:'#bArenaGo',pause:'#bResume',over:'#bAgain',upgrade:'#up0'};
   if(focusMap[s]&&!coarse){const el=$(focusMap[s]);if(el)el.focus({preventScroll:true});}
 }
+const storeOK=(()=>{try{localStorage.setItem('elementa:t','1');localStorage.removeItem('elementa:t');return true;}catch(_){return false;}})();
+try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist();}catch(_){}
+if(matchMedia('(hover:none) and (pointer:coarse)').matches)document.documentElement.classList.add('kbd-hide');
+{const canFS=document.fullscreenEnabled&&!window.ELEMENTA_APP&&!matchMedia('(display-mode: fullscreen),(display-mode: standalone)').matches;
+ $('#fsSec').hidden=!canFS;$('#bFull').addEventListener('click',()=>{if(document.fullscreenElement)document.exitFullscreen();else document.documentElement.requestFullscreen({navigationUI:'hide'}).catch(()=>{});});
+ document.addEventListener('fullscreenchange',()=>{$('#bFull').textContent=document.fullscreenElement?'Sair da tela cheia':'Tela cheia';if(!document.fullscreenElement&&state==='play')pauseGame();});}
 function refreshMenu(){
+  $('#verTxt').textContent=window.ELEMENTA_VERSION?'Versão '+window.ELEMENTA_VERSION:'';
+  {const ios=/iPhone|iPad|iPod/.test(navigator.userAgent)&&!navigator.standalone&&!window.ELEMENTA_APP;
+   $('#saveWarn').textContent=!storeOK?'Este navegador não está salvando o progresso.':ios?'No iPhone, use Compartilhar › Adicionar à Tela de Início para não perder o progresso.':'';}
   $('#grimCount').textContent=seal4()?`${countDisc()+cataDisc()+infDisc.size}/${COMBOS.length+MIX4.length+INF_ALL.length}`:`${countDisc()}/${COMBOS.length}`;$('#avPill').textContent=`${AVATARS.filter(avUnlocked).length}/${AVATARS.length}`;
   $('#recordTxt').textContent=best.wave?`Recorde: onda ${best.wave} · ${best.score} pontos${meta.wins?` · ${meta.wins} ${meta.wins===1?'vitória':'vitórias'}`:''}`:'';
   $('#essPill').textContent=meta.essence;refreshDiff();
@@ -6144,7 +6238,7 @@ function renderGrimoire(){
   $('#conqNote').textContent=`Você desbloqueou ${conq.size} de ${CONQ.length} conquistas.`;
   $('#grimConq').innerHTML=CONQ.map(c=>conq.has(c.id)?`<li><span class="g">${conqSVG(40)}</span><div><b>${c.name}</b><p>${c.desc}</p></div></li>`
     :`<li class="unknown"><span class="g">${glyphSVG('?',40)}</span><div><b>${c.name}</b><p>${c.desc}</p></div></li>`).join('');
-  $('#grimSub').textContent=`Você descobriu ${countDisc()} de ${COMBOS.length} combinações.`;
+  $('#grimSub').textContent=`Você descobriu ${countDisc()} de ${COMBOS.length} misturas e rituais.`;
   $('#grimBase').innerHTML=ORDER.split('').map(k=>spellLi(k,true)).join('');
   $('#grimMix').innerHTML=MIX2.map(k=>spellLi(k,discovered.has(k))).join('');
   $('#grimRit').innerHTML=MIX3.map(k=>spellLi(k,discovered.has(k))).join('');
@@ -6156,9 +6250,9 @@ function renderGrimoire(){
   $('#beastNote').textContent=`Você encontrou ${seenN} de ${FAMS.length*4} criaturas e derrotou ${bossesBeaten.size} de ${Object.keys(BOSSES).length} chefes.`;
   $('#grimBeast').innerHTML=FAMS.map(f=>`<li><span class="g">${famIcon(f)}</span><div><b>${FAM[f].plural}</b><p>${FAM[f].desc}</p><div class="chips">${
       ORDER.split('').map(e=>bestiary.has(f+':'+e)?`<span class="chip" style="--c:${EL[e].c}">${EL[e].name}</span>`:`<span class="chip off">?</span>`).join('')}</div></div></li>`).join('')
-    +`<li><span class="g">${glyphSVG('FWEA'.slice(0,3),36)}</span><div><b>Chefes</b><p>Um deles aparece na quinta onda de cada fase.</p><div class="chips">${
+    +`<li><span class="g">${glyphSVG('FWEA'.slice(0,3),36)}</span><div><b>Chefes</b><p>Na Arena, um deles aparece na quinta onda de cada fase; os outros guardam os capítulos da História.</p><div class="chips">${
       Object.keys(BOSSES).map(k=>bossesBeaten.has(k)?`<span class="chip" style="--c:#e8c477">${BOSSES[k].name}</span>`:`<span class="chip off">?</span>`).join('')}</div></div></li>`;
-  $('#arcNote').textContent=`Você coletou ${ARCANA.filter(c=>arcCollected.has(c.n)).length} de 22. Escolha um ao vencer cada onda.`;
+  $('#arcNote').textContent=`Você coletou ${ARCANA.filter(c=>arcCollected.has(c.n)).length} de 22 Arcanos. Na Arena, escolha um ao vencer cada onda; na História, ao subir de nível.`;
   $('#grimArc').innerHTML=ARCANA.map(c=>arcCollected.has(c.n)
     ?`<li><span class="g">${arcGlyph(c,40)}</span><div><b>${c.rn} · ${c.name}</b><span class="recipe">${c.who}</span><p>${c.desc}</p></div></li>`
     :`<li class="unknown"><span class="g">${glyphSVG('?',40)}</span><div><b>${c.rn} · ???</b><span class="recipe">Arcano não coletado</span><p>Vença uma onda e escolha esta carta.</p></div></li>`).join('');
@@ -6186,7 +6280,9 @@ function bindKey(code,key){const a=keyWait;keyWait=null;bindKey.justT=performanc
 function renderKeys(){const box=$('#keyList');if(!box)return;
   box.innerHTML=KEY_ACTS.map(([a,name])=>`<span${a.length===1?` style="color:${EL[a].c}"`:''}>${name}</span><button data-act="${a}" class="${keyWait===a?'wait':''}">${keyWait===a?'Aperte uma tecla…':keyName(KM[a])}</button>`).join('');
   box.querySelectorAll('button').forEach(b=>b.addEventListener('click',ev=>{keyWait=keyWait===b.dataset.act?null:b.dataset.act;renderKeys();try{document.activeElement.blur();}catch(_){}sfx('tick','A');}));}
-function refreshKeyHints(){document.querySelectorAll('kbd[data-k]').forEach(k=>k.textContent=keyName(KM[k.dataset.k]));}
+function refreshKeyHints(){document.querySelectorAll('kbd[data-k]').forEach(k=>k.textContent=keyName(KM[k.dataset.k]));
+  // no modo canhoto o joystick vai para a direita e os símbolos para a esquerda
+  document.querySelectorAll('[data-side]').forEach(e=>{const r=(e.dataset.side==='btn')!==!!opts.left;e.textContent=r?'direita':'esquerda';});}
 $('#keyReset').addEventListener('click',()=>{delete opts.keys;store.set('opts',opts);keyWait=null;loadKeys();renderKeys();sfx('tick','A');});
 function renderOpts(){renderKeys();document.querySelectorAll('#sOpts .seg[data-opt]').forEach(g=>{const k=g.dataset.opt;g.querySelectorAll('button').forEach(b=>b.classList.toggle('on',String(opts[k])===b.dataset.v));});}
 document.querySelectorAll('#sOpts .seg[data-opt]').forEach(g=>g.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
@@ -6202,7 +6298,14 @@ $('#bResumeTop').addEventListener('click',resumeGame);
 function fillPauseArc(list){const box=$('#pauseArcBox');box.hidden=!list.length;box.open=false;
   $('#pauseArcSum').textContent=`Arcanos ativos (${list.length})`;
   $('#pauseArc').innerHTML=list.map(n=>{const c=ARCANA[n];return `<span title="${c.desc}">${c.rn} · ${c.name}</span>`;}).join('');}
-$('#bQuit').addEventListener('click',()=>{if(mode==='arena'&&run.daily&&P)recordDaily(run.won);awardEssence();P=null;story=null;mode='arena';groundCv=null;parts.length=0;setState('menu');});
+let quitArm=0,quitT=0;
+$('#bQuit').addEventListener('click',()=>{const b=$('#bQuit');clearTimeout(quitT);
+  if(performance.now()-quitArm>3000){quitArm=performance.now();
+    b.textContent=mode==='story'?(story&&CH().noSave?'Sair do tutorial? Toque de novo':'Sair? Você volta à última fonte. Toque de novo'):'Encerrar a corrida? Toque de novo';
+    quitT=setTimeout(()=>{quitArm=0;b.textContent='Sair para o menu';},3000);return;}
+  quitArm=0;b.textContent='Sair para o menu';
+  if(mode==='arena'&&P){if(run.victoryPending){run.victoryPending=false;showVictory();return;}gameOver(true);return;}
+  P=null;story=null;mode='arena';groundCv=null;parts.length=0;setState('menu');});
 $('#bAgain').addEventListener('click',()=>{audioInit();newGame();});
 $('#bMenu').addEventListener('click',()=>{P=null;parts.length=0;setState('menu');});
 const toggleSound=()=>{muted=!muted;store.set('muted',muted);if(!muted)audioInit();soundLabels();};
@@ -6249,9 +6352,9 @@ function renderAltar(){
 }
 function refreshDiff(){
   selDiff=clamp(selDiff,0,meta.maxDiff);
-  $('#diffNote').textContent=meta.maxDiff<1?'Vença a Quintessência no Normal para liberar a Provação 1.':meta.maxDiff<DIFFS.length-1?`Vença a Provação ${meta.maxDiff} para liberar a próxima.`:'';
-  $('#dName').textContent=selDiff?`Provação ${selDiff}`:'Normal';
-  $('#dDesc').textContent=selDiff?`${DIFFS[selDiff]}${selDiff>1?' E as regras anteriores.':''} Essência +${selDiff*25}%.`:'Sem regras extras.';
+  $('#diffNote').textContent=meta.maxDiff<1?'Vença a Quintessência no Normal para liberar a Provação\u00a01.':meta.maxDiff<DIFFS.length-1?`Vença a Provação ${meta.maxDiff} para liberar a próxima.`:'';
+  $('#dName').innerHTML=selDiff?numHTML(`Provação ${selDiff}`):'Normal';
+  $('#dDesc').textContent=selDiff?`${DIFFS[selDiff]}${selDiff>1?' Soma as regras anteriores.':''} Essência +${selDiff*25}%.`:'Sem regras extras.';
   $('#dPrev').disabled=selDiff<=0;$('#dNext').disabled=selDiff>=meta.maxDiff;
 }
 $('#dPrev').addEventListener('click',()=>{selDiff--;store.set('diff',selDiff);refreshDiff();});
@@ -6259,15 +6362,15 @@ $('#dNext').addEventListener('click',()=>{selDiff++;store.set('diff',selDiff);re
 $('#bAltar').addEventListener('click',()=>openSub('altar'));
 $('#bWinGo').addEventListener('click',()=>{showUpgrade();});
 $('#bWinMenu').addEventListener('click',()=>{P=null;parts.length=0;setState('menu');});
-function pauseGame(){if(state==='play'){
+function pauseGame(){if(state==='play'){quitArm=0;clearTimeout(quitT);$('#bQuit').textContent='Sair para o menu';
   if(mode==='story'&&story){$('#pausePhase').textContent=`${CH().label||'Capítulo '+CH().rn} · ${CH().title} · ${story.region?story.region.name:''} · ${STORY_DIFF[story.diff].name}. ${storyObjective().text}`;fillPauseArc(LV.cards);drawPauseMap();setState('pause');return;}
   $('#pausePhase').textContent=phaseLine()+(run.phase&&run.phase.omens.length?'. '+run.phase.omens.map(o=>o.desc).join(' '):'');
   $('#pauseMap').hidden=true;$('#mapLegend').hidden=true;
   fillPauseArc(P.arcRun);
   setState('pause');}}
 function resumeGame(){if(state==='pause'){last=performance.now();setState('play');}}
-function gameOver(){
-  sfx('over');
+function gameOver(quit){
+  if(!quit)sfx('over');
   if(wave.n>best.wave)best.wave=wave.n;
   const rec=score>best.score;
   if(rec)best.score=score;
@@ -6276,8 +6379,8 @@ function gameOver(){
   $('#overEss').innerHTML=`<span class="ess">+${ess} de Essência</span> · total ${meta.essence}. Gaste no Altar.`;
   $('#oWave').textContent=wave.n;$('#oScore').textContent=score;$('#oDisc').textContent=runDisc;
   const ph=run.phase;
-  $('#overSub').textContent=(ph?`Você caiu na fase ${ph.num}, ${ph.biome.name}. `:'')+(rec?'Novo recorde de pontos.':`Recorde: onda ${best.wave} · ${best.score} pontos`);
-  if(run.daily){const d=recordDaily(false);$('#overSub').textContent=`Desafio do dia (${dayLabel()}): onda ${wave.n} · ${score} pontos. Seu melhor hoje: onda ${d.wave} · ${d.score} pontos, em ${d.tries} ${d.tries===1?'tentativa':'tentativas'}.`;}
+  $('#overSub').textContent=(ph?`${quit?'Corrida encerrada':'Você caiu'} na fase ${ph.num}, ${ph.biome.name}. `:'')+(rec?'Novo recorde de pontos.':`Recorde: onda ${best.wave} · ${best.score} pontos`);
+  if(run.daily){const d=recordDaily(run.won);$('#overSub').textContent=`Desafio do dia (${dayLabel()}): onda ${wave.n} · ${score} pontos. Seu melhor hoje: onda ${d.wave} · ${d.score} pontos, em ${d.tries} ${d.tries===1?'tentativa':'tentativas'}.`;}
   holds.clear();joy.active=false;
   setState('over');
 }
@@ -6293,9 +6396,17 @@ window.elementaBack=()=>{
   if(state==='dialog'){dialogNext();return 'ok';}
   if(state==='over'){P=null;parts.length=0;setState('menu');return 'ok';}
   if(state==='chapter'){$('#bChMenu').click();return 'ok';}
+  if(state==='win'){$('#bWinMenu').click();return 'ok';}
   if(state==='menu')return 'exit';
   return 'ok';
 };
+
+// Web/PWA: o Voltar do navegador ou do Android age como o do APK (pausa, fecha telas) em vez de sair da página
+if(!window.ELEMENTA_APP){let armed=false,skipPop=false;
+  const arm=()=>{if(armed||state==='menu')return;armed=true;try{history.pushState({el:1},'');}catch(_){}};
+  addEventListener('pointerup',arm,true);addEventListener('keydown',arm,true);addEventListener('click',arm);
+  window.elementaDisarm=()=>{if(armed){armed=false;skipPop=true;try{history.back();}catch(_){skipPop=false;}}};
+  addEventListener('popstate',()=>{if(skipPop){skipPop=false;return;}armed=false;if(state!=='menu'&&window.elementaBack()!=='exit')arm();});}
 
 // ---------------- Loop ----------------
 function frame(now){
