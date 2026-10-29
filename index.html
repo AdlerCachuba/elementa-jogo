@@ -20,7 +20,7 @@
 <link rel="icon" href="icon-192.png">
 <link rel="manifest" href="manifest.webmanifest">
 <script>if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));</script>
-<script>window.ELEMENTA_VERSION="12.0";</script>
+<script>window.ELEMENTA_VERSION="12.2";</script>
 <title>Elementa</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -55,12 +55,16 @@ body{font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-t
 .wave{display:grid;justify-items:center;text-align:center}
 .wave b{font-family:var(--display);font-size:21px;font-weight:400;color:var(--gold);line-height:1.05}
 .wave small{font-size:11px;color:var(--muted);font-weight:500}
+#flowTxt{color:#c7bda9;min-height:14px;max-width:100%;font-variant-numeric:tabular-nums}
+#flowTxt.chain{color:var(--gold)}
+.bar.hp.low{border-color:#ff8c8f;box-shadow:0 0 10px rgba(217,67,74,.3)}
+.bar.hp.low span{color:#ffe1dc}
 .num{font-family:var(--body);font-weight:800;font-size:.86em;letter-spacing:0}
 .hud-right{display:flex;align-items:center;gap:10px;justify-self:end}
 /* celular em pé: barras e pausa na 1ª linha, título centralizado na 2ª */
 @media (orientation:portrait) and (max-width:600px){
   #hud{grid-template-columns:minmax(0,1fr) auto;row-gap:6px}
-  .bars{grid-column:1;grid-row:1;width:min(64vw,240px)}
+  .bars{grid-column:1;grid-row:1;width:min(100%,64vw,240px)}
   .hud-right{grid-column:2;grid-row:1}
   .wave{grid-column:1/-1;grid-row:2;justify-self:center}
 }
@@ -104,6 +108,8 @@ body{font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-t
 .ver:empty,.savewarn:empty{display:none}
 .savewarn{margin:4px 0 0;font-size:13px;color:#ffb09a;max-width:34ch;text-wrap:balance}
 @media (max-height:800px){.menu h1{font-size:clamp(44px,min(17vw,12vh),96px)}.lede{margin:2px 0 10px;font-size:16px}.menu .stack{gap:8px}.menu .stack .btn{min-height:46px;padding-block:8px}}
+@media (max-height:680px) and (orientation:portrait){.lede{font-size:15px;line-height:1.4}.menu .stack{gap:6px}.menu .stack .btn{min-height:44px;padding-block:6px}}
+@media (max-height:600px) and (orientation:portrait){.menu .lede{display:none}.menu .stack{grid-template-columns:1fr 1fr}.menu .stack .btn{justify-content:flex-start;padding-inline:10px;font-size:15px}.menu .stack #bStory,.menu .stack #bPlay,.menu .stack #bOpts{grid-column:1/-1;justify-content:center}.menu .stack .pill{right:8px;font-size:11px;padding-inline:5px}}
 @media (max-height:520px) and (orientation:landscape){.menu-inner{width:min(620px,100%)}.lede{display:none}.menu .stack{grid-template-columns:1fr 1fr}.menu .stack .btn{min-height:44px}.menu .stack .btn.primary{grid-column:1/-1}}
 .avgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px;margin-top:14px}
 .avitem{display:grid;justify-items:center;gap:2px;padding:8px 6px 10px;border-radius:12px;border:1px solid var(--line);background:rgba(28,23,38,.9);color:var(--text);cursor:pointer;font:inherit}
@@ -148,6 +154,22 @@ body{font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-t
 .g{display:grid;place-items:center}
 .spells li>.g{padding-top:2px}
 .spells li.unknown .recipe{color:var(--muted)}
+.grim-tools{margin-top:14px}.grim-tools label{display:block;font-size:13px;font-weight:700;color:var(--gold);margin-bottom:5px}
+#grimSearch{box-sizing:border-box;width:100%;min-height:44px;padding:10px 12px;border:1px solid var(--line);border-radius:9px;background:rgba(10,8,16,.8);color:var(--text);font:500 16px var(--body);-webkit-user-select:text;user-select:text}
+#grimSearch:focus-visible{outline:2px solid var(--gold);outline-offset:2px}.grim-tools .seg{gap:5px}.grim-tools .seg button{min-height:44px;flex:1 1 44px;padding-inline:8px}
+.grim-tools .seg button[aria-pressed="true"]{border-color:var(--gold);background:rgba(232,196,119,.16);color:var(--gold)}
+.grim-tools .grim-check{display:flex;align-items:center;gap:8px;min-height:44px;margin:4px 0 0;color:var(--text);font-weight:500}.grim-check input{width:18px;height:18px;accent-color:var(--gold)}
+#grimBattle{padding:9px 11px;margin:10px 0 0;border:1px solid var(--line);border-radius:8px;color:#a6ddff;font-size:13px;line-height:1.35}
+#grimResults{margin:6px 0 0}#grimEmpty{padding:12px;border:1px solid var(--line);border-radius:8px;font-size:14px;color:var(--muted)}
+.grim-ready{font-size:12px!important;color:#a6ddff!important}.grim-unready{font-size:12px!important;color:var(--muted)!important}.grim-prepare{margin-top:7px;min-height:44px!important;font-size:14px!important}
+#grimCollections{margin-top:20px;border-top:1px solid var(--line);padding-top:10px}#grimCollections>summary{cursor:pointer;min-height:44px;display:flex;align-items:center;font-size:16px;color:var(--gold);font-weight:700}
+@media (min-width:760px),(max-height:520px) and (orientation:landscape){
+  #sGrim .grim-tools{display:grid;grid-template-columns:minmax(140px,1fr) minmax(200px,1.2fr);gap:4px 12px;align-items:center;margin-top:10px}
+  .grim-tools>label[for]{grid-column:1;grid-row:1;margin:0}.grim-tools #grimSearch{grid-column:1;grid-row:2}
+  .grim-tools #grimSizes{grid-column:2;grid-row:2;margin:0}.grim-tools .grim-check{grid-column:2;grid-row:1;margin:0;font-size:13px}
+  .grim-tools #grimResults{grid-column:1/-1;margin:0}.grim-tools #grimSizes button{padding-inline:4px;font-size:12px}
+  #grimBattle{font-size:12px;padding:7px 9px;margin-top:8px}#sGrim .panel h3{margin-top:14px}
+}
 
 /* Como jogar */
 .help dl{margin:14px 0 0}
@@ -163,6 +185,7 @@ body{font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-t
 .card{display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:center;text-align:left;font:inherit;color:var(--text);background:rgba(28,23,38,.9);border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;width:100%}
 .card b{display:block;font-family:var(--display);font-weight:400;font-size:20px}
 .card small{display:block;font-size:14px;color:var(--muted);margin-top:2px}
+.card .up-owned{font-size:12px;color:var(--gold);margin-top:4px}.up-heading{display:flex;align-items:center;justify-content:space-between;gap:10px}.up-heading>span{min-width:0}.up-heading small{display:block;font:500 12px var(--body);line-height:1.25;color:var(--muted);letter-spacing:0;text-transform:none;margin-top:3px}.up-heading .btn{flex:0 0 auto;letter-spacing:0;text-transform:none}
 .card>span:last-child{min-width:0}
 .tag{display:inline-block;font:800 10px var(--body);letter-spacing:.14em;text-transform:uppercase;color:#1d1408;background:var(--gold);border-radius:4px;padding:2px 6px;margin-bottom:4px}
 .note{margin:0 0 4px;font-size:13px;color:var(--muted)}
@@ -190,16 +213,18 @@ body{font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-t
 .arcbox{margin-top:10px;border:1px solid var(--line);border-radius:10px;padding:8px 12px}
 .arcbox summary{cursor:pointer;font:700 14px var(--body);color:var(--gold);min-height:28px;display:flex;align-items:center}
 .arcbox .arc-row{margin-top:6px}
+#pauseArc{display:grid;gap:6px}#pauseArc .active-arc{border:1px solid var(--line);border-radius:6px;padding:7px 9px}#pauseArc b{font:700 13px var(--body);color:var(--gold)}#pauseArc p{font-size:13px;line-height:1.35;color:var(--text);margin:3px 0 0}
 @media (prefers-reduced-motion: reduce){.tarot-in{transition:none}}
 @media (max-height:520px){.tarot{width:auto;max-width:none;height:min(40vh,200px);justify-self:center}}
-/* bênçãos da Arena com o celular deitado: arcanos à esquerda, bênçãos à direita */
-@media (max-height:520px) and (orientation:landscape) and (min-width:640px){
+/* bênçãos da Arena em telas largas: arcanos à esquerda, bênçãos à direita */
+@media (orientation:landscape) and (min-width:640px){
   #sUp .panel{width:min(980px,100%);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:18px;align-items:start}
   #sUp #upTitle,#sUp .panel>.stack{grid-column:1/-1}
-  #sUp .panel>h3:nth-of-type(1){grid-column:1;grid-row:2}#sUp #upArcana{grid-column:1;grid-row:3}
-  #sUp .panel>h3:nth-of-type(2){grid-column:2;grid-row:2}#sUp #upCards{grid-column:2;grid-row:3;margin-top:10px;gap:6px}
+  #sUp #waveRecap{grid-column:1/-1;grid-row:2;margin-top:8px;padding:7px 10px}
+  #sUp .panel>h3:nth-of-type(1){grid-column:1;grid-row:3}#sUp #upArcana{grid-column:1;grid-row:4}
+  #sUp .panel>h3:nth-of-type(2){grid-column:2;grid-row:3}#sUp #upCards{grid-column:2;grid-row:4;margin-top:10px;gap:6px}
   #sUp .card{padding:7px 10px;gap:10px;grid-template-columns:34px 1fr}#sUp .card b{font-size:17px}#sUp .card small{font-size:12.5px}
-  #sUp .panel>.stack{grid-row:4}
+  #sUp .panel>.stack{grid-row:5}
 }
 
 /* Bestiário */
@@ -239,6 +264,10 @@ body{font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-t
 .stats div{display:grid;gap:2px;padding:10px;border:1px solid var(--line);border-radius:10px;text-align:center}
 .stats b{font-size:26px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--text)}
 .stats span{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.feats{margin:12px 0 0;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:rgba(232,196,119,.06);font-size:14px;line-height:1.4;color:var(--text);font-variant-numeric:tabular-nums}
+.feats b{color:var(--gold);font-weight:800}.feats p{margin:4px 0 0;color:var(--muted)}
+.run-recap{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;margin-top:12px;font-size:13px;line-height:1.35;color:var(--muted);font-variant-numeric:tabular-nums}
+.run-recap b{color:var(--text)}
 
 /* Avisos */
 #toast{position:absolute;z-index:30;left:calc(env(safe-area-inset-left,0px) + 16px);right:calc(env(safe-area-inset-right,0px) + 16px);margin:0 auto;width:fit-content;box-sizing:border-box;top:var(--toastTop,calc(env(safe-area-inset-top,0px) + 74px));transform:translateY(-16px);opacity:0;display:flex;gap:12px;align-items:center;padding:10px 18px 10px 12px;background:var(--panel);border:1px solid var(--gold);border-radius:12px;pointer-events:none;transition:opacity .3s,transform .3s;max-width:calc(100% - 32px);box-shadow:0 0 30px rgba(232,196,119,.25)}
@@ -249,12 +278,13 @@ body{font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-t
 #toast small{display:block;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);font-weight:800}
 #toast b{display:block;font-family:var(--display);font-weight:400;font-size:24px;line-height:1.1}
 #toast em{display:block;font-style:normal;font-size:13px;color:var(--muted)}
-#banner{position:absolute;left:var(--bnL,16px);right:var(--bnR,16px);top:max(28%,calc(var(--bnTop,0px) + 86px));text-align:center;pointer-events:none;opacity:0;transition:opacity .45s}
+#banner{position:absolute;left:var(--bnL,16px);right:var(--bnR,16px);top:var(--bnFitTop,max(28%,calc(var(--bnTop,0px) + 86px)));text-align:center;pointer-events:none;opacity:0;transition:opacity .45s}
 #banner.show{opacity:1}
 #banner b{display:block;font-family:var(--display);font-weight:400;font-size:clamp(32px,8vw,48px);color:var(--gold);text-shadow:0 2px 14px #000}
-#banner span{display:block;font-size:16px;color:var(--text);text-shadow:0 1px 6px #000,0 0 2px #000;margin-top:4px;font-weight:500}
+#banner>span{display:block;font-size:16px;color:var(--text);text-shadow:0 1px 6px #000,0 0 2px #000;margin-top:4px;font-weight:500}
 #banner i{display:block;font-style:normal;font-size:14px;color:var(--gold);text-shadow:0 1px 6px #000;margin-top:6px}
-@media (max-height:520px) and (orientation:landscape){#banner{top:max(28%,var(--bnTop,0px))}#banner b{font-size:clamp(22px,8vh,40px)}#banner span,#banner i{font-size:13px}}
+#banner.fit-small>b{font-size:clamp(26px,6.8vw,40px)}#banner.fit-small>span{font-size:14px}#banner.fit-small>small,#banner.fit-small>i{font-size:12px;margin-top:4px}
+@media (max-height:520px) and (orientation:landscape){#banner{top:max(28%,var(--bnTop,0px))}#banner b{font-size:clamp(22px,8vh,40px)}#banner>span,#banner>i{font-size:13px}}
 @media (prefers-reduced-motion: reduce){#toast,#banner{transition:none}}
 </style>
 
@@ -270,7 +300,7 @@ body{font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-t
       <div class="bar mana" id="mnBar"><i id="mnFill"></i><span id="mnTxt">100</span></div>
       <div class="bar xp" id="xpBar" hidden><i id="xpFill"></i><span id="xpTxt">Nível 1</span></div>
     </div>
-    <div class="wave"><b id="waveTxt">Onda 1</b><small id="leftTxt"></small></div>
+    <div class="wave"><b id="waveTxt">Onda 1</b><small id="leftTxt"></small><small id="flowTxt" hidden></small></div>
     <div class="hud-right"><span id="scoreTxt">0</span><button id="pauseBtn" class="icon-btn" aria-label="Pausar">II</button></div>
   </div>
 
@@ -303,12 +333,40 @@ body{font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-t
     <div class="panel">
       <div class="ph"><h2>Grimório</h2><button class="btn small" data-back>Voltar</button></div>
       <p class="sub" id="grimSub"></p>
-      <h3>Fraquezas dos espíritos</h3>
-      <div class="cycle" id="cycle"></div>
+      <div class="grim-tools">
+        <label for="grimSearch">Buscar magia</label><input id="grimSearch" type="search" placeholder="Nome, efeito ou elemento" autocomplete="off" autocapitalize="off" spellcheck="false">
+        <div class="seg" id="grimSizes" role="group" aria-label="Filtrar pelo número de selos"><button data-grim-size="0" aria-pressed="true">Todos</button><button data-grim-size="1" aria-pressed="false">1 selo</button><button data-grim-size="2" aria-pressed="false">2 selos</button><button data-grim-size="3" aria-pressed="false">3 selos</button><button data-grim-size="4" aria-pressed="false">4 selos</button></div>
+        <label class="grim-check"><input id="grimKnown" type="checkbox">Só magias descobertas</label>
+        <p class="note" id="grimResults" role="status" aria-live="polite"></p>
+      </div>
+      <p id="grimBattle" hidden></p>
+      <p id="grimEmpty" hidden>Nenhuma receita encontrada. Tente outro nome, número de selos ou desmarque “Só magias descobertas”.</p>
+      <div data-grim-section="1">
       <h3>Elementos puros</h3>
       <ul class="spells" id="grimBase"></ul>
+      </div>
+      <div data-grim-section="2">
       <h3>Misturas de dois elementos</h3>
       <ul class="spells" id="grimMix"></ul>
+      </div>
+      <div data-grim-section="3">
+      <h3>Rituais de três elementos</h3>
+      <p class="note">Na Arena, o terceiro selo desperta na onda 4; na História, no Capítulo III.</p>
+      <ul class="spells" id="grimRit"></ul>
+      </div>
+      <div data-grim-section="4">
+      <h3>Cataclismos · quarto selo</h3>
+      <p class="note" id="cataNote"></p>
+      <ul class="spells" id="grimCata"></ul>
+      </div>
+      <div data-grim-section="4">
+      <h3>Infusões · quarto selo</h3>
+      <p class="note" id="infNote"></p>
+      <ul class="spells" id="grimInf"></ul>
+      </div>
+      <details id="grimCollections"><summary>Fraquezas e coleções</summary>
+      <h3>Fraquezas dos espíritos</h3>
+      <div class="cycle" id="cycle"></div>
       <h3>Reações elementais</h3>
       <ul class="spells" id="grimReact"></ul>
       <h3>Bestiário</h3>
@@ -317,18 +375,10 @@ body{font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-t
       <h3>Arcanos Maiores</h3>
       <p class="note" id="arcNote"></p>
       <ul class="spells" id="grimArc"></ul>
-      <h3>Rituais de três elementos</h3>
-      <p class="note">Na Arena, o terceiro selo desperta na onda 4; na História, no Capítulo III.</p>
-      <ul class="spells" id="grimRit"></ul>
-      <h3>Cataclismos · quarto selo</h3>
-      <p class="note" id="cataNote"></p>
-      <ul class="spells" id="grimCata"></ul>
-      <h3>Infusões · quarto selo</h3>
-      <p class="note" id="infNote"></p>
-      <ul class="spells" id="grimInf"></ul>
       <h3>Conquistas</h3>
       <p class="note" id="conqNote"></p>
       <ul class="spells" id="grimConq"></ul>
+      </details>
     </div>
   </section>
 
@@ -346,15 +396,19 @@ body{font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-t
         <dt>Lançar</dt>
         <dd>Toque no círculo central para mirar no inimigo mais próximo, ou toque em qualquer ponto da metade <span data-side="btn">direita</span> da tela para mirar ali. Segure para lançar sem parar. Teclado: <kbd data-k="cast">Espaço</kbd> ou clique do mouse.</dd>
         <dt>Passo Etéreo</dt>
-        <dd>Depois do Capítulo V (no Desafio do dia, desde o início), toque no botão roxo de setas, junto aos símbolos, ou aperte <kbd data-k="dash">Shift</kbd> para avançar rápido sem levar dano. Serve para cruzar vãos e desviar de golpes, também na Arena.</dd>
+        <dd>Depois do Capítulo V (no Desafio do dia, desde o início), toque no botão roxo de setas, junto aos símbolos, ou aperte <kbd data-k="dash">Shift</kbd> para avançar rápido sem levar dano. Serve para cruzar vãos e desviar de golpes, também na Arena. Um toque pouco antes de terminar a recarga entra assim que o passo fica pronto. As faixas vermelhas no chão avisam a direção das investidas inimigas.</dd>
         <dt>Misturas</dt>
         <dd>São 10 misturas de dois elementos e 20 rituais de três, todos escondidos. Na primeira vez que você lançar um, ele é registrado no Grimório.</dd>
+        <dt>Preparar pelo Grimório</dt>
+        <dd>Na pausa, abra o Grimório para buscar uma magia por nome, efeito ou elemento e filtrar pelo número de selos. Magias descobertas com ingredientes e selos disponíveis têm o botão Preparar magia: ele carrega a receita e volta à pausa. Ao continuar, toque em lançar. Nas Infusões, o último ingrediente fica na ordem indicada.</dd>
         <dt>Evoluções e bênçãos</dt>
-        <dd>Entre as ondas você escolhe uma bênção. Algumas evoluem uma magia que você já conhece: Bola de Fogo vira três, Tornado vira dois, Relâmpago salta entre mais inimigos.</dd>
+        <dd>Entre as ondas você escolhe uma bênção. Algumas evoluem uma magia que você já conhece: Bola de Fogo vira três, Tornado vira dois, Relâmpago salta entre mais inimigos. Os valores mostram como o atributo ficará com o Arcano escolhido. Na Arena normal, você pode trocar as três bênçãos uma vez por fase; o Arcano escolhido é mantido. Não há troca no Desafio do dia.</dd>
         <dt>Modo História</dt>
         <dd>A história de Elementa, contada em capítulos. Você começa só com a Água e vai despertando os outros elementos pelo caminho.</dd>
         <dt>Corridas aleatórias (Arena)</dt>
         <dd>A corrida é dividida em fases de 5 ondas. Cada fase sorteia um cenário, as criaturas que vão aparecer (golems, diabretes, lodos, espectros, sentinelas, feras, morcegos e xamãs, de qualquer elemento), um presságio que muda as regras e o chefe da quinta onda. Fora do Desafio do dia, você nunca joga a mesma corrida duas vezes.</dd>
+        <dt>Sequências e façanhas da Arena</dt>
+        <dd>Na mesma onda, derrote inimigos com até 4 segundos entre abates para manter a sequência. A cada 5 abates, os pontos por inimigo sobem 10%, até 30%. Levar dano ou passar 4 segundos sem abater encerra a sequência. Cada onda também dá pontos extras por terminar sem sofrer dano, lançar 3 magias diferentes ou provocar uma reação elemental. As regras também valem no Desafio do dia.</dd>
         <dt>Reações elementais</dt>
         <dd>Água deixa os inimigos molhados. Relâmpago em quem está molhado eletrocuta todos por perto; vento em quem está queimando espalha o fogo; Terra em quem está congelado estilhaça com dano dobrado; água sobre lava vira uma parede de obsidiana.</dd>
         <dt>Fim da corrida, Altar e Provações</dt>
@@ -378,9 +432,10 @@ body{font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-t
   <section id="sUp" class="screen" hidden>
     <div class="panel">
       <h2 id="upTitle">Onda vencida</h2>
+      <div id="waveRecap" class="feats" hidden></div>
       <h3>Escolha um Arcano Maior</h3>
       <div class="arcana" id="upArcana"></div>
-      <h3>Escolha uma bênção</h3>
+      <h3 class="up-heading"><span>Escolha uma bênção<small id="upRerollHint"></small></span><button id="upReroll" class="btn small">Trocar</button></h3>
       <div class="cards" id="upCards"></div>
       <div class="stack"><button id="upGo" class="btn primary" disabled>Escolha um Arcano e uma bênção</button></div>
     </div>
@@ -415,6 +470,7 @@ body{font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-t
         <div><b id="wScore">0</b><span>Pontos</span></div>
         <div><b id="wEss">0</b><span>Essência</span></div>
       </div>
+      <div id="winRecap" class="run-recap"></div>
       <div class="stack">
         <button id="bWinGo" class="btn primary">Continuar no modo infinito</button>
         <button id="bWinMenu" class="btn">Voltar ao menu</button>
@@ -426,6 +482,7 @@ body{font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-t
     <div class="panel" style="width:min(498px,100%)">
       <div class="ph"><h2>Arena</h2><button class="btn small" data-back>Voltar</button></div>
       <p class="sub">Ondas de inimigos em fases de cinco. Cada fase sorteia cenário, criaturas, presságio e chefe. Na onda 20, a Quintessência.</p>
+      <div class="feats"><b>Domine os elementos</b><p>Encadeie abates para ganhar até 30% mais pontos. Em cada onda, tente não levar dano, lançar 3 magias diferentes e provocar uma reação elemental: cada façanha dá pontos extras.</p></div>
       <p class="record" id="recordTxt"></p>
       <h3>Provação</h3>
       <div class="diff" id="diffRow"><button id="dPrev" aria-label="Provação anterior">‹</button><div><b id="dName">Normal</b><small id="dDesc"></small></div><button id="dNext" aria-label="Próxima provação">›</button></div>
@@ -458,11 +515,17 @@ body{font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-t
       <div class="seg" data-opt="left"><button data-v="false">Destro: joystick à esquerda</button><button data-v="true">Canhoto: joystick à direita</button></div>
       <h3>Tremor de tela</h3>
       <div class="seg" data-opt="shake"><button data-v="0">Desligado</button><button data-v="0.5">Suave</button><button data-v="1">Normal</button></div>
+      <h3>Efeitos visuais</h3>
+      <div class="seg" data-opt="fx"><button data-v="0.5">Leves</button><button data-v="1">Completos</button></div>
+      <p class="sub diff-note">A opção Leves reduz as partículas decorativas. Os ataques, os avisos de perigo e as regras do jogo continuam completos.</p>
       <h3>Vibração</h3>
       <div class="seg" data-opt="vib"><button data-v="false">Desligada</button><button data-v="true">Ligada</button></div>
       <h3>Símbolos dos elementos nos inimigos</h3>
       <div class="seg" data-opt="sym"><button data-v="false">Só a cor</button><button data-v="true">Cor e símbolo</button></div>
       <p class="sub diff-note">Cor e símbolo mostra o triângulo do elemento sobre cada inimigo. Ajuda a jogar com daltonismo ou em telas pequenas.</p>
+      <h3>Indicador de alvo</h3>
+      <div class="seg" data-opt="aim"><button data-v="false">Desligado</button><button data-v="true">Ligado</button></div>
+      <p class="sub diff-note">Um anel mostra para onde vai a magia ao usar o botão de lançar. Toque e segure esse botão para lançar continuamente.</p>
       <div id="fsSec" hidden><h3>Tela</h3><div class="seg"><button id="bFull">Tela cheia</button></div></div>
       <div id="kbdSec">
       <h3>Teclado</h3>
@@ -539,6 +602,7 @@ body{font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-t
         <div><b id="oScore">0</b><span>Pontos</span></div>
         <div><b id="oDisc">0</b><span>Descobertas</span></div>
       </div>
+      <div id="overRecap" class="run-recap"></div>
       <div class="stack">
         <button id="bAgain" class="btn primary">Jogar de novo</button>
         <button id="bMenu" class="btn">Menu</button>
@@ -855,7 +919,7 @@ const meta=Object.assign({essence:0,ups:{},maxDiff:0,wins:0},store.get('meta',{}
 const saveMeta=()=>store.set('meta',meta);
 const lv=id=>run&&run.daily?0:(meta.ups[id]||0);
 // opções do jogador (tela Opções)
-const opts=Object.assign({btn:1,left:false,shake:1,vib:true,sym:false},store.get('opts',{}));
+const opts=Object.assign({btn:1,left:false,shake:1,vib:true,sym:false,aim:true,fx:1},store.get('opts',{}));
 // teclas de cada comando (tela Opções → Teclado)
 const KEY_ACTS=[['F','Fogo','Digit1'],['W','Água','Digit2'],['E','Terra','Digit3'],['A','Ar','Digit4'],['cast','Lançar magia','Space'],['clear','Limpar selos','KeyX'],
   ['dash','Passo Etéreo','ShiftLeft'],['ult','Avatar dos Elementos','KeyQ'],['up','Andar para cima','KeyW'],['down','Andar para baixo','KeyS'],['left','Andar para a esquerda','KeyA'],['right','Andar para a direita','KeyD'],['pause','Pausar','KeyP']];
@@ -944,8 +1008,10 @@ function resize(){
   if(P){const b=bounds();P.x=clamp(P.x,b.l+P.r,b.r-P.r);P.y=clamp(P.y,b.t+P.r,b.b-P.r);}
 }
 function layout(){
-  const base=Math.min(W,H);
-  const br=clamp(base*.072,26,42)*opts.btn,pad=14,L=opts.left?-1:1;
+  const base=Math.min(W,H),pad=14,L=opts.left?-1:1;
+  let br=clamp(base*.072,26,42)*opts.btn,jr0=clamp(base*.13,46,70)*opts.btn;
+  // em telas estreitas, mantém espaço entre joystick e símbolos mesmo com botões Grandes
+  const fit=Math.min(1,Math.max(0,W-SA.l-SA.r-pad*2-24)/(br*6.3+jr0*2));br*=fit;jr0*=fit;
   const cx=opts.left?SA.l+pad+br*3.15:W-SA.r-pad-br*3.15,cy=H-SA.b-pad-br*3.15,d=br*2.15;
   UI.br=br;UI.cast={x:cx,y:cy,r:br*1.2,flash:0};
   const pos={A:[0,-d],F:[d*L,0],E:[0,d],W:[-d*L,0]};
@@ -953,7 +1019,7 @@ function layout(){
   UI.clear={x:cx-d*.95*L,y:cy-d*.95,r:br*.62,flash:0};
   UI.ult={x:cx+d*.95*L,y:cy-d*.95,r:br*.62,flash:0};
   UI.dash={x:cx-d*.95*L,y:cy+d*.95,r:br*.6,flash:0};
-  UI.joyR=clamp(base*.13,46,70)*opts.btn;
+  UI.joyR=jr0;
   UI.joyHome={x:opts.left?W-SA.r-pad-UI.joyR-12:SA.l+pad+UI.joyR+12,y:H-SA.b-pad-UI.joyR-12};
   // com o celular deitado, avisos e banner ficam na faixa livre entre o joystick e os botões
   const app=$('#app'),low=W>H&&H<=520,jl=UI.joyHome.x-UI.joyR,jr=UI.joyHome.x+UI.joyR,cl=cx-br*3.3,cr=cx+br*3.3;
@@ -1181,7 +1247,7 @@ function dailyPreview(){const keep=run,b=biome;run={phase:null,rainT:2,diff:0,se
   seeded(501,()=>newPhase(1));const ph=run.phase;run=keep;biome=b;makeBg();
   return `${ph.biome.name} · ${rosterText(ph.roster)}${ph.omens.length?` · Presságio: ${ph.omens.map(o=>o.name).join(' + ')}`:''}`;}
 let slots=['W'],cds={},wave={n:0,queue:[]},score=0,runDisc=0;
-const parts=[];
+const parts=[];let partSeq=0;
 const holds=new Map();
 const joy={active:false,id:null,ox:0,oy:0,x:0,y:0,dx:0,dy:0};
 const keys={};
@@ -1193,13 +1259,14 @@ const offView=(x,y,m)=>mode==='story'&&story?(x<-m||x>story.w+m||y<-m||y>story.h
 function newGame(){
   dlg=null;
   P={x:W/2,y:H/2,r:16,hp:100,maxHp:100,mana:100,maxMana:100,regen:14,speed:205,dmgMul:1,cdMul:1,hpRegen:0,
-     aff:{F:0,W:0,E:0,A:0},kx:0,ky:0,dashT:0,dashCd:0,dashDx:0,dashDy:0,stolen:null,stolenT:0,fx:1,fy:0,armorT:0,hurtT:0,vibT:0,noManaT:0,castT:0,
+     aff:{F:0,W:0,E:0,A:0},kx:0,ky:0,dashT:0,dashCd:0,dashBuffer:0,dashDx:0,dashDy:0,stolen:null,stolenT:0,fx:1,fy:0,armorT:0,hurtT:0,vibT:0,noManaT:0,castT:0,
      maxSlots:2,evo:new Set(),echo:0,echoQ:[],lifeSteal:0,killMana:0,ether:0,etherMul:1,avatarT:0,
      mixDmg:0,bossDmg:0,weakMult:1.75,dmgTaken:1,waveShield:0,shieldT:0,fortune:false,fortuneReady:false,tower:false,fullHeal:false,
      confChance:0,avatarDur:7,discSlow:.7,arcRun:[],arcCycle:new Set()};
   enemies=[];projs=[];eprojs=[];zones=[];rings=[];bolts=[];orbs=[];nums=[];allies=[];strikes=[];beams=[];hazards=[];parts.length=0;
   const daily=arenaDaily&&mode!=='story';
-  run={phase:null,rainT:2,diff:daily?0:selDiff,won:false,victoryPending:false,bossKills:0,essAwarded:0,daily:daily?dayKey():null,seed:daily?+dayKey().replace(/-/g,''):0};
+  run={phase:null,rainT:2,diff:daily?0:selDiff,won:false,victoryPending:false,bossKills:0,essAwarded:0,daily:daily?dayKey():null,seed:daily?+dayKey().replace(/-/g,''):0,
+    stats:{time:0,kills:0,casts:0,reactions:0,chain:0,chainT:0,bestChain:0,perfect:0,versatile:0,bonus:0}};
   P.maxHp+=10*lv('vida');P.hp=P.maxHp;P.maxMana+=10*lv('mana');P.mana=P.maxMana;P.regen*=1+.06*lv('regen');P.dmgMul*=1+.05*lv('dano');
   P.ether=25*lv('centelha');if(lv('selo'))P.maxSlots=3;P.revive=lv('revive');
   slots=['W'];cds={};score=0;runDisc=0;shake=0;slowT=0;
@@ -1259,7 +1326,8 @@ function startWaveNow(n){
   while(q.length<c){const sp=pick(avail),g=FAM[sp.fam].group||1;const el=sp.fam!=='bat'&&Math.random()<eliteP;
     for(let j=0;j<g;j++)q.push({fam:sp.fam,el:sp.el,elite:el});}
   if(boss)q.splice(Math.min(2,q.length),0,{boss:final?'quint':ph.boss});
-  wave={n,queue:q,spawnT:1.6,interval:Math.max(.3,1.25-n*.06),cleared:false,clearT:0};
+  wave={n,queue:q,spawnT:1.6,interval:Math.max(.3,1.25-n*.06),cleared:false,clearT:0,hurt:0,spells:new Set(),reactions:0,recap:null};
+  if(run.stats){run.stats.chain=0;run.stats.chainT=0;}
   if(P.waveShield)P.shieldT=P.waveShield;
   P.fortuneReady=P.fortune;
   if(P.tower)rings.push({kind:'tower',x:P.x,y:P.y,r:P.r,maxR:340,speed:520,dmg:40,els:'',kb:520,delay:2.6,follow:true,hit:new Set()});
@@ -1313,9 +1381,37 @@ function spawner(dt){
   }
 }
 const CLEAR_TIME=1.7;
+// Façanhas só contam na Arena; não alteram os sorteios nem o progresso da História.
+function arenaCast(k){if(mode!=='arena'||!run.stats||wave.cleared)return;run.stats.casts++;if(wave.spells)wave.spells.add(k);}
+function arenaKillPoints(base){
+  if(mode!=='arena'||!run.stats)return base;
+  const s=run.stats;s.kills++;s.chain++;s.chainT=4;s.bestChain=Math.max(s.bestChain,s.chain);
+  const bonus=Math.min(3,Math.floor(s.chain/5))*10,pts=Math.round(base*(1+bonus/100));s.bonus+=pts-base;
+  if(s.chain===5||s.chain===10||s.chain===15)addText(P.x,P.y-52,`Sequência ${s.chain} · +${bonus}% pontos`,'#e8c477');
+  return pts;
+}
+function arenaWaveRewards(){
+  const s=run.stats,feats=[];let bonus=0;
+  const add=(name,pts)=>{const n=Math.round(pts*(1+.1*(wave.n-1)));feats.push({name,pts:n});bonus+=n;};
+  if(!wave.hurt){s.perfect++;add('Intocável',40);}
+  if(wave.spells&&wave.spells.size>=3){s.versatile++;add('Alquimista',35);}
+  if(wave.reactions)add('Reação elemental',30);
+  score+=bonus;s.bonus+=bonus;wave.recap={feats,bonus};
+  return wave.recap;
+}
+function fillWaveRecap(){
+  const box=$('#waveRecap'),r=wave.recap;box.hidden=!r;
+  if(!r)return;
+  box.innerHTML=r.feats.length?`<b>Façanhas · +${r.bonus} pontos</b><p>${r.feats.map(f=>`${f.name} +${f.pts}`).join(' · ')}</p>`:'<b>Onda superada</b><p>Na próxima, tente não levar dano, lançar 3 magias diferentes ou provocar uma reação.</p>';
+}
+function fillRunRecap(id){
+  const s=run.stats,box=$(id);box.hidden=!s;if(!s)return;
+  const sec=Math.floor(s.time),time=`${Math.floor(sec/60)}:${String(sec%60).padStart(2,'0')}`;
+  box.innerHTML=`<span>Tempo em jogo <b>${time}</b></span><span>Inimigos vencidos <b>${s.kills}</b></span><span>Melhor sequência <b>${s.bestChain}</b></span><span>Ondas sem dano <b>${s.perfect}</b></span><span>Reações elementais <b>${s.reactions}</b></span><span>Pontos de bônus <b>${s.bonus}</b></span>`;
+}
 function checkWaveClear(){
   if(wave.queue.length||enemies.length)return;
-  if(!wave.cleared){wave.cleared=true;wave.clearT=CLEAR_TIME;slowT=1.5;sfx('wave');banner(`Onda ${wave.n} vencida`,'','');}
+  if(!wave.cleared){wave.cleared=true;wave.clearT=CLEAR_TIME;slowT=1.5;sfx('wave');const r=arenaWaveRewards();banner(`Onda ${wave.n} vencida`,r.feats.length?r.feats.map(f=>f.name).join(' · '):'Prepare sua próxima combinação','',r.bonus?`+${r.bonus} pontos de façanhas`:'');}
   wave.clearT-=realDt;
   if(wave.clearT<=0){if(run.victoryPending){run.victoryPending=false;showVictory();}else showUpgrade();}
 }
@@ -1370,6 +1466,16 @@ function arcCardHTML(c,i){
     <span class="face front"><span class="rn">${c.rn}</span><span class="art">${arcGlyph(c,64)}</span><span class="tn">${c.name}</span><span class="tw">${c.who}</span></span></span>
   </button><p class="teff">${c.desc}</p></div>`;
 }
+function upgradePreview(u,c){
+  if(u.evo)return u.desc;
+  const old=P,fmt=n=>Number(n.toFixed(1)).toLocaleString('pt-BR');let a,b;
+  const stat=()=>({vigor:P.maxHp,fluxo:P.regen,reserva:P.maxMana,foco:P.cdMul*100,agil:P.speed/205*100,regen:P.hpRegen,poder:P.dmgMul*100,eco:Math.min(1,P.echo)*100,vamp:P.lifeSteal,mare:P.killMana,quint:P.etherMul*100})[u.id];
+  // O Arcano e a bênção são simulados numa cópia, sem mudar o jogador ao consultar a oferta.
+  try{P=Object.assign({},old,{aff:Object.assign({},old.aff),evo:new Set(old.evo),elems:new Set(old.elems),arcRun:old.arcRun.slice(),arcCycle:new Set(old.arcCycle),echoQ:old.echoQ.map(q=>Object.assign({},q))});if(c)c.apply();a=u.el?P.aff[u.el]*100:stat();u.apply();b=u.el?P.aff[u.el]*100:stat();}finally{P=old;}
+  if(u.el)return `Bônus de ${EL[u.el].name}: +${fmt(a)}% → +${fmt(b)}%.`;
+  const labels={vigor:['Vida máxima','; cura total.'],fluxo:['Regeneração base',' de mana/s.'],reserva:['Mana máxima','.'],foco:['Tempo de recarga',' do tempo base.'],agil:['Velocidade de movimento',' da velocidade base.'],regen:['Cura por segundo',' de vida/s.'],poder:['Dano geral',' do dano base.'],eco:['Chance de eco','.'],vamp:['Cura por abate',' de vida.'],mare:['Mana por abate','.'],quint:['Ganho de carga do Avatar',' do ganho base.']},l=labels[u.id],pct=['foco','agil','poder','eco','quint'].includes(u.id)?'%':'';
+  return l?`${l[0]}: ${fmt(a)}${pct} → ${fmt(b)}${pct}${l[1]}`:u.desc;
+}
 function showUpgrade(){return seeded(1000+wave.n,showUpgradeNow);}
 function showUpgradeNow(){
   const take=arr=>arr.splice(Math.random()*arr.length|0,1)[0];
@@ -1384,30 +1490,45 @@ function showUpgradeNow(){
   const rest=gen.concat(evoPool);
   while(picks.length<3&&rest.length)picks.push(take(rest));
   $('#upTitle').innerHTML=numHTML(`Onda ${wave.n} vencida`);
+  fillWaveRecap();
   let selArc=null,selUp=null;
-  const go=$('#upGo');
-  const refresh=()=>{go.disabled=!(selArc&&selUp);go.textContent=go.disabled?(selArc?'Agora escolha uma bênção':selUp?'Agora escolha um Arcano':'Escolha um Arcano e uma bênção'):`Seguir para a onda ${wave.n+1}`;};
+  const go=$('#upGo'),reroll=$('#upReroll'),hint=$('#upRerollHint'),canReroll=mode==='arena'&&!run.daily,phase=run.phase?run.phase.num:Math.ceil(wave.n/PHASE_LEN),counts=run.blessCounts||(run.blessCounts={});
+  const refresh=()=>{go.disabled=!(selArc&&selUp);go.textContent=go.disabled?(selArc?'Agora escolha uma bênção':selUp?'Agora escolha um Arcano':'Escolha um Arcano e uma bênção'):`Seguir para a onda ${wave.n+1}`;
+    const used=run.blessRerollPhase===phase;reroll.hidden=!canReroll;reroll.disabled=used||rest.length<3;reroll.textContent=used?'Troca usada':'Trocar';reroll.setAttribute('aria-label','Trocar as três bênçãos; uma troca por fase');
+    hint.textContent=(canReroll?used?'Nova troca na próxima fase':'Uma troca por fase':'')+(selArc?(canReroll?' · ':'')+'Valores com o Arcano escolhido':'');hint.hidden=!hint.textContent;
+    picks.forEach((u,i)=>{const e=$('#up'+i+' .up-preview');if(e)e.textContent=upgradePreview(u,selArc);});};
   const abox=$('#upArcana');abox.innerHTML=arcs.map(arcCardHTML).join('');abox.style.gridTemplateColumns=`repeat(${arcs.length},minmax(0,1fr))`;
   arcs.forEach((c,i)=>{
     const btn=$('#arc'+i);
     setTimeout(()=>btn.classList.add('open'),reduceMotion?0:180+i*260);
     loadArcImage(c.n,src=>{if(!src)return;const im=document.createElement('img');im.src=src;im.alt='';
       const f=btn.querySelector('.front');f.innerHTML='';f.appendChild(im);});
-    btn.addEventListener('click',()=>{selArc=c;abox.querySelectorAll('.tarot').forEach(t=>t.classList.toggle('sel',t===btn));refresh();sfx('tick','A');});
+    btn.setAttribute('aria-pressed','false');btn.addEventListener('click',()=>{selArc=c;abox.querySelectorAll('.tarot').forEach(t=>{t.classList.toggle('sel',t===btn);t.setAttribute('aria-pressed',String(t===btn));});refresh();sfx('tick','A');});
   });
-  const box=$('#upCards');box.innerHTML='';
+  const box=$('#upCards');
+  const renderPicks=()=>{box.innerHTML='';
   picks.forEach((u,i)=>{
-    const b=document.createElement('button');b.className='card';b.id='up'+i;
+    const b=document.createElement('button');b.className='card';b.id='up'+i;b.dataset.upgrade=u.id;b.setAttribute('aria-pressed','false');
     const icon=u.evo?glyphSVG(u.evo,36):u.el?glyphSVG(u.el,36):upIcon(u.id);
-    b.innerHTML=`<span class="g">${icon}</span><span>${u.evo?`<em class="tag">Evolução · ${SPELLS[u.evo].name}</em>`:''}<b>${u.name}</b><small>${u.desc}</small></span>`;
-    b.addEventListener('click',()=>{selUp=u;box.querySelectorAll('.card').forEach(t=>t.classList.toggle('sel',t===b));refresh();sfx('tick','W');});
+    const n=counts[u.id]||0;
+    b.innerHTML=`<span class="g">${icon}</span><span>${u.evo?`<em class="tag">Evolução · ${SPELLS[u.evo].name}</em>`:''}<b>${u.name}</b><small class="up-preview">${upgradePreview(u,selArc)}</small>${n?`<small class="up-owned">Escolhida ${n} ${n===1?'vez':'vezes'} nesta corrida</small>`:''}</span>`;
+    b.addEventListener('click',()=>{selUp=u;box.querySelectorAll('.card').forEach(t=>{t.classList.toggle('sel',t===b);t.setAttribute('aria-pressed',String(t===b));});refresh();sfx('tick','W');});
     box.appendChild(b);
-  });
+  });};
+  renderPicks();
+  reroll.onclick=()=>{
+    if(state!=='upgrade'||mode!=='arena'||run.daily||run.blessRerollPhase===phase||rest.length<3)return;
+    run.blessRerollPhase=phase;selUp=null;
+    const R=srand(7100+wave.n*313+arcs.reduce((n,c)=>n*31+c.n,7)),pool=rest.slice();picks.length=0;
+    while(picks.length<3&&pool.length){const i=R()*pool.length|0;picks.push(pool[i]);pool.splice(i,1);}
+    renderPicks();refresh();sfx('clear');
+  };
   go.onclick=()=>{
-    if(!selArc||!selUp)return;
+    if(state!=='upgrade'||!selArc||!selUp)return;
     selArc.apply();P.arcRun.push(selArc.n);P.arcCycle.add(selArc.n);
     if(!arcCollected.has(selArc.n)){arcCollected.add(selArc.n);store.set('arc',[...arcCollected]);if(arcCollected.size>=ARCANA.length)unlockConq('arcanos');}
     selUp.apply();
+    counts[selUp.id]=(counts[selUp.id]||0)+1;
     P.hp=P.fullHeal?P.maxHp:Math.min(P.maxHp,P.hp+P.maxHp*(run.diff>=5?0:.2));P.mana=P.maxMana;
     startWave(wave.n+1);setState('play');
   };
@@ -1424,7 +1545,9 @@ function pressElement(e){
   sfx('tick',e);
 }
 function dash(){
-  if(!P||!P.canDash||P.dashCd>0||P.dashT>0||state!=='play')return;
+  if(!P||!P.canDash||state!=='play')return;
+  if(P.dashCd>0||P.dashT>0){if(P.dashCd<=.15&&P.dashT<=0)P.dashBuffer=.15;return;}
+  P.dashBuffer=0;
   let dx=0,dy=0;
   if(joy.active&&(joy.dx||joy.dy)){dx=joy.dx;dy=joy.dy;}
   else{if(held('left'))dx-=1;if(held('right'))dx+=1;if(held('up'))dy-=1;if(held('down'))dy+=1;}
@@ -1433,18 +1556,28 @@ function dash(){
   burst(P.x,P.y,'#e0d0ff',14,180);
 }
 function clearSlots(){slots=[];UI.clear.flash=.18;sfx('clear');}
+function controlAt(x,y){
+  const all=[{kind:'cast',b:UI.cast,pad:1.15},...UI.els.map(b=>({kind:'el',b,pad:1.2})),{kind:'clear',b:UI.clear,pad:1.35},{kind:'ult',b:UI.ult,pad:1.4}];
+  if(P.canDash)all.push({kind:'dash',b:UI.dash,pad:1.4});
+  let best=null,bd=Infinity;
+  // o círculo desenhado tem prioridade sobre a área de toque ampliada dos vizinhos
+  for(const o of all){const d=d2(x,y,o.b.x,o.b.y);if(d<=o.b.r*o.b.r&&d<bd){best=o;bd=d;}}
+  if(best)return best;
+  for(const o of all){const d=d2(x,y,o.b.x,o.b.y)/(o.b.r*o.pad)**2;if(d<=1&&d<bd){best=o;bd=d;}}
+  return best;
+}
 function onDown(e){
   if(state!=='play')return;
   e.preventDefault();audioInit();
   const x=e.clientX,y=e.clientY;
   try{cv.setPointerCapture(e.pointerId);}catch(_){}
-  {const c=UI.cast;if(d2(x,y,c.x,c.y)<c.r*c.r){c.flash=.18;holds.set(e.pointerId,{auto:true,x,y});tryCast(x,y,true,false);return;}}
-  for(const b of UI.els){if(d2(x,y,b.x,b.y)<(b.r*1.2)**2){pressElement(b.e);b.flash=.18;return;}}
-  if(d2(x,y,UI.clear.x,UI.clear.y)<(UI.clear.r*1.35)**2){clearSlots();return;}
-  if(d2(x,y,UI.ult.x,UI.ult.y)<(UI.ult.r*1.4)**2){ultimate();return;}
-  if(P.canDash&&d2(x,y,UI.dash.x,UI.dash.y)<(UI.dash.r*1.4)**2){dash();return;}
+  const hit=controlAt(x,y);
+  if(hit){const b=hit.b;
+    if(hit.kind==='cast'){b.flash=.18;holds.set(e.pointerId,{auto:true,x,y});tryCast(x,y,true,false);}
+    else if(hit.kind==='el'){pressElement(b.e);b.flash=.18;}
+    else if(hit.kind==='clear')clearSlots();else if(hit.kind==='ult')ultimate();else dash();
+    return;}
   const c=UI.cast;
-  if(d2(x,y,c.x,c.y)<(c.r*1.15)**2){c.flash=.18;holds.set(e.pointerId,{auto:true,x,y});tryCast(x,y,true,false);return;}
   if(d2(x,y,c.x,c.y)<(UI.br*3.3)**2)return;
   if(e.pointerType!=='mouse'&&(opts.left?x>W*.5:x<W*.5)){
     if(!joy.active)Object.assign(joy,{active:true,id:e.pointerId,ox:x,oy:y,x,y,dx:0,dy:0});
@@ -1473,6 +1606,7 @@ cv.addEventListener('pointercancel',onUp);
 cv.addEventListener('lostpointercapture',onUp);
 cv.addEventListener('contextmenu',e=>e.preventDefault());
 addEventListener('keydown',e=>{
+  if(state==='grimoire'&&e.target&&e.target.id==='grimSearch'&&e.code!=='Escape')return;
   if(keyWait){e.preventDefault();e.stopPropagation();if(state==='opts')bindKey(e.code,e.key);else keyWait=null;return;}
   keys[e.code]=true;
   if(e.repeat&&state!=='play'&&(e.code==='Space'||e.code==='Enter'||e.code==='NumpadEnter')){e.preventDefault();return;}
@@ -1499,21 +1633,34 @@ addEventListener('blur',()=>{for(const k in keys)keys[k]=false;});
 
 // ---------------- Magias ----------------
 function nearest(x,y,R){let best=null,bd=R?R*R:Infinity;for(const e of enemies){if(e.dead)continue;const d=d2(e.x,e.y,x,y);if(d<bd){bd=d;best=e;}}return best;}
+function autoTarget(){
+  if(!P)return null;
+  let best=null,fallback=null,bd=mode==='story'?520*520:Infinity,fd=bd;
+  const cx=mode==='story'?camX:0,cy=mode==='story'?camY:0,top=Math.max(SA.t+56,UI.topB||0)+8;
+  const els=slots.join('');
+  for(const e of enemies){if(e.dead||e.hp<=0)continue;const x=e.x-cx,y=e.y-cy;
+    if(x<SA.l+8||x>W-SA.r-8||y<top||y>H-SA.b-8)continue;
+    const d=d2(e.x,e.y,P.x,P.y),immune=e.invuln||(e.kind==='prismara'&&!(e.exposedT>0))||(e.egg&&!els.includes('W'))||(e.shade&&mode==='story'&&!inLight(e.x,e.y));
+    if(d<fd){fd=d;fallback=e;}if(!immune&&d<bd){bd=d;best=e;}}
+  return best||fallback;
+}
 function healP(n){const b=P.hp;P.hp=Math.min(P.maxHp,P.hp+n);if(P.hp-b>=1)addText(P.x,P.y-28,'+'+Math.round(P.hp-b),'#6be38a');}
 function tryCast(tx,ty,auto,quiet){
-  if(!slots.length){if(!quiet&&P.noManaT<=-.6){P.noManaT=-.01;addText(P.x,P.y-30,'Escolha um elemento','#e8c477');}return false;}
+  if(!slots.length){if(!quiet&&T>=(P.castHintAt||0)){P.castHintAt=T+.9;addText(P.x,P.y-30,'Escolha um elemento','#e8c477');}return false;}
   const k=spellKey(slots),sp=spellOf(k);
   if(!sp)return false;
-  if((cds[k]||0)>0)return false;
+  const cd=cds[k]||0;
+  if(cd>0){if(!quiet&&T>=(P.castHintAt||0)){P.castHintAt=T+.9;addText(P.x,P.y-30,`Recarregando: ${(Math.ceil(cd*10)/10).toFixed(1).replace('.',',')} s`,'#b9b0d4');}return false;}
   const free=P.avatarT>0,cost=free?0:costOf(k,sp);
-  if(P.mana<cost){if(!quiet||P.noManaT<=-.6){P.noManaT=.35;sfx('nomana');}return false;}
+  if(P.mana<cost){P.noManaT=.35;if(!quiet&&T>=(P.castHintAt||0)){P.castHintAt=T+.9;sfx('nomana');addText(P.x,P.y-30,`Faltam ${Math.ceil(cost-P.mana)} de mana`,'#ffb09a');}return false;}
   let ax,ay;
-  if(auto){const t=nearest(P.x,P.y,mode==='story'?520:0);if(t){ax=t.x;ay=t.y;}else{ax=P.x+P.fx*200;ay=P.y+P.fy*200;}}
+  if(auto){const t=autoTarget();if(t){ax=t.x;ay=t.y;}else{ax=P.x+P.fx*200;ay=P.y+P.fy*200;}}
   else{ax=tx+camX;ay=ty+camY;}
   if(Math.abs(ax-P.x)<1&&Math.abs(ay-P.y)<1){ax=P.x+P.fx;ay=P.y+P.fy;}
   P.mana-=cost;cds[k]=sp.cd*P.cdMul*(free?.5:1);P.castT=.15;P.castN=(P.castN||0)+1;P.castAtT=T;
   const a=Math.atan2(ay-P.y,ax-P.x);P.fx=Math.cos(a);P.fy=Math.sin(a);
   cast(k,ax,ay,a);
+  arenaCast(k);
   if(mode==='story'&&story&&CH().onCast)CH().onCast(story,k);
   if(mode==='story'){const u=enemies.find(e=>e.kind==='umbra'&&!e.dead);if(u){u.mq=u.mq||[];u.mq.push({k:sp.multi||k,name:sp.name,t:.7});if(u.mq.length>4)u.mq.shift();}}
   if(P.echo&&Math.random()<P.echo)P.echoQ.push({k,ax,ay,t:.25});
@@ -1734,6 +1881,7 @@ function hurt(e,amt,els,o){
   if(e.hp<=0&&!e.dead)kill(e);
 }
 function noteReaction(k,x,y){
+  if(mode==='arena'&&run.stats&&!wave.cleared){run.stats.reactions++;wave.reactions=(wave.reactions||0)+1;}
   const R=REACTIONS[k];addText(x,y,R.name+'!',R.col);
   if(!reactSeen.has(k)){reactSeen.add(k);store.set('react',[...reactSeen]);if(reactSeen.size>=Object.keys(REACTIONS).length)setTimeout(()=>unlockConq('reacoes'),100);
     showToast('Nova reação descoberta',R.name,R.recipe,glyphSVG(R.g,46));sfx('discover');slowT=Math.max(slowT,.5);}
@@ -1770,7 +1918,7 @@ function quench(x,y,r){
 function kill(e){
   e.dead=true;
   if(mode==='story'&&story){story.kills++;if(e.popIdx!=null)story.deadPop.push(e.popIdx);gainXP(e.boss?(e.echo?40:80):Math.max(2,Math.round(e.pts*.6))*(e.elite?2:1));if(e.area)story.areaDead[e.area]=(story.areaDead[e.area]||0)+1;if(e.boss)storyEvent('bossDead',e);}
-  score+=Math.round(e.pts*(1+(wave.n-1)*.1)*(hasOmen('sangue')?1.5:1));
+  score+=arenaKillPoints(Math.round(e.pts*(1+(wave.n-1)*.1)*(hasOmen('sangue')?1.5:1)));
   P.ether=Math.min(100,P.ether+(e.boss?40:e.elite?8:3)*P.etherMul);
   if(P.lifeSteal)P.hp=Math.min(P.maxHp,P.hp+P.lifeSteal);
   if(P.killMana)P.mana=Math.min(P.maxMana,P.mana+P.killMana);
@@ -1791,6 +1939,7 @@ function hurtPlayer(d){
   if(P.shieldT>0||P.dashT>0)return;
   if(P.armorT>0)d*=.6;
   d*=P.dmgTaken;
+  if(d>0&&mode==='arena'&&run.stats){wave.hurt=(wave.hurt||0)+d;run.stats.chain=0;run.stats.chainT=0;}
   P.hp-=d;if(d>0&&mode==='story'&&story&&story.flags.bossSpawned&&!story.flags.bossDead)story.bossHurt=true;
   if(P.hurtT<=0){P.hurtT=.12;sfx('hurt');addShake(3);
     if(P.vibT<=0){P.vibT=.3;try{if(opts.vib&&navigator.vibrate&&(!navigator.userActivation||navigator.userActivation.hasBeenActive))navigator.vibrate(25);}catch(_){}}}
@@ -1810,13 +1959,14 @@ function hurtPlayer(d){
   if(P.hp<=0){P.hp=0;gameOver();}
 }
 function addShake(v){if(!reduceMotion&&opts.shake>0)shake=Math.max(shake,v*opts.shake);}
-function addNum(x,y,d,m){if(nums.length>70)nums.shift();nums.push({x,y,txt:String(Math.max(1,Math.round(d))),col:m>1?'#ffe27a':m<1?'#8f8799':'#efe7d6',big:m>1,life:.75,max:.75});}
+function addNum(x,y,d,m){if(!(d>0))return;if(nums.length>70)nums.shift();nums.push({x,y,txt:String(Math.max(1,Math.round(d))),col:m>1?'#ffe27a':m<1?'#8f8799':'#efe7d6',big:m>1,life:.75,max:.75});}
 function addText(x,y,txt,col){nums.push({x,y,txt,col,big:true,life:1,max:1});}
 
 // ---------------- Partículas ----------------
 function puff(x,y,o){
   if(parts.length>PART_CAP)parts.splice(0,parts.length-PART_CAP);
   const p=Object.assign({x,y,vx:0,vy:0,life:.6,size:4,color:'#fff',drag:2,grav:0,add:true},o);
+  p.seq=partSeq++;
   if(p.max==null)p.max=p.life;parts.push(p);
 }
 function burst(x,y,color,n,spd,o){
@@ -1834,6 +1984,7 @@ function updateParts(dt){
 // ---------------- Atualização ----------------
 function update(dt){
   T+=dt;
+  if(mode==='arena'&&run.stats){const s=run.stats;if(!wave.cleared)s.time+=realDt;s.chainT=Math.max(0,s.chainT-realDt);if(!s.chainT)s.chain=0;}
   spawner(dt);
   updatePlayer(dt);
   updateAllies(dt);
@@ -1866,6 +2017,7 @@ function updatePlayer(dt){
   if(m>.05&&P.castT<=0){P.fx=mx/m;P.fy=my/m;}
   const ox0=P.x,oy0=P.y,mm=P.moveMul||1;
   P.dashCd-=dt;
+  if(P.dashBuffer>0&&P.dashCd<=0&&P.dashT<=0)dash();else P.dashBuffer=Math.max(0,(P.dashBuffer||0)-dt);
   if(P.dashT>0){P.dashT-=dt;P.x+=P.dashDx*880*dt;P.y+=P.dashDy*880*dt;
     puff(P.x,P.y,{life:.3,size:7,color:'#b48cff',drag:4});}
   else{P.x+=mx*P.speed*mm*dt;P.y+=my*P.speed*mm*dt;}
@@ -2534,10 +2686,11 @@ function updateRings(dt){
 function updateOrbs(dt){
   for(const o of orbs){
     o.life-=dt;const dx=P.x-o.x,dy=P.y-o.y,d=Math.hypot(dx,dy);
+    if(o.t==='hp'?P.hp>=P.maxHp:P.mana>=P.maxMana)continue;
     if(d<130&&d>1){o.x+=dx/d*380*dt;o.y+=dy/d*380*dt;}
     if(d<P.r+10){o.life=0;
-      if(o.t==='hp'){P.hp=Math.min(P.maxHp,P.hp+14);addText(P.x,P.y-28,'+14','#6be38a');}
-      else{P.mana=Math.min(P.maxMana,P.mana+25);addText(P.x,P.y-28,'+25','#7fb2ff');}
+      if(o.t==='hp'){const n=Math.min(14,P.maxHp-P.hp);P.hp+=n;addText(P.x,P.y-28,'+'+Math.ceil(n),'#6be38a');}
+      else{const n=Math.min(25,P.maxMana-P.mana);P.mana+=n;addText(P.x,P.y-28,'+'+Math.ceil(n),'#7fb2ff');}
       sfx('pick');}
   }
   orbs=orbs.filter(o=>o.life>0);
@@ -2555,12 +2708,23 @@ function hudStack(){
   if(!ob.hidden)UI.objB=ob.getBoundingClientRect().bottom;
   UI.topB=Math.max(hb,mode==='story'&&UI.objB?UI.objB:0);
   const tt=Math.round(Math.max(UI.topB,UI.bossBot||0)+8);if(UI.toastTop!==tt){UI.toastTop=tt;app.style.setProperty('--toastTop',tt+'px');app.style.setProperty('--bnTop',tt+'px');}
+  // em pé, aproxima o aviso do HUD antes de reduzir a letra para preservar os selos e o nome da magia
+  const bn=$('#banner');if(W<=H&&bn.classList.contains('show')&&UI.els.length){
+    const bot=UI.els[0].y-UI.br-24-38,bh=bn.getBoundingClientRect().height,key=[W,H,tt,bot,bn.textContent].join('|');
+    if(UI.bnFitKey!==key||UI.bnFitH!==bh){bn.classList.remove('fit-small');let h=bn.getBoundingClientRect().height;
+      if(h>bot-tt){bn.classList.add('fit-small');h=bn.getBoundingClientRect().height;}
+      const top=Math.max(tt,Math.min(Math.max(H*.28,tt+86),bot-h));app.style.setProperty('--bnFitTop',Math.floor(top)+'px');UI.bnFitKey=key;UI.bnFitH=h;}
+  }else if(UI.bnFitKey){app.style.removeProperty('--bnFitTop');bn.classList.remove('fit-small');UI.bnFitKey=null;}
 }
 function updateHUD(){
   hpFill.style.transform=`scaleX(${clamp(P.hp/P.maxHp,0,1)})`;
   mnFill.style.transform=`scaleX(${clamp(P.mana/P.maxMana,0,1)})`;
-  setText('hpTxt',`${Math.ceil(P.hp)} / ${P.maxHp}`);
+  const low=P.hp<=P.maxHp*.25;$('#hud .hp').classList.toggle('low',low);
+  setText('hpTxt',`${low?'Vida baixa · ':''}${Math.ceil(P.hp)} / ${P.maxHp}`);
   setText('mnTxt',P.avatarT>0?'Avatar: mana livre':`${Math.floor(P.mana)} / ${P.maxMana}`);
+  const flow=$('#flowTxt');flow.hidden=mode!=='arena';
+  if(mode==='arena'&&run.stats){const s=run.stats,b=Math.min(3,Math.floor(s.chain/5))*10;flow.classList.toggle('chain',s.chain>=5);
+    setText('flowTxt',wave.cleared?'Onda concluída':s.chain>=2?`Sequência ${s.chain} · ${b?'+'+b+'% pontos':'bônus em 5'}`:`${wave.hurt?'Magias':'Sem dano · magias'} ${Math.min(3,wave.spells?wave.spells.size:0)}/3${wave.reactions?' · reação ✓':''}`);}
   {const xb=$('#xpBar'),on=mode==='story'&&!!story;if(xb.hidden===on)xb.hidden=!on;
     if(on){const mx=lvMax();$('#xpFill').style.transform=`scaleX(${mx?1:clamp(LV.xp/xpNeed(LV.lvl),0,1)})`;setText('xpTxt',mx?`Nível ${LV.lvl} · máximo`:`Nível ${LV.lvl} · ${LV.xp} / ${xpNeed(LV.lvl)} XP`);}}
   if(mode==='story'&&story){setText('waveTxt',CH().label||'Capítulo '+CH().rn);setText('leftTxt',story.region?story.region.name:'');setText('scoreTxt','');
@@ -2594,6 +2758,7 @@ function render(){
   drawHazards();
   drawOrbs();
   drawRings();
+  drawDashWarnings();
   for(const l of allies)if(l.kind==='tree'||l.kind==='golem'||l.kind==='obsidian')drawAlly(l);
   for(const e of enemies)if(!e.dead)drawEnemy(e);
   drawPlayer();
@@ -2606,6 +2771,7 @@ function render(){
   drawParts();
   drawBolts();
   ctx.restore();
+  if(state==='play')drawAutoTarget();
   if(inStory)drawStoryDark();
   if(hasOmen('eclipse')){const g=ctx.createRadialGradient(P.x,P.y,80,P.x,P.y,240);g.addColorStop(0,'rgba(4,3,8,0)');g.addColorStop(1,'rgba(4,3,8,.94)');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);}
   ctx.save();if(inStory)ctx.translate(-camX,-camY);drawNums();ctx.restore();
@@ -2637,11 +2803,11 @@ function menuAmbient(dt){
 }
 function drawParts(){
   ctx.globalCompositeOperation='lighter';
-  for(const p of parts){if(!p.add)continue;const f=p.life/p.max;
+  for(const p of parts){if(!p.add||(opts.fx<1&&(p.seq&1)))continue;const f=p.life/p.max;
     if(p.streak){ctx.strokeStyle=hexA(p.color,f*.8);ctx.lineWidth=p.size;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(p.x-p.vx*.04,p.y-p.vy*.04);ctx.stroke();}
     else drawGlow(p.x,p.y,p.size*2.4*(.4+.6*f),p.color,Math.min(1,f*1.4));}
   ctx.globalCompositeOperation='source-over';
-  for(const p of parts){if(p.add)continue;const f=p.life/p.max;ctx.globalAlpha=Math.min(1,f*1.5);ctx.fillStyle=p.color;ctx.fillRect(p.x-p.size/2,p.y-p.size/2,p.size,p.size);}
+  for(const p of parts){if(p.add||(opts.fx<1&&(p.seq&1)))continue;const f=p.life/p.max;ctx.globalAlpha=Math.min(1,f*1.5);ctx.fillStyle=p.color;ctx.fillRect(p.x-p.size/2,p.y-p.size/2,p.size,p.size);}
   ctx.globalAlpha=1;
 }
 // ---------------- Avatares da bolinha (liberados por conquistas) ----------------
@@ -2810,8 +2976,7 @@ function drawBody(fam,el,r,e){
       break;
     case 'beast':{
       ctx.save();ctx.rotate(e.face);
-      if(e.mode==='wind'){ctx.translate(rand(-2,2),rand(-2,2));
-        ctx.strokeStyle='rgba(255,90,60,.55)';ctx.lineWidth=2;ctx.setLineDash([6,6]);ctx.beginPath();ctx.moveTo(r*1.6,0);ctx.lineTo(r*1.6+220,0);ctx.stroke();ctx.setLineDash([]);}
+      if(e.mode==='wind')ctx.translate(rand(-2,2),rand(-2,2));
       ctx.strokeStyle=dk;ctx.lineWidth=Math.max(3,r*.22);ctx.lineCap='round';
       for(const s of[-1,1])for(const k of[-.55,.45]){ctx.beginPath();ctx.moveTo(k*r,s*r*.45);ctx.lineTo(k*r+Math.sin(T*12+e.seed+k*3)*r*.25,s*r*1.0);ctx.stroke();}
       ctx.beginPath();ctx.ellipse(0,0,r*1.25,r*.8,0,0,TAU);ctx.fillStyle=grad();ctx.fill();
@@ -3078,6 +3243,23 @@ BOSS_ART.aurelion=function(e,c){
   additive(()=>drawGlow(0,0,60,'#ff6b2c',.45+.15*Math.sin(T*5)));
 };
 function drawBossArt(e,c){ctx.save();ctx.scale(e.r/40,e.r/40);ctx.lineJoin='round';BOSS_ART[e.kind](e,c);ctx.restore();ctx.globalAlpha=1;ctx.setLineDash([]);}
+function drawDashWarnings(){
+  for(const e of enemies){
+    if(e.dead||e.mode!=='wind'||e.stunT>0||e.freezeT>0||!Number.isFinite(e.dashA))continue;
+    if(mode==='story'&&story){
+      if(e.x+e.r<camX||e.x-e.r>camX+W||e.y+e.r<camY||e.y-e.r>camY+H||e.shade&&!inLight(e.x,e.y))continue;
+      if(story.eclipse){let lit=d2(e.x,e.y,P.x,P.y)<210*210;
+        for(const l of story.lanterns||[])if(!l.alive&&d2(e.x,e.y,l.x,l.y)<l.lr*l.lr)lit=true;
+        for(const sp of story.springs||[])if(d2(e.x,e.y,sp.x,sp.y)<sp.r*sp.r*4)lit=true;if(!lit)continue;
+      }else if(story.region&&story.region.dark&&d2(e.x,e.y,P.x,P.y)>250*250)continue;
+    }
+    const w=Math.min(36,e.r*.7+6),len=Math.min(280,Math.min(W,H)*.65+e.r);
+    ctx.save();ctx.translate(e.x,e.y);ctx.rotate(e.dashA);
+    ctx.beginPath();ctx.moveTo(e.r,-w);ctx.lineTo(len-15,-w);ctx.lineTo(len,0);ctx.lineTo(len-15,w);ctx.lineTo(e.r,w);ctx.closePath();
+    ctx.fillStyle='rgba(255,90,60,.12)';ctx.fill();ctx.strokeStyle='rgba(255,132,101,.55)';ctx.lineWidth=1.5;ctx.stroke();
+    ctx.setLineDash([7,6]);ctx.beginPath();ctx.moveTo(e.r+8,0);ctx.lineTo(len-16,0);ctx.stroke();ctx.restore();
+  }
+}
 function drawEnemy(e){
   const c=EL[e.el],r=e.r;
   if(e.liftT>0){ctx.fillStyle='rgba(0,0,0,.35)';ctx.beginPath();ctx.ellipse(e.x,e.y+r*.6,r*.9,r*.35,0,0,TAU);ctx.fill();}
@@ -3361,6 +3543,13 @@ function drawBossBar(){
   else put(`${nm} · ${EL[b.el].name} · fraco contra ${EL[WEAK[b.el]].name}`,y+14);
   ctx.shadowBlur=0;UI.bossBot=bot;
 }
+function drawAutoTarget(){
+  if(!opts.aim||!slots.length||wave.cleared)return;const e=autoTarget();if(!e)return;
+  const x=e.x-(mode==='story'?camX:0),y=e.y-(mode==='story'?camY:0),r=e.r+7;
+  ctx.save();ctx.strokeStyle='rgba(232,196,119,.7)';ctx.lineWidth=1.6;
+  for(let i=0;i<4;i++){const a=i*Math.PI/2+.18;ctx.beginPath();ctx.arc(x,y,r,a,a+.8);ctx.stroke();}
+  ctx.restore();
+}
 function drawControls(){
   const R=UI.joyR;
   if(joy.active||coarse){
@@ -3372,6 +3561,7 @@ function drawControls(){
     ctx.globalAlpha=1;
   }
   const k=slots.length?spellKey(slots):null,sp=k&&spellOf(k),free=P.avatarT>0;
+  const cost=sp&&!free?costOf(k,sp):0,cd=k?Math.max(0,cds[k]||0):0,missing=Math.max(0,Math.ceil(cost-P.mana)),can=!!sp&&cd<=0&&!missing;
   for(const b of UI.els){
     const c=EL[b.e],n=slots.filter(s=>s===b.e).length,on=n>0;
     ctx.beginPath();ctx.arc(b.x,b.y,b.r,0,TAU);ctx.fillStyle=on?hexA(c.c,.2):'rgba(14,11,20,.72)';ctx.fill();
@@ -3410,14 +3600,13 @@ function drawControls(){
   // botão de lançar
   const c=UI.cast;
   ctx.beginPath();ctx.arc(c.x,c.y,c.r,0,TAU);ctx.fillStyle='rgba(14,11,20,.82)';ctx.fill();
-  const can=sp&&(free||P.mana>=costOf(k,sp));
-  ctx.strokeStyle=free?EL[ORDER[(T*6|0)%4]].g:can?'#e8c477':'rgba(217,67,74,.85)';ctx.lineWidth=2.5;ctx.stroke();
+  ctx.strokeStyle=can?(free?EL[ORDER[(T*6|0)%4]].g:'#e8c477'):missing?'rgba(217,67,74,.85)':cd>0?'#897b9e':'rgba(232,196,119,.35)';ctx.lineWidth=2.5;ctx.stroke();
   if(c.flash>0)additive(()=>drawGlow(c.x,c.y,c.r*1.6,'#e8c477',c.flash*4));
   const ly=UI.els[0].y-UI.br-24;
   let lx=c.x,name='',recipe='',known=false;
   const hint=coarse?'Toque em um elemento':`Elementos: ${['F','W','E','A'].map(e=>keyName(KM[e])).join(' ')}`;
   if(k){known=k.length===1||(k.includes('>')?infDisc.has(sp.multi):discovered.has(k));name=known?sp.name:'???';
-    recipe=`${slots.map(s=>EL[s].name).join(' + ')} · ${free?'grátis':costOf(k,sp)+' mana'}`;
+    recipe=cd>0?`Recarregando · ${(Math.ceil(cd*10)/10).toFixed(1).replace('.',',')} s`:missing?`Faltam ${missing} de mana`:`${slots.map(s=>EL[s].name).join(' + ')} · ${free?'grátis':cost+' mana'}`;
     ctx.font=`20px ${DISPLAY}`;const w1=ctx.measureText(name).width;ctx.font=`700 12px ${BODY}`;const w2=ctx.measureText(recipe).width;
     const half=Math.min(Math.max(w1,w2),W-SA.l-SA.r-24)/2;lx=clamp(c.x,SA.l+12+half,W-SA.r-12-half);}
   else{ctx.font=`700 12px ${BODY}`;const half=ctx.measureText(hint).width/2;lx=clamp(c.x,SA.l+12+half,W-SA.r-12-half);}
@@ -3427,13 +3616,12 @@ function drawControls(){
     if(s){ctx.fillStyle=EL[s].c;ctx.fill();}else{ctx.strokeStyle='rgba(232,196,119,.5)';ctx.lineWidth=1.5;ctx.stroke();}}
   ctx.textAlign='center';ctx.textBaseline='alphabetic';ctx.shadowColor='#000';ctx.shadowBlur=6;
   if(k){ctx.globalAlpha=can?1:.45;comboGlyph(ctx,k,c.x,c.y+1,c.r*.5,3);ctx.globalAlpha=1;
-    const cd=cds[k]||0;
     if(cd>0){const f=clamp(cd/(sp.cd*P.cdMul*(free?.5:1)),0,1);ctx.beginPath();ctx.moveTo(c.x,c.y);ctx.arc(c.x,c.y,c.r,-Math.PI/2,-Math.PI/2+TAU*f);ctx.closePath();ctx.fillStyle='rgba(0,0,0,.5)';ctx.fill();}
     const mw=W-SA.l-SA.r-24;
     ctx.font=`20px ${DISPLAY}`;ctx.fillStyle=known?'#efe7d6':'#e8c477';ctx.fillText(name,lx,ly,mw);
-    ctx.font=`700 12px ${BODY}`;ctx.fillStyle='#b9b0a0';ctx.fillText(recipe,lx,ly+16,mw);
+    ctx.font=`700 12px ${BODY}`;ctx.fillStyle=cd>0?'#c5b4e2':missing?'#ffb09a':'#b9b0a0';ctx.fillText(recipe,lx,ly+16,mw);
   } else {
-    ctx.font=`700 12px ${BODY}`;ctx.fillStyle='#b9b0a0';ctx.fillText(hint,lx,ly+8);
+    ctx.font=`700 12px ${BODY}`;ctx.fillStyle='#b9b0a0';ctx.fillText(hint,lx,ly+8,W-SA.l-SA.r-24);
   }
   ctx.shadowBlur=0;
 }
@@ -6182,7 +6370,7 @@ function drawStoryDark(){
 const screens={avatar:$('#sAvatar'),level:$('#sLevel'),opts:$('#sOpts'),arena:$('#sArena'),chapters:$('#sChapters'),dialog:$('#sDialog'),chapter:$('#sChapter'),altar:$('#sAltar'),win:$('#sWin'),menu:$('#sMenu'),grimoire:$('#sGrim'),help:$('#sHelp'),upgrade:$('#sUp'),pause:$('#sPause'),over:$('#sOver')};
 let screenAt=0;
 function setState(s){
-  state=s;screenAt=performance.now();
+  if(P)P.dashBuffer=0;state=s;screenAt=performance.now();
   for(const k in screens)screens[k].hidden=k!==s;
   $('#app').classList.toggle('story',!!(P&&mode==='story'));
   {const inGame=s==='play'||s==='dialog';$('#app').classList.toggle('playing',inGame);$('#app').classList.toggle('talk',s==='dialog');$('#app').classList.toggle('menus',!inGame);}
@@ -6220,21 +6408,45 @@ function refreshMenu(){
 }
 function soundLabels(){const t=`Som: ${muted?'desligado':'ligado'}`,m=`Música: ${M.on?'ligada':'desligada'}`;
   $('#bSound').textContent=t;$('#bPSound').textContent=t;$('#bMusic').textContent=m;$('#bPMusic').textContent=m;}
+let grimSize=0;
+const grimFold=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+function grimBattle(){return !!(P&&returnTo==='pause');}
+function grimReason(k){
+  const els=k.replace('>','').split('');
+  if(els.length>P.maxSlots)return `Precisa de ${els.length} selos; você tem ${P.maxSlots}.`;
+  const missing=[...new Set(els)].filter(e=>!P.elems.has(e));if(missing.length)return 'Desperte: '+missing.map(e=>EL[e].name).join(', ')+'.';
+  if(els.includes(P.stolen))return `${EL[P.stolen].name} está com Nihil.`;
+  return '';
+}
+function grimPrepareHTML(k){
+  if(!grimBattle())return '';const reason=grimReason(k);
+  return reason?`<p class="grim-unready">${reason}</p>`:`<p class="grim-ready">Elementos e selos disponíveis</p><button class="btn small grim-prepare" data-grim-prepare="${k}">Preparar magia</button>`;
+}
 function spellLi(k,known){
-  const s=SPELLS[k];
-  if(!known)return `<li class="unknown"><span class="g">${glyphSVG('?',40)}</span><div><b>???</b><span class="recipe">${k.length===4?'Cataclismo desconhecido':k.length===3?'Ritual desconhecido':'Mistura desconhecida'}</span><p>${s.hint}</p></div></li>`;
-  const rec=k.length===1?`${EL[k].name} puro`:k.split('').map(c=>EL[c].name).join(' + ');
+  const s=spellOf(k),inf=k.includes('>'),n=inf?4:k.length,attrs=`data-grim-spell data-grim-size="${n}" data-grim-known="${known?1:0}"`;
+  if(!known)return `<li class="unknown" ${attrs}><span class="g">${glyphSVG('?',40)}</span><div><b>???</b><span class="recipe">${n===4?'Cataclismo desconhecido':n===3?'Ritual desconhecido':'Mistura desconhecida'}</span><p>${s.hint}</p></div></li>`;
+  const rec=inf?`${s.base.split('').map(c=>EL[c].name).join(' + ')} → ${EL[s.inf].name} por último`:k.length===1?`${EL[k].name} puro`:k.split('').map(c=>EL[c].name).join(' + ');
   const evo=EVOS[k]?`<p><b style="display:inline;font:inherit;color:var(--gold)">Evolução:</b> ${EVOS[k].name}. ${EVOS[k].desc}</p>`:'';
-  return `<li><span class="g">${glyphSVG(k,40)}</span><div><b>${s.name}</b><span class="recipe">${rec} · ${s.cost} mana</span><p>${s.desc}</p>${evo}</div></li>`;
+  const cost=grimBattle()&&P.avatarT>0?'grátis no Avatar':`${grimBattle()?costOf(k,s):s.cost} mana`;
+  return `<li ${attrs}><span class="g">${glyphSVG(k,40)}</span><div><b>${s.name}</b><span class="recipe">${rec} · ${cost}</span><p>${s.desc}</p>${evo}${grimPrepareHTML(k)}</div></li>`;
+}
+function filterGrimSpells(){
+  const words=grimFold($('#grimSearch').value.trim()).split(/\s+/).filter(Boolean),known=$('#grimKnown').checked;let count=0;
+  document.querySelectorAll('#sGrim [data-grim-section]').forEach(box=>{let shown=0;
+    box.querySelectorAll('[data-grim-spell]').forEach(li=>{const ok=(!grimSize||+li.dataset.grimSize===grimSize)&&(!known||li.dataset.grimKnown==='1')&&words.every(w=>grimFold(li.textContent).includes(w));li.hidden=!ok;if(ok)shown++;});
+    const note=box.querySelector('.note');box.hidden=!shown&&!(!box.querySelector('[data-grim-spell]')&&note&&note.textContent.trim()&&!words.length&&(!grimSize||grimSize===4));count+=shown;});
+  $('#grimResults').textContent=`${count} ${count===1?'receita visível':'receitas visíveis'}`;$('#grimEmpty').hidden=!!count;
+  document.querySelectorAll('#grimSizes button').forEach(b=>b.setAttribute('aria-pressed',String(+b.dataset.grimSize===grimSize)));
 }
 function renderGrimoire(){
   checkConq(true);
-  const s4=seal4();
+  const s4=seal4()||grimBattle()&&P.maxSlots>=4;
   $('#cataNote').textContent=s4?`Você descobriu ${cataDisc()} de ${MIX4.length} Cataclismos. Carregue quatro elementos que formem uma destas combinações.`:'Conclua o Capítulo X para ganhar o Quarto Selo e misturar os quatro elementos.';
   $('#grimCata').innerHTML=s4?MIX4.map(k=>spellLi(k,discovered.has(k))).join(''):'';
   $('#infNote').textContent=s4?`Você descobriu ${infDisc.size} de ${INF_ALL.length} Infusões. Os três primeiros toques formam um ritual, e o quarto elemento o reforça: Fogo ${INF_FX.F}; Água ${INF_FX.W}; Terra ${INF_FX.E}; Ar ${INF_FX.A}.`:'';
-  $('#grimInf').innerHTML=s4?INF_ALL.map(m=>infDisc.has(m)?`<li><span class="g">${glyphSVG(m,40)}</span><div><b>${m.split('').map(c=>EL[c].name).join(' + ')}</b><span class="recipe">Infusão descoberta</span><p>A ordem dos toques decide qual ritual sai e qual elemento entra por último.</p></div></li>`
-    :`<li class="unknown"><span class="g">${glyphSVG('?',40)}</span><div><b>???</b><span class="recipe">Infusão desconhecida</span><p>Quatro elementos que não formam um Cataclismo.</p></div></li>`).join(''):'';
+  $('#grimInf').innerHTML=s4?INF_ALL.map(m=>{if(!infDisc.has(m))return `<li class="unknown" data-grim-spell data-grim-size="4" data-grim-known="0"><span class="g">${glyphSVG('?',40)}</span><div><b>???</b><span class="recipe">Infusão desconhecida</span><p>Quatro elementos que não formam um Cataclismo.</p></div></li>`;
+    const variants=[...new Set(m)].map(e=>{const i=m.indexOf(e);return m.slice(0,i)+m.slice(i+1)+'>'+e;}).filter(k=>discovered.has(k.split('>')[0]));
+    return variants.length?variants.map(k=>spellLi(k,true)).join(''):`<li data-grim-spell data-grim-size="4" data-grim-known="1"><span class="g">${glyphSVG(m,40)}</span><div><b>${m.split('').map(c=>EL[c].name).join(' + ')}</b><span class="recipe">Infusão descoberta</span><p>Descubra um ritual de três destes ingredientes para consultar e preparar suas variações.</p></div></li>`;}).join(''):'';
   $('#conqNote').textContent=`Você desbloqueou ${conq.size} de ${CONQ.length} conquistas.`;
   $('#grimConq').innerHTML=CONQ.map(c=>conq.has(c.id)?`<li><span class="g">${conqSVG(40)}</span><div><b>${c.name}</b><p>${c.desc}</p></div></li>`
     :`<li class="unknown"><span class="g">${glyphSVG('?',40)}</span><div><b>${c.name}</b><p>${c.desc}</p></div></li>`).join('');
@@ -6256,7 +6468,15 @@ function renderGrimoire(){
   $('#grimArc').innerHTML=ARCANA.map(c=>arcCollected.has(c.n)
     ?`<li><span class="g">${arcGlyph(c,40)}</span><div><b>${c.rn} · ${c.name}</b><span class="recipe">${c.who}</span><p>${c.desc}</p></div></li>`
     :`<li class="unknown"><span class="g">${glyphSVG('?',40)}</span><div><b>${c.rn} · ???</b><span class="recipe">Arcano não coletado</span><p>Vença uma onda e escolha esta carta.</p></div></li>`).join('');
+  const battle=$('#grimBattle');battle.hidden=!grimBattle();if(!battle.hidden)battle.textContent=`${P.maxSlots} selos · ${ORDER.split('').filter(e=>P.elems.has(e)&&e!==P.stolen).map(e=>EL[e].name).join(', ')}. Preparar carrega os selos e volta à pausa, sem lançar.`;
+  filterGrimSpells();
 }
+$('#grimSearch').addEventListener('input',filterGrimSpells);$('#grimKnown').addEventListener('change',filterGrimSpells);
+$('#grimSearch').addEventListener('focus',()=>{for(const k in keys)keys[k]=false;});
+$('#grimSizes').addEventListener('click',e=>{const b=e.target.closest('button[data-grim-size]');if(!b)return;grimSize=+b.dataset.grimSize;filterGrimSpells();});
+$('#sGrim').addEventListener('click',e=>{const b=e.target.closest('button[data-grim-prepare]');if(!b||state!=='grimoire'||!grimBattle())return;
+  const k=b.dataset.grimPrepare,sp=spellOf(k);if(!sp)return;const known=k.includes('>')?infDisc.has(sp.multi)&&discovered.has(sp.base):k.length===1||discovered.has(k);if(!known||grimReason(k))return;
+  slots=k.replace('>','').split('');UI.cast.flash=.18;setState('pause');showToast('Magia preparada',sp.name,'Ao continuar, toque em lançar.',glyphSVG(k,46));sfx('tick','A');});
 $('#cycle').innerHTML=ORDER.split('').map(e=>`<div>${glyphSVG(WEAK[e],22)}<span><b>${EL[WEAK[e]].name}</b> ${VERB[e]} <b>${EL[e].name}</b></span></div>`).join('');
 $('#helpGlyphs').innerHTML=ORDER.split('').map(e=>`<span>${glyphSVG(e,24)}${EL[e].name}</span>`).join('');
 
@@ -6284,7 +6504,7 @@ function refreshKeyHints(){document.querySelectorAll('kbd[data-k]').forEach(k=>k
   // no modo canhoto o joystick vai para a direita e os símbolos para a esquerda
   document.querySelectorAll('[data-side]').forEach(e=>{const r=(e.dataset.side==='btn')!==!!opts.left;e.textContent=r?'direita':'esquerda';});}
 $('#keyReset').addEventListener('click',()=>{delete opts.keys;store.set('opts',opts);keyWait=null;loadKeys();renderKeys();sfx('tick','A');});
-function renderOpts(){renderKeys();document.querySelectorAll('#sOpts .seg[data-opt]').forEach(g=>{const k=g.dataset.opt;g.querySelectorAll('button').forEach(b=>b.classList.toggle('on',String(opts[k])===b.dataset.v));});}
+function renderOpts(){renderKeys();document.querySelectorAll('#sOpts .seg[data-opt]').forEach(g=>{const k=g.dataset.opt;g.querySelectorAll('button').forEach(b=>{const on=String(opts[k])===b.dataset.v;b.classList.toggle('on',on);b.setAttribute('aria-pressed',String(on));});});}
 document.querySelectorAll('#sOpts .seg[data-opt]').forEach(g=>g.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
   const k=g.dataset.opt,v=b.dataset.v;opts[k]=v==='true'?true:v==='false'?false:+v;store.set('opts',opts);layout();renderOpts();sfx('tick','A');
   if(k==='vib'&&opts.vib){try{navigator.vibrate&&navigator.vibrate(30);}catch(_){}}if(k==='shake'&&opts.shake>0){shake=0;addShake(8);}})));
@@ -6297,7 +6517,7 @@ $('#bResume').addEventListener('click',resumeGame);
 $('#bResumeTop').addEventListener('click',resumeGame);
 function fillPauseArc(list){const box=$('#pauseArcBox');box.hidden=!list.length;box.open=false;
   $('#pauseArcSum').textContent=`Arcanos ativos (${list.length})`;
-  $('#pauseArc').innerHTML=list.map(n=>{const c=ARCANA[n];return `<span title="${c.desc}">${c.rn} · ${c.name}</span>`;}).join('');}
+  $('#pauseArc').innerHTML=list.map(n=>{const c=ARCANA[n];return `<div class="active-arc"><b>${c.rn} · ${c.name}</b><p>${c.desc}</p></div>`;}).join('');}
 let quitArm=0,quitT=0;
 $('#bQuit').addEventListener('click',()=>{const b=$('#bQuit');clearTimeout(quitT);
   if(performance.now()-quitArm>3000){quitArm=performance.now();
@@ -6337,6 +6557,7 @@ function showVictory(){
   $('#winSub').textContent=`Vitória ${run.diff?'na Provação '+run.diff:'no Normal'}. `+(unlocked?`Provação ${run.diff+1} desbloqueada: ${DIFFS[run.diff+1].toLowerCase()}`:'')+
     ' Continue no modo infinito para ganhar mais Essência.';
   if(run.daily){const d=recordDaily(true);$('#winSub').textContent=`Você venceu o Desafio do dia (${dayLabel()})! Melhor de hoje: onda ${d.wave} · ${d.score} pontos. Continue no modo infinito para subir a pontuação.`;}
+  fillRunRecap('#winRecap');
   musicFanfare();
   setState('win');
 }
@@ -6381,6 +6602,7 @@ function gameOver(quit){
   const ph=run.phase;
   $('#overSub').textContent=(ph?`${quit?'Corrida encerrada':'Você caiu'} na fase ${ph.num}, ${ph.biome.name}. `:'')+(rec?'Novo recorde de pontos.':`Recorde: onda ${best.wave} · ${best.score} pontos`);
   if(run.daily){const d=recordDaily(run.won);$('#overSub').textContent=`Desafio do dia (${dayLabel()}): onda ${wave.n} · ${score} pontos. Seu melhor hoje: onda ${d.wave} · ${d.score} pontos, em ${d.tries} ${d.tries===1?'tentativa':'tentativas'}.`;}
+  fillRunRecap('#overRecap');
   holds.clear();joy.active=false;
   setState('over');
 }
